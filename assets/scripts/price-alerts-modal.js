@@ -780,6 +780,9 @@ class PriceAlertModal {
                 if (window.location.pathname.includes('price-alerts.html') && window.priceAlertsManager) {
                     await window.priceAlertsManager.refreshAlerts();
                 }
+                
+                // Dispatch event for badge counter
+                document.dispatchEvent(new CustomEvent('priceAlertsUpdated'));
             } else {
                 throw new Error(data.message || 'Failed to save price alert');
             }

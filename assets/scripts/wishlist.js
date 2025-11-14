@@ -58,6 +58,8 @@ class WishlistManager {
             this.displayWishlist();
             this.updateAllWishlistButtonStates();
             this.updateWishlistCount();
+            // Dispatch event for badge counter
+            document.dispatchEvent(new CustomEvent('wishlistUpdated'));
         });
         
         document.addEventListener('userLoggedOut', () => {
@@ -81,6 +83,8 @@ class WishlistManager {
                 this.displayWishlist();
                 this.updateAllWishlistButtonStates();
                 this.updateWishlistCount();
+                // Dispatch event for badge counter
+                document.dispatchEvent(new CustomEvent('wishlistUpdated'));
             }
         }, 30000);
     }
@@ -203,6 +207,8 @@ class WishlistManager {
             
             this.wishlistItems.unshift(wishlistItem);
         this.updateWishlistCount();
+        // Dispatch event for badge counter
+        document.dispatchEvent(new CustomEvent('wishlistUpdated'));
         this.showNotification('Added to wishlist!', 'success');
         return true;
         } catch (error) {
@@ -238,6 +244,8 @@ class WishlistManager {
 
         this.wishlistItems.splice(index, 1);
         this.updateWishlistCount();
+        // Dispatch event for badge counter
+        document.dispatchEvent(new CustomEvent('wishlistUpdated'));
         this.showNotification('Removed from wishlist', 'info');
         return true;
         } catch (error) {

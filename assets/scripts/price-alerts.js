@@ -60,6 +60,8 @@ class PriceAlertsManager {
             await this.loadPriceAlerts();
             this.displayPriceAlerts();
             this.updatePriceAlertsCount();
+            // Dispatch event for badge counter
+            document.dispatchEvent(new CustomEvent('priceAlertsUpdated'));
         });
         
         document.addEventListener('userLoggedOut', () => {
@@ -81,6 +83,8 @@ class PriceAlertsManager {
                 }
                 this.displayPriceAlerts();
                 this.updatePriceAlertsCount();
+                // Dispatch event for badge counter
+                document.dispatchEvent(new CustomEvent('priceAlertsUpdated'));
             }
         }, 30000);
     }
@@ -491,38 +495,38 @@ class PriceAlertsManager {
         // Always include productId as fallback
         requestBody.productId = productId;
 
-        this.showConfirmModal('Are you sure you want to remove this price alert?', async () => {
-            try {
-                const response = await fetch(this.REMOVE_URL, {
-                    method: 'DELETE',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Failed to remove price alert');
-                }
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Remove from local array
-                    this.priceAlerts = this.priceAlerts.filter(a => a.productId !== productId);
-                    this.updatePriceAlertsCount();
-                    this.displayPriceAlerts();
-                    this.showNotification('Price alert removed successfully', 'success');
-                } else {
-                    throw new Error(data.message || 'Failed to remove price alert');
-                }
-            } catch (error) {
-                console.error('Error removing price alert:', error);
-                this.showNotification(error.message || 'Failed to remove price alert', 'error');
+        // Remove price alert directly without confirmation
+        try {
+            const response = await fetch(this.REMOVE_URL, {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to remove price alert');
             }
-        });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Remove from local array
+                this.priceAlerts = this.priceAlerts.filter(a => a.productId !== productId);
+                this.updatePriceAlertsCount();
+                // Dispatch event for badge counter
+                document.dispatchEvent(new CustomEvent('priceAlertsUpdated'));
+                this.displayPriceAlerts();
+            } else {
+                throw new Error(data.message || 'Failed to remove price alert');
+            }
+        } catch (error) {
+            console.error('Error removing price alert:', error);
+            this.showNotification(error.message || 'Failed to remove price alert', 'error');
+        }
     }
 
     async removeAllAlerts() {
@@ -532,43 +536,42 @@ class PriceAlertsManager {
         }
         
         if (this.priceAlerts.length === 0) {
-            this.showNotification('No alerts to remove', 'info');
             return;
         }
 
-        this.showConfirmModal(`Are you sure you want to remove all ${this.priceAlerts.length} price alerts? This action cannot be undone.`, async () => {
-            try {
-                // Remove all alerts one by one
-                const removePromises = this.priceAlerts.map(alert => {
-                    const requestBody = {};
-                    if (alert.alertId) {
-                        requestBody.alertId = alert.alertId;
-                    } else if (alert.id) {
-                        requestBody.alertId = alert.id;
-                    }
-                    requestBody.productId = alert.productId;
-                    return fetch(this.REMOVE_URL, {
-                        method: 'DELETE',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(requestBody)
-                    });
+        // Remove all alerts directly without confirmation
+        try {
+            // Remove all alerts one by one
+            const removePromises = this.priceAlerts.map(alert => {
+                const requestBody = {};
+                if (alert.alertId) {
+                    requestBody.alertId = alert.alertId;
+                } else if (alert.id) {
+                    requestBody.alertId = alert.id;
+                }
+                requestBody.productId = alert.productId;
+                return fetch(this.REMOVE_URL, {
+                    method: 'DELETE',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
                 });
-                
-                await Promise.all(removePromises);
-                
-                // Clear local array
-                this.priceAlerts = [];
-                this.updatePriceAlertsCount();
-                this.displayPriceAlerts();
-                this.showNotification('All price alerts removed successfully', 'success');
-            } catch (error) {
-                console.error('Error removing all price alerts:', error);
-                this.showNotification('Failed to remove all price alerts', 'error');
-            }
-        });
+            });
+            
+            await Promise.all(removePromises);
+            
+            // Clear local array
+            this.priceAlerts = [];
+            this.updatePriceAlertsCount();
+            // Dispatch event for badge counter
+            document.dispatchEvent(new CustomEvent('priceAlertsUpdated'));
+            this.displayPriceAlerts();
+        } catch (error) {
+            console.error('Error removing all price alerts:', error);
+            this.showNotification('Failed to remove all price alerts', 'error');
+        }
     }
 
     showConfirmModal(message, onConfirm) {

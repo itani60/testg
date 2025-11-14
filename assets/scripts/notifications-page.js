@@ -67,6 +67,8 @@ class NotificationsPageManager {
                 // Update unread count
                 this.updateDesktopNotificationCount();
                 this.updatePageNotificationCount();
+                // Dispatch event for badge counter
+                document.dispatchEvent(new CustomEvent('notificationsUpdated'));
             } else {
                 console.error('Failed to fetch notifications:', data);
                 this.allNotifications = [];
@@ -389,6 +391,8 @@ class NotificationsPageManager {
                     item.classList.remove('unread');
                     this.updateDesktopNotificationCount();
                     this.updatePageNotificationCount();
+                    // Dispatch event for badge counter
+                    document.dispatchEvent(new CustomEvent('notificationsUpdated'));
                 }
             }
         } catch (error) {
@@ -489,6 +493,8 @@ async function removeAllNotifications() {
                 // Update notification count
                 window.notificationsPageManager.updateDesktopNotificationCount();
                 window.notificationsPageManager.updatePageNotificationCount();
+                // Dispatch event for badge counter
+                document.dispatchEvent(new CustomEvent('notificationsUpdated'));
             }
         } else {
             throw new Error('Failed to delete notifications');
