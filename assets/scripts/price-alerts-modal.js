@@ -83,9 +83,11 @@ class PriceAlertModal {
                                         <div class="form-group mb-3">
                                             <label for="emailAddress" class="form-label">
                                                 <i class="fas fa-envelope me-1"></i>Email Address
+                                                <span class="text-danger" id="emailRequiredIndicator">*</span>
                                             </label>
                                             <input type="email" class="form-control" id="emailAddress" name="emailAddress" 
-                                                   placeholder="your@email.com" required>
+                                                   placeholder="your@email.com">
+                                            <div class="form-text" id="emailHelpText">Required for email notifications</div>
                                         </div>
                                     </div>
                                 </div>
@@ -532,6 +534,12 @@ class PriceAlertModal {
             targetPriceInput.addEventListener('input', () => this.validateTargetPrice());
         }
 
+        // Notification method change listener - toggle email requirement
+        const notificationMethodSelect = document.getElementById('notificationMethod');
+        if (notificationMethodSelect) {
+            notificationMethodSelect.addEventListener('change', () => this.handleNotificationMethodChange());
+        }
+
         // Modal accessibility event listeners
         this.modal.addEventListener('show.bs.modal', () => {
             this.modal.setAttribute('aria-hidden', 'false');
@@ -636,6 +644,23 @@ class PriceAlertModal {
         // Clear form first
         document.getElementById('priceAlertForm').reset();
         
+        // Reset email field requirement state
+        const emailRequiredIndicator = document.getElementById('emailRequiredIndicator');
+        const emailHelpText = document.getElementById('emailHelpText');
+        
+        if (emailAddressInput) {
+            emailAddressInput.removeAttribute('required');
+            emailAddressInput.classList.remove('is-invalid');
+            emailAddressInput.setCustomValidity('');
+        }
+        if (emailRequiredIndicator) {
+            emailRequiredIndicator.style.display = 'none';
+        }
+        if (emailHelpText) {
+            emailHelpText.textContent = 'Select notification method first';
+            emailHelpText.style.color = '#6c757d';
+        }
+        
         // Check if we're updating an existing alert
         if (this.existingAlertData) {
             // Pre-fill with existing alert data
@@ -644,6 +669,9 @@ class PriceAlertModal {
             alertNameInput.value = this.existingAlertData.alertName || '';
             emailAddressInput.value = this.existingAlertData.emailAddress || '';
             priceIncreaseCheckbox.checked = this.existingAlertData.priceIncreaseAlert || false;
+            
+            // Update email field requirement based on notification method
+            this.handleNotificationMethodChange();
             
             // Change modal title to indicate update mode
             const modalTitle = document.getElementById('priceAlertModalLabel');
@@ -693,6 +721,63 @@ class PriceAlertModal {
         }
     }
 
+    handleNotificationMethodChange() {
+        const notificationMethodSelect = document.getElementById('notificationMethod');
+        const emailAddressInput = document.getElementById('emailAddress');
+        const emailRequiredIndicator = document.getElementById('emailRequiredIndicator');
+        const emailHelpText = document.getElementById('emailHelpText');
+        
+        if (!notificationMethodSelect || !emailAddressInput) return;
+        
+        const selectedMethod = notificationMethodSelect.value;
+        
+        // If browser only, email is not required
+        if (selectedMethod === 'browser') {
+            emailAddressInput.removeAttribute('required');
+            emailAddressInput.classList.remove('is-invalid');
+            emailAddressInput.setCustomValidity('');
+            
+            // Update UI indicators
+            if (emailRequiredIndicator) {
+                emailRequiredIndicator.style.display = 'none';
+            }
+            if (emailHelpText) {
+                emailHelpText.textContent = 'Not required for browser notifications only';
+                emailHelpText.style.color = '#6c757d';
+            }
+            
+            // Clear email value
+            emailAddressInput.value = '';
+        } 
+        // If email or both, email is required
+        else if (selectedMethod === 'email' || selectedMethod === 'both') {
+            emailAddressInput.setAttribute('required', 'required');
+            
+            // Update UI indicators
+            if (emailRequiredIndicator) {
+                emailRequiredIndicator.style.display = 'inline';
+            }
+            if (emailHelpText) {
+                emailHelpText.textContent = 'Required for email notifications';
+                emailHelpText.style.color = '#6c757d';
+            }
+        }
+        // If no method selected yet
+        else {
+            emailAddressInput.removeAttribute('required');
+            emailAddressInput.classList.remove('is-invalid');
+            emailAddressInput.setCustomValidity('');
+            
+            if (emailRequiredIndicator) {
+                emailRequiredIndicator.style.display = 'none';
+            }
+            if (emailHelpText) {
+                emailHelpText.textContent = 'Select notification method first';
+                emailHelpText.style.color = '#6c757d';
+            }
+        }
+    }
+
     async handlePriceAlertSubmission() {
         const form = document.getElementById('priceAlertForm');
         const formData = new FormData(form);
@@ -710,6 +795,18 @@ class PriceAlertModal {
         const emailAddress = formData.get('emailAddress');
         const priceIncreaseAlert = formData.has('priceIncreaseAlert');
         const productId = document.getElementById('targetPrice').getAttribute('data-product-id');
+        
+        // Validate email based on notification method
+        if (notificationMethod === 'email' || notificationMethod === 'both') {
+            if (!emailAddress || emailAddress.trim() === '') {
+                const emailInput = document.getElementById('emailAddress');
+                emailInput.classList.add('is-invalid');
+                emailInput.setCustomValidity('Email address is required for email notifications');
+                form.classList.add('was-validated');
+                this.showNotification('Please enter an email address for email notifications', 'error');
+                return;
+            }
+        }
         
         if (!this.currentProduct) {
             this.showNotification('Error: Product not found', 'error');
@@ -731,7 +828,7 @@ class PriceAlertModal {
             targetPrice: targetPrice,
             notificationMethod: notificationMethod,
             alertName: alertName,
-            emailAddress: emailAddress,
+            emailAddress: notificationMethod === 'browser' ? '' : (emailAddress || ''), // Only include email if not browser-only
             priceIncreaseAlert: priceIncreaseAlert
         };
 
