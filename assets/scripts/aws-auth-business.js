@@ -4,24 +4,24 @@
   const BASE_URL = 'https://acc.comparehubprices.site';
 
   // API Endpoints - routes include /business/Business prefix (matching aws-auth.js pattern)
-  const LOGIN_URL = `${BASE_URL}/business/Business/login`;
-  const REGISTER_URL = `${BASE_URL}/business/Business/register`;
-  const VERIFY_EMAIL_URL = `${BASE_URL}/business/Business/verify-email`;
-  const RESEND_VERIFICATION_URL = `${BASE_URL}/business/Business/resend-otp-verification`;
-  const GET_SESSION_URL = `${BASE_URL}/business/Business/session`;
-  const USER_INFO_URL = `${BASE_URL}/business/Business/user-info`;
-  const FORGOT_PASSWORD_URL = `${BASE_URL}/business/Business/forgot-password`;
-  const RESET_PASSWORD_URL = `${BASE_URL}/business/Business/reset-password`;
-  const RESEND_OTP_FORGOT_PASSWORD_URL = `${BASE_URL}/business/Business/resend-otp-forgot-password`;
-  const UPDATE_BUSINESS_INFO_URL = `${BASE_URL}/business/Business/update-business-info`;
-  const UPDATE_BUSINESS_PASSWORD_URL = `${BASE_URL}/business/Business/update-business-password`;
-  const RESEND_PASSWORD_UPDATE_OTP_URL = `${BASE_URL}/business/Business/resend-password-update-otp`;
-  const MFA_REMOVE_URL = `${BASE_URL}/business/Business/mfa/remove`;
-  const MFA_SET_PRIMARY_URL = `${BASE_URL}/business/Business/mfa/set-primary`;
-  const EMAIL_MFA_LOGIN_SEND_URL = `${BASE_URL}/business/Business/email-mfa/login-send`;
-  const EMAIL_MFA_LOGIN_VERIFY_URL = `${BASE_URL}/business/Business/email-mfa/login-verify`;
-  const DELETE_ACCOUNT_URL = `${BASE_URL}/business/Business/account/delete`;
-  const LOGOUT_URL = `${BASE_URL}/business/Business/logout`;
+  const LOGIN_URL = `${BASE_URL}/business/business/login`;
+  const REGISTER_URL = `${BASE_URL}/business/business/register`;
+  const VERIFY_EMAIL_URL = `${BASE_URL}/business/business/verify-email`;
+  const RESEND_VERIFICATION_URL = `${BASE_URL}/business/business/resend-otp-verification`;
+  const GET_SESSION_URL = `${BASE_URL}/business/business/session`;
+  const USER_INFO_URL = `${BASE_URL}/business/business/user-info`;
+  const FORGOT_PASSWORD_URL = `${BASE_URL}/business/business/forgot-password`;
+  const RESET_PASSWORD_URL = `${BASE_URL}/business/business/reset-password`;
+  const RESEND_OTP_FORGOT_PASSWORD_URL = `${BASE_URL}/business/business/resend-otp-forgot-password`;
+  const UPDATE_BUSINESS_INFO_URL = `${BASE_URL}/business/business/update-business-info`;
+  const UPDATE_BUSINESS_PASSWORD_URL = `${BASE_URL}/business/business/update-business-password`;
+  const RESEND_PASSWORD_UPDATE_OTP_URL = `${BASE_URL}/business/business/resend-password-update-otp`;
+  const MFA_REMOVE_URL = `${BASE_URL}/business/business/mfa/remove`;
+  const MFA_SET_PRIMARY_URL = `${BASE_URL}/business/business/mfa/set-primary`;
+  const EMAIL_MFA_LOGIN_SEND_URL = `${BASE_URL}/business/business/email-mfa/login-send`;
+  const EMAIL_MFA_LOGIN_VERIFY_URL = `${BASE_URL}/business/business/email-mfa/login-verify`;
+  const DELETE_ACCOUNT_URL = `${BASE_URL}/business/business/account/delete`;
+  const LOGOUT_URL = `${BASE_URL}/business/business/logout`;
 
   class BusinessAWSAuthService {
     constructor() {
