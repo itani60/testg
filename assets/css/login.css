@@ -1,0 +1,103 @@
+/* Basic styles for the standalone test login form */
+
+.tlf-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.08);
+}
+
+.tlf-visual {
+  background: linear-gradient(135deg, #0b0e13, #1a1f2b 60%, #21293a);
+  color: #fff;
+  min-height: 520px;
+}
+.tlf-visual-inner {
+  padding: 28px 24px;
+}
+.tlf-visual-inner h1 { margin: 0 0 8px; font-weight: 800; font-size: 28px; }
+.tlf-visual-inner p { margin: 0; color: #cfd3da; max-width: 800px; }
+
+.tlf-wrapper { padding: 24px 16px; background: #f8f9fb; }
+
+.tlf-card {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.tlf-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.tlf-toggle-btn {
+  appearance: none;
+  background: #f8f9fa;
+  border: none;
+  border-bottom: 1px solid #e9ecef;
+  padding: 14px 16px;
+  font-weight: 600;
+  color: #495057;
+}
+.tlf-toggle-btn.active {
+  background: #fff;
+  color: #212529;
+  border-bottom: 2px solid #dc3545;
+}
+
+.tlf-body {
+  padding: 20px 18px 22px;
+}
+
+.tlf-form { }
+
+.tlf-field { margin-bottom: 14px; }
+.tlf-field label { display:block; font-weight:600; margin-bottom:6px; color:#212529; }
+.tlf-field input {
+  width: 100%;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  padding: 12px 12px;
+  outline: none;
+}
+.tlf-field input:focus { border-color:#dc3545; box-shadow: 0 0 0 2px rgba(220,53,69,0.12); }
+
+.tlf-row { display:flex; align-items:center; justify-content:space-between; margin: 8px 0 14px; }
+.tlf-checkbox { display:flex; align-items:center; gap:8px; color:#495057; }
+.tlf-link { color:#dc3545; text-decoration:none; font-weight:600; }
+.tlf-link:hover { text-decoration:underline; }
+
+.tlf-submit {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #dc3545;
+  color: #fff;
+  font-weight: 700;
+}
+.tlf-submit:hover { filter: brightness(0.95); }
+
+.tlf-foot { margin-top: 14px; display:flex; gap:6px; justify-content:center; color:#6c757d; }
+
+@media (max-width: 480px){
+  .tlf-card { border-radius: 12px; }
+  .tlf-body { padding: 16px 14px 18px; }
+}
+
+@media (max-width: 992px){
+  .tlf-shell { grid-template-columns: 1fr; }
+  .tlf-visual { min-height: 220px; }
+}
+
+

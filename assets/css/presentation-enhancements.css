@@ -1,0 +1,604 @@
+/* =================================================================
+   COMPARE HUB PRICES PRESENTATION - STUNNING VISUAL ENHANCEMENTS
+   Eye-Catching Graphics | Advanced Animations | 3D Effects
+   ================================================================= */
+
+/* =================================================================
+   ANIMATED GRADIENT BACKGROUND WITH PARTICLES
+   ================================================================= */
+body[data-presentation="comparehub"] {
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Animated Gradient Mesh Background */
+body[data-presentation="comparehub"]::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(220, 53, 69, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(118, 75, 162, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 60% 90%, rgba(52, 152, 219, 0.3) 0%, transparent 50%);
+    animation: meshMove 20s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes meshMove {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+        transform: translate(-5%, 5%) rotate(5deg);
+    }
+    50% {
+        transform: translate(5%, -5%) rotate(-5deg);
+    }
+    75% {
+        transform: translate(-5%, -5%) rotate(3deg);
+    }
+}
+
+/* Floating Particles */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    animation: floatParticle 15s infinite ease-in-out;
+}
+
+.particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+.particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+.particle:nth-child(4) { left: 40%; animation-delay: 1s; }
+.particle:nth-child(5) { left: 50%; animation-delay: 3s; }
+.particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+.particle:nth-child(7) { left: 70%; animation-delay: 2.5s; }
+.particle:nth-child(8) { left: 80%; animation-delay: 4.5s; }
+.particle:nth-child(9) { left: 90%; animation-delay: 1.5s; }
+
+@keyframes floatParticle {
+    0%, 100% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+    }
+    10%, 90% {
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(0) translateX(50px);
+    }
+}
+
+/* =================================================================
+   STUNNING HEADER WITH 3D EFFECT
+   ================================================================= */
+header[role="banner"] {
+    position: relative;
+    overflow: hidden;
+}
+
+header[role="banner"]::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(255, 255, 255, 0.05) 50%, 
+        transparent 70%);
+    animation: headerShine 8s infinite;
+}
+
+@keyframes headerShine {
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+}
+
+/* Logo with 3D Float Effect */
+.logo-section .w-16 {
+    animation: float3D 4s ease-in-out infinite;
+    box-shadow: 
+        0 10px 30px rgba(220, 53, 69, 0.4),
+        0 20px 60px rgba(220, 53, 69, 0.2);
+    position: relative;
+}
+
+@keyframes float3D {
+    0%, 100% {
+        transform: translateY(0) rotateX(0deg) rotateY(0deg);
+    }
+    25% {
+        transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+    }
+    50% {
+        transform: translateY(-15px) rotateX(0deg) rotateY(10deg);
+    }
+    75% {
+        transform: translateY(-10px) rotateX(-5deg) rotateY(5deg);
+    }
+}
+
+/* =================================================================
+   INTERACTIVE TABLE OF CONTENTS WITH 3D CARDS
+   ================================================================= */
+.toc-item {
+    position: relative;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toc-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.toc-item:hover {
+    transform: translateY(-10px) rotateX(5deg) scale(1.05);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.2),
+        0 0 40px rgba(220, 53, 69, 0.3);
+}
+
+.toc-item:hover::before {
+    opacity: 1;
+}
+
+.toc-item .flex-shrink-0 {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toc-item:hover .flex-shrink-0 {
+    transform: scale(1.2) rotate(360deg);
+    box-shadow: 0 0 30px rgba(220, 53, 69, 0.6);
+}
+
+/* Ripple Effect on Click */
+.toc-item:active {
+    transform: scale(0.95);
+}
+
+.toc-item::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s, opacity 0.6s;
+    opacity: 0;
+}
+
+.toc-item:active::after {
+    width: 300px;
+    height: 300px;
+    opacity: 0.3;
+}
+
+/* =================================================================
+   SECTION HEADERS WITH ANIMATED UNDERLINES
+   ================================================================= */
+.section-header {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.section-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        #dc3545, 
+        #667eea, 
+        #dc3545, 
+        transparent);
+    background-size: 200% 100%;
+    animation: expandLine 2s ease-in-out forwards, shimmerLine 3s ease-in-out infinite;
+    border-radius: 2px;
+}
+
+@keyframes expandLine {
+    to {
+        width: 200px;
+    }
+}
+
+@keyframes shimmerLine {
+    0%, 100% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 200% 0%;
+    }
+}
+
+/* Section Number with Glow */
+.section-number {
+    position: relative;
+    animation: pulse3D 2s ease-in-out infinite;
+    box-shadow: 
+        0 0 20px rgba(220, 53, 69, 0.5),
+        0 0 40px rgba(220, 53, 69, 0.3),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes pulse3D {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 
+            0 0 20px rgba(220, 53, 69, 0.5),
+            0 0 40px rgba(220, 53, 69, 0.3);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 
+            0 0 30px rgba(220, 53, 69, 0.7),
+            0 0 60px rgba(220, 53, 69, 0.5);
+    }
+}
+
+/* =================================================================
+   ENHANCED CARDS WITH GLASS MORPHISM
+   ================================================================= */
+.summary-card,
+.service-card,
+.value-item,
+.segment,
+.stat-item,
+.stream-item,
+.plan-comparison {
+    position: relative;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+
+.summary-card::before,
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(220, 53, 69, 0.1), transparent);
+    transform: rotate(45deg);
+    transition: all 0.6s ease;
+}
+
+.summary-card:hover::before,
+.service-card:hover::before {
+    transform: rotate(45deg) translateX(-50%);
+}
+
+.summary-card:hover,
+.service-card:hover {
+    transform: translateY(-15px) scale(1.03);
+    box-shadow: 
+        0 30px 60px rgba(0, 0, 0, 0.15),
+        0 0 40px rgba(220, 53, 69, 0.2);
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+/* Icon Containers with 3D Effect */
+.service-icon,
+.value-icon {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.service-card:hover .service-icon,
+.value-item:hover .value-icon {
+    transform: translateZ(20px) rotateY(360deg);
+    box-shadow: 
+        0 10px 30px rgba(220, 53, 69, 0.4),
+        0 0 40px rgba(220, 53, 69, 0.3);
+}
+
+/* =================================================================
+   STATS WITH COUNTING ANIMATION
+   ================================================================= */
+.stat-number {
+    background: linear-gradient(135deg, #dc3545, #667eea);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 900;
+    animation: statGlow 2s ease-in-out infinite;
+}
+
+@keyframes statGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 10px rgba(220, 53, 69, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 20px rgba(220, 53, 69, 0.8));
+    }
+}
+
+/* =================================================================
+   PRICING PLANS WITH HOLOGRAPHIC EFFECT
+   ================================================================= */
+.plan-comparison.featured {
+    position: relative;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.9), 
+        rgba(220, 53, 69, 0.05), 
+        rgba(102, 126, 234, 0.05)) !important;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.plan-comparison.featured::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        #dc3545, 
+        #667eea, 
+        #f093fb, 
+        #dc3545);
+    background-size: 400% 400%;
+    border-radius: 14px;
+    z-index: -1;
+    animation: holographicBorder 4s ease infinite;
+}
+
+@keyframes holographicBorder {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.popular-badge {
+    animation: badgePulse 2s ease-in-out infinite;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+}
+
+@keyframes badgePulse {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.05);
+    }
+}
+
+/* =================================================================
+   FOOTER WITH PARALLAX EFFECT
+   ================================================================= */
+footer[role="contentinfo"] {
+    position: relative;
+    overflow: hidden;
+}
+
+footer[role="contentinfo"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        transparent,
+        #dc3545,
+        #667eea,
+        #dc3545,
+        transparent);
+    background-size: 200% 100%;
+    animation: footerLine 3s ease-in-out infinite;
+}
+
+@keyframes footerLine {
+    0%, 100% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 200% 0%;
+    }
+}
+
+/* =================================================================
+   SCROLL PROGRESS BAR
+   ================================================================= */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 4px;
+    background: linear-gradient(90deg, #dc3545, #667eea, #f093fb);
+    z-index: 9999;
+    transition: width 0.1s ease-out;
+    box-shadow: 0 2px 10px rgba(220, 53, 69, 0.5);
+}
+
+/* =================================================================
+   INTERACTIVE BUTTONS WITH MAGNETIC EFFECT
+   ================================================================= */
+.btn,
+button,
+a[class*="btn"] {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    transform: translateY(-1px);
+}
+
+/* =================================================================
+   TEXT REVEAL ANIMATION
+   ================================================================= */
+.animate-text-reveal {
+    opacity: 0;
+    animation: textReveal 1s ease-out forwards;
+}
+
+@keyframes textReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+        filter: blur(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* =================================================================
+   STAGGERED ANIMATION FOR LISTS
+   ================================================================= */
+.stagger-item {
+    opacity: 0;
+    animation: staggerFadeIn 0.6s ease-out forwards;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0.1s; }
+.stagger-item:nth-child(2) { animation-delay: 0.2s; }
+.stagger-item:nth-child(3) { animation-delay: 0.3s; }
+.stagger-item:nth-child(4) { animation-delay: 0.4s; }
+.stagger-item:nth-child(5) { animation-delay: 0.5s; }
+.stagger-item:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes staggerFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* =================================================================
+   CURSOR FOLLOW EFFECT (OPTIONAL)
+   ================================================================= */
+.cursor-glow {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(220, 53, 69, 0.5), transparent);
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.1s ease-out;
+    filter: blur(5px);
+}
+
+/* =================================================================
+   RESPONSIVE ADJUSTMENTS
+   ================================================================= */
+@media (max-width: 768px) {
+    .toc-item:hover {
+        transform: translateY(-5px) scale(1.02);
+    }
+    
+    body[data-presentation="comparehub"]::before {
+        animation-duration: 30s;
+    }
+}
+
+/* =================================================================
+   PRINT OPTIMIZATIONS
+   ================================================================= */
+@media print {
+    .particles,
+    .scroll-progress,
+    .cursor-glow {
+        display: none !important;
+    }
+    
+    body[data-presentation="comparehub"]::before {
+        display: none !important;
+    }
+}
+
+/* =================================================================
+   ACCESSIBILITY - REDUCE MOTION
+   ================================================================= */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

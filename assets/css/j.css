@@ -1,0 +1,300 @@
+/* Contact Us Hero Section */
+.contact-hero {
+    position: relative;
+    background: linear-gradient(135deg, #20c997 0%, #17a2b8 50%, #138496 100%);
+    min-height: 350px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(32, 201, 151, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(23, 162, 184, 0.08) 0%, transparent 50%);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding: 2rem 1rem;
+}
+
+.contact-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2.5rem;
+    margin: 0 auto;
+    max-width: 700px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+}
+
+.contact-icon-large {
+    margin-bottom: 1.5rem;
+}
+
+.icon-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #20c997, #17a2b8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(32, 201, 151, 0.3);
+    position: relative;
+}
+
+.icon-ring::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #20c997, #17a2b8);
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.icon-inner {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icon-inner i {
+    font-size: 24px;
+    color: #20c997;
+}
+
+.contact-details {
+    text-align: center;
+}
+
+.contact-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.contact-subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Contact Us Container */
+.contact-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 2rem;
+    padding: 2rem 1rem;
+    background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    z-index: 10;
+    border-radius: 24px 24px 0 0;
+}
+
+.contact-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(32, 201, 151, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(32, 201, 151, 0.03) 0%, transparent 50%);
+    z-index: -1;
+}
+
+.contact-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* Breadcrumb */
+.breadcrumb-nav {
+    margin-bottom: 2rem;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.breadcrumb-item a {
+    color: #000000 !important;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.breadcrumb-item a:hover {
+    color: #000000 !important;
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: #000000 !important;
+    font-weight: 600;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: #6c757d;
+    font-weight: 600;
+}
+
+
+
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .quick-links-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .contact-hero {
+        min-height: 0;
+        height: auto;
+        padding: 0;
+        align-items: flex-start !important;
+        overflow: visible !important;
+        margin-top: -110px;
+    }
+    
+ }
+
+@media (max-width: 400px) {
+    .quick-links-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, 1fr);
+    }
+}
+
+/* Tablet devices - Move hero up */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .contact-hero {
+        margin-top: -60px !important;
+    }
+}
+
+/* Larger tablets */
+@media (min-width: 1024px) and (max-width: 1366px) {
+    .contact-hero {
+        margin-top: -100px !important;
+    }
+}
+
+/* Tablet landscape orientation */
+@media (min-width: 768px) and (max-width: 1366px) and (orientation: landscape) {
+    .contact-hero {
+        margin-top: -60px !important;
+    }
+}
+
+/* Contact page: mobile header search - shrink icon and align sizes */
+@media (max-width: 768px) {
+    .mobile-header .mobile-search .form-control.mobile-search-input {
+        height: 40px;
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.95rem;
+    }
+
+    .mobile-header .mobile-search .search-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 40px;
+        padding: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .mobile-header .mobile-search .search-btn i {
+        font-size: 1rem;
+        line-height: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-header .mobile-search .form-control.mobile-search-input {
+        height: 38px;
+    }
+
+    .mobile-header .mobile-search .search-btn {
+        width: 42px;
+        height: 38px;
+    }
+
+    .mobile-header .mobile-search .search-btn i {
+        font-size: 0.95rem;
+    }
+}
+
+.mobile-search {
+    flex: 1;
+    position: relative;
+}
+
+.mobile-search .input-group {
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.mobile-search .input-group:focus-within {
+    border-color: #dc3545;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+    transform: translateY(-1px);
+}
+
+.mobile-search-input {
+    border: none !important;
+    background: white !important;
+    outline: none !important;
+    font-size: 1rem;
+    color: #333;
+    padding: 0.75rem 1rem !important;
+    font-weight: 500;
+    box-shadow: none !important;
+}

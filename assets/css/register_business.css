@@ -1,0 +1,276 @@
+/* Business Registration Form Styles */
+.main {
+  padding-top: 11rem;
+  padding-bottom: 2rem;
+  min-height: calc(100vh - 200px);
+}
+
+.trf-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.1);
+  overflow: hidden;
+}
+
+.trf-visual {
+  background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+}
+
+.trf-visual-inner {
+  max-width: 520px;
+}
+
+.trf-visual-inner h1 {
+  margin: 0 0 0.75rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.trf-visual-inner p {
+  margin: 0;
+  opacity: 0.95;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.trf-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.trf-card {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.trf-body {
+  padding: 1rem;
+}
+
+.trf-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.trf-duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.trf-field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.trf-field label {
+  font-weight: 600;
+  color: #222;
+  font-size: 0.95rem;
+}
+
+.trf-field input[type="text"],
+.trf-field input[type="email"],
+.trf-field input[type="password"],
+.trf-field textarea,
+.trf-field select {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+  outline: none;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.trf-field textarea {
+  height: auto;
+  min-height: 100px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.trf-field select {
+  cursor: pointer;
+  background-color: #fff;
+}
+
+.trf-field input:focus,
+.trf-field textarea:focus,
+.trf-field select:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+}
+
+.trf-reqs {
+  margin: -0.25rem 0 0 0;
+  padding-left: 1.25rem;
+  color: #666;
+  font-size: 0.9rem;
+  list-style: none;
+}
+
+.trf-reqs li {
+  margin: 0.15rem 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.trf-reqs li i {
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.trf-reqs li.met {
+  color: #198754;
+}
+
+.trf-reqs li.met i {
+  color: #198754;
+}
+
+.trf-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.trf-checkbox {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.trf-checkbox input[type="checkbox"] {
+  margin-top: 0.2rem;
+  cursor: pointer;
+}
+
+.trf-link {
+  color: #dc3545;
+  text-decoration: none;
+}
+
+.trf-link:hover {
+  text-decoration: underline;
+}
+
+.trf-submit {
+  margin-top: 0.25rem;
+  height: 46px;
+  border: none;
+  border-radius: 10px;
+  background: #dc3545;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.trf-submit:hover {
+  background: #c42636;
+}
+
+.trf-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.trf-foot {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .main {
+    padding-top: 8rem;
+    padding-bottom: 1rem;
+  }
+
+  .trf-shell {
+    grid-template-columns: 1fr;
+    border-radius: 12px;
+  }
+
+  .trf-visual {
+    padding: 2rem 1.5rem;
+  }
+
+  .trf-visual-inner h1 {
+    font-size: 1.5rem;
+  }
+
+  .trf-visual-inner p {
+    font-size: 0.9rem;
+  }
+
+  .trf-wrapper {
+    padding: 1.5rem;
+  }
+
+  .trf-duo {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Alert Message Styles */
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.alert.d-none {
+  display: none;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  border: 1px solid #bee5eb;
+  color: #0c5460;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+

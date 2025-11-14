@@ -1,0 +1,325 @@
+
+/* Membership Card */
+.membership-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(0, 123, 255, 0.1);
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.membership-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    opacity: 1;
+}
+
+/* Membership Header */
+.membership-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid rgba(0, 123, 255, 0.1);
+}
+
+.membership-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.membership-icon i {
+    font-size: 24px;
+    color: #fff;
+}
+
+.membership-info {
+    flex: 1;
+}
+
+.membership-plan {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.membership-description {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+}
+
+.membership-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.active-badge {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    color: white;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* Membership Details Grid */
+.membership-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.membership-detail-item {
+    background: rgba(248, 249, 250, 0.8);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(0, 123, 255, 0.1);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.membership-detail-item:hover {
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.1);
+    border-color: rgba(0, 123, 255, 0.2);
+}
+
+.detail-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+}
+
+.detail-icon i {
+    font-size: 18px;
+    color: white;
+}
+
+.detail-content {
+    flex: 1;
+}
+
+.detail-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+}
+
+.detail-subtitle {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Cancel Membership Section */
+.cancel-membership-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid rgba(220, 53, 69, 0.1);
+}
+
+.cancel-header {
+    margin-bottom: 1.5rem;
+}
+
+.cancel-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #dc3545;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.cancel-title i {
+    font-size: 1.2rem;
+}
+
+.cancel-description {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+.cancel-action {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-cancel-membership {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 2rem;
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-cancel-membership:hover {
+    background: linear-gradient(45deg, #c82333, #bd2130);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+    color: white;
+}
+
+.btn-cancel-membership i {
+    font-size: 1rem;
+}
+
+/* Manage Button Styling */
+.btn-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-card:hover {
+    background: linear-gradient(45deg, #0056b3, #004085);
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main {
+        padding: 1.5rem 0.75rem;
+    }
+
+    .membership-card {
+        padding: 1.5rem;
+    }
+
+    .membership-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .membership-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .membership-icon i {
+        font-size: 20px;
+    }
+
+    .membership-plan {
+        font-size: 1.3rem;
+    }
+
+    .membership-details-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .cancel-action {
+        justify-content: center;
+    }
+
+    .btn-cancel-membership {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .main {
+        padding: 1rem 0.5rem;
+    }
+
+    .membership-card {
+        padding: 1.25rem;
+    }
+
+    .membership-plan {
+        font-size: 1.1rem;
+    }
+
+    .membership-description {
+        font-size: 0.95rem;
+    }
+
+    .membership-detail-item {
+        padding: 1.25rem;
+    }
+
+    .detail-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .detail-icon i {
+        font-size: 16px;
+    }
+
+    .detail-value {
+        font-size: 1.1rem;
+    }
+
+    .cancel-title {
+        font-size: 1.1rem;
+    }
+
+    .btn-cancel-membership {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+    }
+}
+

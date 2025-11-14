@@ -1,0 +1,1458 @@
+/* Account Settings Page Styles - Matching Profile Pages Design */
+
+/* Override main class padding that causes spacing issues */
+.main {
+    padding-top: 0 !important;
+}
+
+/* Mobile-First Optimizations - Scoped to account settings page only */
+.account-settings-container * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+.account-settings-container {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+/* Account Settings Hero Section */
+.account-settings-hero {
+    position: relative;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 50%, #a71e2a 100%);
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    margin-top: 3rem;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(220, 53, 69, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(200, 35, 51, 0.08) 0%, transparent 50%);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding: 2rem 1rem;
+}
+
+.account-settings-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2.5rem;
+    margin: 0 auto;
+    max-width: 700px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+}
+
+.settings-icon-large {
+    margin-bottom: 1.5rem;
+}
+
+.icon-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3);
+    position: relative;
+}
+
+.icon-ring::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.icon-inner {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icon-inner i {
+    font-size: 24px;
+    color: #dc3545;
+}
+
+.settings-details {
+    text-align: center;
+}
+
+.settings-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.settings-subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Account Settings Container */
+.account-settings-container {
+    max-width: 800px;
+    margin: 2rem auto 0 auto;
+    padding: 2rem 1rem;
+    background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    z-index: 10;
+    border-radius: 24px 24px 0 0;
+}
+
+.account-settings-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(220, 53, 69, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(220, 53, 69, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.account-settings-container > * {
+    position: relative;
+    z-index: 1;
+}
+
+
+/* Breadcrumb */
+.breadcrumb-nav {
+    margin: 1rem 0 2rem 0;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.9rem;
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-item a {
+    color: #dc3545;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.breadcrumb-item a:hover {
+    color: #c82333;
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.breadcrumb-item::after {
+    content: '/';
+    color: #6c757d;
+    margin: 0 0.5rem;
+}
+
+.breadcrumb-item:last-child::after {
+    display: none;
+}
+
+/* Settings Form Container - Matching Profile Card Style */
+.settings-form-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Form Sections */
+.form-section {
+    margin-bottom: 2.5rem;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f1f3f4;
+}
+
+.section-title i {
+    color: #dc3545;
+    font-size: 1.1rem;
+}
+
+/* Danger Section */
+.danger-section {
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);
+    border: 2px solid #fecaca;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.danger-title {
+    color: #dc2626 !important;
+    border-bottom-color: #fecaca !important;
+}
+
+.danger-title i {
+    color: #dc2626 !important;
+}
+
+.danger-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.danger-info h4 {
+    color: #dc2626;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.danger-info p {
+    color: #7f1d1d;
+    margin: 0;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+/* Input Wrapper */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    color: #6c757d;
+    z-index: 2;
+}
+
+.form-input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2c3e50;
+    background: #ffffff;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+    background: #ffffff;
+}
+
+.form-input:valid {
+    border-color: #28a745;
+}
+
+.form-input:invalid:not(:placeholder-shown) {
+    border-color: #dc3545;
+}
+
+/* Password Toggle */
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    z-index: 3;
+}
+
+.password-toggle:hover {
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.1);
+}
+
+/* Form Help */
+.form-help {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.form-help i {
+    color: #17a2b8;
+}
+
+/* Password Requirements - Matching Register.css */
+.password-requirements {
+    margin-top: 0.75rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #dc3545;
+    display: block;
+}
+
+.requirements-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.requirements-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.requirement {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.requirement i {
+    margin-right: 0.5rem;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.requirement.valid i {
+    color: #28a745;
+}
+
+.requirement.valid i::before {
+    content: '\f00c';
+}
+
+.requirement.invalid i {
+    color: #dc3545;
+}
+
+.requirement.invalid i::before {
+    content: '\f00d';
+}
+
+/* Notification Settings */
+.notification-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.notification-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: #ffffff;
+    border: 2px solid #f1f3f4;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+    border-color: #dc3545;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.1);
+}
+
+.notification-info h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+}
+
+.notification-info p {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #dc3545;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 2rem;
+    border-top: 2px solid #f1f3f4;
+}
+
+/* Button Styling - Matching Profile Navigation Style - Scoped to account settings page */
+.account-settings-container .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 48px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.account-settings-container .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.account-settings-container .btn:hover::before {
+    left: 100%;
+}
+
+.account-settings-container .btn-primary {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    border: 2px solid #dc3545;
+}
+
+.account-settings-container .btn-primary:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+    color: white;
+    border-color: #c82333;
+}
+
+.account-settings-container .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(220, 53, 69, 0.3);
+}
+
+.account-settings-container .btn-danger {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+    border: 2px solid #dc2626;
+}
+
+.account-settings-container .btn-danger:hover {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+    color: white;
+    border-color: #b91c1c;
+}
+
+.account-settings-container .btn-danger:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(220, 38, 38, 0.3);
+}
+
+/* Delete Account Button - Smaller Size on Desktop */
+.danger-section .btn-danger {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    min-width: auto;
+}
+
+/* Loading State */
+.account-settings-container .btn.loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+}
+
+.account-settings-container .btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success Message */
+.success-message {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #c3e6cb;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+}
+
+.success-message i {
+    color: #28a745;
+    font-size: 1.1rem;
+}
+
+/* Error Message */
+.error-message {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #f5c6cb;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+}
+
+.error-message i {
+    color: #dc3545;
+    font-size: 1.1rem;
+}
+
+/* Modal Styling */
+.modal-content {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid #e9ecef;
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-title {
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.modal-title i {
+    color: #dc3545;
+    margin-right: 0.5rem;
+}
+
+/* OTP Input */
+.otp-input-container {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+.otp-input {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.otp-input:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+    outline: none;
+}
+
+.otp-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.otp-timer {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Alert */
+.alert {
+    border-radius: 12px;
+    border: none;
+    font-weight: 500;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+}
+
+.alert-danger i {
+    color: #dc2626;
+    margin-right: 0.5rem;
+}
+
+/* Mobile Optimization - Matching Profile Pages */
+@media (max-width: 768px) {
+    .account-settings-hero {
+        min-height: 0;
+        height: auto;
+        padding: 0;
+        align-items: flex-start !important;
+        overflow: visible !important;
+        margin-top: -20px;
+        margin-bottom: 0;
+    }
+    
+    .account-settings-card {
+        padding: 2rem;
+        margin: 0 1rem;
+    }
+    
+    .settings-title {
+        font-size: 2rem;
+    }
+    
+    .settings-subtitle {
+        font-size: 1rem;
+    }
+    
+    .account-settings-container {
+        padding: 1.5rem 0.75rem;
+        margin-top: -6rem;
+    }
+    
+    .settings-form-container {
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-top: 0;
+    }
+    
+    .breadcrumb-nav {
+        margin: 1rem 0 1.5rem 0;
+    }
+    
+    .breadcrumb {
+        font-size: 0.85rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-input {
+        padding: 0.875rem 0.875rem 0.875rem 2.75rem;
+        font-size: 0.95rem;
+    }
+    
+    .input-icon {
+        left: 0.875rem;
+        font-size: 0.9rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .account-settings-container .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 1rem 1.5rem;
+    }
+    
+    .danger-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .notification-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .otp-input-container {
+        gap: 0.5rem;
+    }
+    
+    .otp-input {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+    
+    .password-requirements {
+        margin-top: 0.6rem;
+        padding: 0.8rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .requirements-title {
+        font-size: 0.85rem;
+        margin-bottom: 0.45rem;
+    }
+    
+    .requirement {
+        font-size: 0.8rem;
+        margin-bottom: 0.25rem;
+    }
+}
+
+/* Small Mobile Optimization */
+@media (max-width: 480px) {
+    .account-settings-hero {
+        min-height: 0;
+        height: auto;
+        padding: 0;
+        align-items: flex-start !important;
+        overflow: visible !important;
+        margin-top: -40px;
+        margin-bottom: 0;
+    }
+    
+    .account-settings-card {
+        padding: 1.5rem;
+        margin: 0 0.5rem;
+    }
+    
+    .settings-title {
+        font-size: 1.75rem;
+    }
+    
+    .settings-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .account-settings-container {
+        padding: 1rem 0.5rem;
+        margin-top: -6rem;
+    }
+    
+    .settings-form-container {
+        padding: 1.25rem;
+        border-radius: 12px;
+        margin-top: 0;
+    }
+    
+    .breadcrumb-nav {
+        margin: 0.75rem 0 1.25rem 0;
+    }
+    
+    .breadcrumb {
+        font-size: 0.8rem;
+    }
+    
+    .form-input {
+        padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .input-icon {
+        left: 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .form-label {
+        font-size: 0.9rem;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+    }
+    
+    .account-settings-container .btn {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.95rem;
+    }
+    
+    .danger-section {
+        padding: 1.5rem;
+    }
+    
+    .otp-input {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+    
+    .password-requirements {
+        margin-top: 0.5rem;
+        padding: 0.875rem;
+        border-radius: 6px;
+    }
+    
+    .requirements-title {
+        font-size: 0.8rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .requirement {
+        font-size: 0.75rem;
+        margin-bottom: 0.2rem;
+    }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 360px) {
+    .account-settings-hero {
+        min-height: 0;
+        height: auto;
+        padding: 0;
+        align-items: flex-start !important;
+        overflow: visible !important;
+        margin-top: -50px;
+        margin-bottom: 0;
+    }
+    
+    .account-settings-card {
+        padding: 1.25rem;
+    }
+    
+    .settings-title {
+        font-size: 1.5rem;
+    }
+    
+    .settings-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .account-settings-container {
+        padding: 0.75rem 0.4rem;
+        margin-top: -6rem;
+    }
+    
+    .settings-form-container {
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 0;
+    }
+    
+    .form-input {
+        padding: 0.7rem 0.7rem 0.7rem 2.25rem;
+        font-size: 0.85rem;
+    }
+    
+    .input-icon {
+        left: 0.7rem;
+        font-size: 0.8rem;
+    }
+    
+    .form-label {
+        font-size: 0.85rem;
+    }
+    
+    .section-title {
+        font-size: 1rem;
+    }
+    
+    .account-settings-container .btn {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .danger-section {
+        padding: 1.25rem;
+    }
+    
+    .otp-input {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+    
+    .password-requirements {
+        padding: 0.75rem;
+        font-size: 0.75rem;
+    }
+    
+    .requirements-title {
+        font-size: 0.75rem;
+    }
+    
+    .requirement {
+        font-size: 0.7rem;
+    }
+}
+
+/* Animation Effects */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.account-settings-container {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.settings-form-container {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.form-section {
+    animation: fadeInUp 1s ease-out;
+}
+
+.form-section:nth-child(2) { animation-delay: 0.1s; }
+.form-section:nth-child(3) { animation-delay: 0.2s; }
+.form-section:nth-child(4) { animation-delay: 0.3s; }
+
+/* Focus States for Accessibility */
+.account-settings-container .form-input:focus,
+.account-settings-container .btn:focus {
+    outline: 3px solid rgba(220, 53, 69, 0.5);
+    outline-offset: 2px;
+}
+
+/* Validation States */
+.account-settings-container .form-input.is-valid {
+    border-color: #28a745;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='m2.3 6.73.94-.94 1.89-1.89.94-.94-.94-.94L3.24 1.36l-.94-.94L.36 2.42l.94.94 1.89 1.89.94.94z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+.account-settings-container .form-input.is-invalid {
+    border-color: #dc3545;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 1.4 1.4 1.4-1.4'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+/* Page-specific spacing overrides to reduce gap below fixed header/search on mobile/tablet */
+@media (max-width: 1400px) {
+  .account-settings-page .main {
+    padding-top: 9.5rem !important; /* styles.css default was 12rem */
+  }
+  
+  .account-settings-container {
+    margin-top: 8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .account-settings-page .main {
+    padding-top: 10rem !important; /* styles.css default was 14rem */
+  }
+}
+
+@media (max-width: 480px) {
+  .account-settings-page .main {
+    padding-top: 10.5rem !important; /* styles.css default was 16rem */
+  }
+}
+
+/* Tablet Optimization - Hero positioning and sizing */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Reduce top padding to move hero up on tablet portrait */
+  .account-settings-page .main {
+    padding-top: 6rem !important;
+  }
+  .account-settings-hero {
+    min-height: 400px;
+    margin-top: -1rem; /* move hero up two notches on tablet portrait */
+    padding: 1.5rem 0;
+  }
+  
+  .account-settings-card {
+    padding: 2rem;
+    margin: 0 auto 1rem auto;
+    max-width: 600px;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .settings-title {
+    font-size: 2.2rem;
+  }
+  
+  .settings-subtitle {
+    font-size: 1.05rem;
+  }
+  
+  .icon-ring {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .icon-inner {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .icon-inner i {
+    font-size: 20px;
+  }
+  
+  .account-settings-container {
+    margin-top: 0.5rem;
+  }
+}
+
+/* Large Tablet Optimization */
+@media (min-width: 1025px) and (max-width: 1200px) {
+.account-settings-hero {
+    min-height: 450px;
+    margin-top: -1rem;
+}
+  
+  .account-settings-card {
+    padding: 2.25rem;
+    margin: 0 auto 1.5rem auto;
+    max-width: 650px;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .settings-title {
+    font-size: 2.3rem;
+  }
+  
+  .settings-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .account-settings-container {
+    margin-top: 1rem;
+  }
+}
+
+/* Tablet Landscape Optimization - Hero positioning - Higher specificity */
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+  .account-settings-hero {
+    min-height: 300px !important;
+    margin-top: -1.5rem !important;
+    padding: 1rem 0 !important;
+    height: auto !important;
+  }
+  
+  .account-settings-card {
+    padding: 1.5rem !important;
+    margin: 0 auto 0.5rem auto !important;
+  }
+  
+  .settings-title {
+    font-size: 2rem !important;
+  }
+  
+  .settings-subtitle {
+    font-size: 1rem !important;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1200px) and (orientation: landscape) {
+  .account-settings-hero {
+    min-height: 320px !important;
+    margin-top: -2.5rem !important; /* move hero up on tablet landscape */
+    padding: 1rem 0 !important;
+    height: auto !important;
+  }
+  
+  .account-settings-card {
+    padding: 1.75rem !important;
+    margin: 0 auto 0.75rem auto !important;
+  }
+  
+  .settings-title {
+    font-size: 2.1rem !important;
+  }
+  
+  .settings-subtitle {
+    font-size: 1.05rem !important;
+  }
+}
+
+/* Force landscape tablet hero positioning */
+@media (min-width: 769px) and (max-width: 1200px) and (orientation: landscape) {
+  .account-settings-page .main {
+    padding-top: 6rem !important; /* move whole section up in landscape */
+  }
+  .account-settings-hero {
+    min-height: 280px !important;
+    margin-top: -3rem !important; /* move hero further up in landscape */
+    padding: 0.75rem 0 !important;
+  }
+}
+
+/* Galaxy Tab S7 and similar tablets - specific targeting */
+@media (min-width: 800px) and (max-width: 1200px) and (min-height: 600px) and (max-height: 900px) {
+  .account-settings-hero {
+    min-height: 250px !important;
+    margin-top: -1.5rem !important;
+    padding: 0.5rem 0 !important;
+    height: auto !important;
+  }
+  
+  .account-settings-card {
+    padding: 1.25rem !important;
+    margin: 0 auto 0.25rem auto !important;
+  }
+  
+  .settings-title {
+    font-size: 1.8rem !important;
+  }
+  
+  .settings-subtitle {
+    font-size: 0.95rem !important;
+  }
+  
+  .account-settings-container {
+    margin-top: 0.5rem !important;
+  }
+}
+
+/* Alternative approach - using viewport height for landscape tablets */
+@media (min-width: 768px) and (max-height: 1024px) and (orientation: landscape) {
+  .account-settings-hero {
+    min-height: 200px !important;
+    margin-top: -1.5rem !important;
+    padding: 0.25rem 0 !important;
+    height: auto !important;
+  }
+  
+  .account-settings-container {
+    margin-top: 0.5rem !important;
+  }
+}
+
+/* Desktop Optimization - Hero positioning - Higher specificity */
+@media (min-width: 1201px) {
+  .account-settings-hero {
+    margin-top: 5.75rem !important; /* desktop: move hero down a bit more */
+  }
+}
+
+/* Force desktop hero positioning */
+@media (min-width: 1400px) {
+  .account-settings-hero {
+    margin-top: 6.75rem !important; /* large desktop: move hero down a bit more */
+  }
+}
+
+/* Large Desktop Optimization */
+@media (min-width: 1600px) {
+  .account-settings-hero {
+    margin-top: 7.75rem !important; /* xlarge desktop: move hero down a bit more */
+  }
+}
+
+/* Device Detection Based CSS - More Accurate Targeting */
+
+/* Galaxy Tab S7 and similar tablets - Device detection */
+.device-galaxy-tab .account-settings-hero {
+  margin-top: -5.5rem !important;
+  min-height: 300px !important;
+  padding: 0.5rem 0 !important;
+}
+
+.device-galaxy-tab.orientation-landscape .account-settings-hero {
+  margin-top: -3rem !important; /* stronger lift for Tab S7 landscape */
+  min-height: 250px !important;
+  padding: 0.25rem 0 !important;
+}
+.device-galaxy-tab.orientation-landscape .account-settings-page .main {
+  padding-top: 6rem !important; /* move entire section up on Tab S7 landscape */
+}
+
+.device-galaxy-tab .account-settings-container {
+  margin-top: 0.5rem !important;
+}
+
+.device-galaxy-tab.orientation-landscape .account-settings-container {
+  margin-top: 0.5rem !important;
+}
+
+/* Android Tablets - Device detection */
+.device-android-tablet .account-settings-hero {
+  margin-top: -5rem !important;
+  min-height: 350px !important;
+}
+
+.device-android-tablet.orientation-landscape .account-settings-hero {
+  margin-top: -1.5rem !important;
+  min-height: 300px !important;
+  padding: 0.5rem 0 !important;
+}
+
+/* iPad - Device detection */
+.device-ipad .account-settings-hero {
+  margin-top: -3.5rem !important;
+  min-height: 450px !important;
+}
+
+.device-ipad .account-settings-page .main {
+  padding-top: 6.5rem !important; /* increase top padding on iPad portrait */
+}
+
+.device-ipad.orientation-landscape .account-settings-hero {
+  margin-top: -0.5rem !important;
+  min-height: 350px !important;
+}
+
+.device-ipad.orientation-landscape .account-settings-page .main {
+  padding-top: 5rem !important; /* increase top padding on iPad landscape */
+}
+
+/* General tablet device detection */
+.device-tablet .account-settings-hero {
+  margin-top: -4rem !important;
+  min-height: 400px !important;
+}
+
+.device-tablet.orientation-landscape .account-settings-hero {
+  margin-top: -3rem !important; /* lift all tablets in landscape regardless of width */
+  min-height: 320px !important;
+}
+.device-tablet.orientation-landscape .account-settings-page .main {
+  padding-top: 6rem !important;
+}
+
+/* Desktop with device detection */
+.device-desktop .account-settings-hero {
+  margin-top: 2.5rem !important; /* move hero down a bit on desktop */
+}
+
+.device-desktop.screen-xlarge .account-settings-hero {
+  margin-top: 3.5rem !important; /* move hero down a bit on very large screens */
+}
+
+/* Fallback - Force tablet hero positioning with higher specificity */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .account-settings-hero {
+    margin-top: -1rem !important;
+    min-height: 400px !important;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1200px) {
+  .account-settings-hero {
+    margin-top: -1rem !important;
+    min-height: 450px !important;
+  }
+}
+
+/* Mobile-only override to move the account settings container up slightly */
+@media (max-width: 768px) {
+  .account-settings-container {
+    margin-top: 1rem !important; /* small gap under hero */
+  }
+}
+
+@media (max-width: 480px) {
+  .account-settings-container {
+    margin-top: 1rem !important; /* small gap under hero */
+  }
+}
+
+@media (max-width: 360px) {
+  .account-settings-container {
+    margin-top: 1rem !important; /* small gap under hero */
+  }
+}
+
+/* Mobile Landscape Optimization - Hero adjustments only */
+@media (max-width: 768px) and (orientation: landscape) {
+  .account-settings-hero {
+    min-height: 220px; /* shorter hero for limited vertical space */
+    padding: 0.5rem 0;
+    align-items: center !important;
+    margin-top: -10px;
+    margin-bottom: 0;
+  }
+  .account-settings-card {
+    padding: 1.25rem; /* tighter card spacing */
+    margin: 0 0.75rem;
+  }
+  .settings-title {
+    font-size: 1.6rem;
+  }
+  .settings-subtitle {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) and (orientation: landscape) {
+  .account-settings-hero {
+    min-height: 200px;
+    padding: 0.5rem 0;
+    margin-top: -10px;
+  }
+  .account-settings-card {
+    padding: 1rem;
+    margin: 0 0.5rem;
+  }
+  .settings-title {
+    font-size: 1.5rem;
+  }
+  .settings-subtitle {
+    font-size: 0.9rem;
+  }
+}
+
+/* Target Samsung Galaxy Tab S7 (approx 800x1280) explicitly */
+@media (width: 800px) and (orientation: portrait) {
+  .account-settings-page .main {
+    padding-top: 5rem !important; /* lift whole section */
+  }
+  .account-settings-hero {
+    margin-top: -3rem !important; /* move hero up */
+  }
+}
+
+@media (width: 1280px) and (orientation: landscape) {
+  .account-settings-page .main {
+    padding-top: 4rem !important;
+  }
+  .account-settings-hero {
+    margin-top: -3rem !important;
+  }
+}

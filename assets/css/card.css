@@ -1,0 +1,478 @@
+/* Product Card Styles - Used across the site */
+
+/* Smartphone Cards */
+.smartphone-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.smartphone-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    flex: 1;
+}
+
+.card-image-container {
+    height: 160px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem;
+    position: relative;
+}
+
+.price-alert-bell {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    /* Keep bells below sticky headers/menus */
+    z-index: 2;
+}
+
+.price-alert-bell:hover {
+    background: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.price-alert-bell i {
+    color: #007bff;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.price-alert-bell:hover i {
+    color: #0056b3;
+}
+
+.price-alert-bell.active {
+    background: #007bff;
+}
+
+.price-alert-bell.active i {
+    color: white;
+}
+
+.card-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.card-content {
+    padding: 1rem;
+}
+
+.brand-badge {
+    background: #6c757d;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 0.75rem;
+}
+
+.product-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.product-specs {
+    margin-bottom: 0.75rem;
+}
+
+.product-specs span {
+    font-size: 0.85rem;
+    color: #666;
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    margin-right: 0.5rem;
+    margin-bottom: 0.25rem;
+    display: inline-block;
+}
+
+.product-price {
+    margin-bottom: 0.75rem;
+}
+
+.current-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #28a745;
+}
+
+.retailer-info {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem 1rem 1rem;
+    align-items: center;
+    min-height: 36px;
+    margin-top: auto;
+}
+
+.btn-compare {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.6rem;
+    border-radius: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-size: 0.75rem;
+    flex: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.btn-compare:hover {
+    background: #218838;
+}
+
+.btn-wishlist {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.6rem;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-size: 0.75rem;
+    flex: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.btn-wishlist:hover {
+    background: #c82333;
+}
+
+/* Loading and Error States */
+.loading-state,
+.no-results,
+.error-message {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #666;
+    grid-column: 1 / -1;
+}
+
+.loading-state i,
+.error-message i {
+    color: #007bff;
+}
+
+.no-results i {
+    color: #ccc;
+}
+
+/* ========================================
+   TRENDING DEALS CARDS
+   ======================================== */
+
+/* Trending Deals Cards */
+.trending-deals-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.trending-deals-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.trending-deals-card .card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    flex: 1;
+}
+
+.trending-deals-card .card-image-container {
+    height: 160px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem;
+    position: relative;
+}
+
+.trending-deals-card .price-alert-bell {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    /* Keep bells below sticky headers/menus */
+    z-index: 2;
+}
+
+.trending-deals-card .price-alert-bell:hover {
+    background: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.trending-deals-card .price-alert-bell i {
+    color: #007bff;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.trending-deals-card .price-alert-bell:hover i {
+    color: #0056b3;
+}
+
+.trending-deals-card .price-alert-bell.active {
+    background: #007bff;
+}
+
+.trending-deals-card .price-alert-bell.active i {
+    color: white;
+}
+
+.trending-deals-card .card-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.trending-deals-card .card-content {
+    padding: 1rem;
+}
+
+.trending-deals-card .brand-badge {
+    background: #6c757d;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 0.75rem;
+}
+
+.trending-deals-card .product-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.trending-deals-card .product-specs {
+    margin-bottom: 0.75rem;
+}
+
+.trending-deals-card .product-specs span {
+    font-size: 0.85rem;
+    color: #666;
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    margin-right: 0.5rem;
+    margin-bottom: 0.25rem;
+    display: inline-block;
+}
+
+.trending-deals-card .product-price {
+    margin-bottom: 0.75rem;
+}
+
+.trending-deals-card .current-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #28a745;
+}
+
+.trending-deals-card .retailer-info {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+}
+
+.trending-deals-card .card-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem 1rem 1rem;
+    align-items: center;
+    min-height: 36px;
+    margin-top: auto;
+}
+
+.trending-deals-card .btn-compare {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.6rem;
+    border-radius: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-size: 0.75rem;
+    flex: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.trending-deals-card .btn-compare:hover {
+    background: #218838;
+}
+
+.trending-deals-card .btn-wishlist {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.6rem;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-size: 0.75rem;
+    flex: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.trending-deals-card .btn-wishlist:hover {
+    background: #c82333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card-content {
+        padding: 1rem;
+    }
+    
+    .card-actions {
+        padding: 0.75rem 1rem 1rem 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn-compare,
+    .btn-wishlist {
+        width: 100%;
+        flex: none;
+    }
+    
+    .product-specs span {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .product-name {
+        font-size: 1rem;
+    }
+    
+    .current-price {
+        font-size: 1.1rem;
+    }
+    
+    /* Trending Deals Responsive */
+    .trending-deals-card .card-content {
+        padding: 1rem;
+    }
+    
+    .trending-deals-card .card-actions {
+        padding: 0.75rem 1rem 1rem 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .trending-deals-card .btn-compare,
+    .trending-deals-card .btn-wishlist {
+        width: 100%;
+        flex: none;
+    }
+    
+    .trending-deals-card .product-specs span {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .trending-deals-card .product-name {
+        font-size: 1rem;
+    }
+    
+    .trending-deals-card .current-price {
+        font-size: 1.1rem;
+    }
+}
+
+/* Mobile grid override for smartphone deals on homepage */
+@media (max-width: 480px) {
+  .smartphones-deals-showcase {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  .smartphones-deals-showcase .card-image-container {
+    height: 140px;
+    padding: 0.75rem;
+  }
+}

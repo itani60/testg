@@ -1,0 +1,74 @@
+/* Desktop login dropdown styles for test.html */
+
+@media (min-width: 992px) {
+  .login-dropdown-container {
+    position: relative;
+  }
+
+  /* Align the login button to the far right of the header */
+  .notification-buttons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .notification-buttons .login-dropdown-container {
+    margin-left: auto;
+  }
+
+  .login-dropdown {
+    position: absolute;
+    top: 100%;
+    right: -6px;
+    margin-top: 18px;
+    display: none !important;
+    width: 300px;
+    padding: 12px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+  }
+
+  /* Only show on explicit toggle, not hover/focus */
+  .login-dropdown-container:hover .login-dropdown,
+  .login-dropdown-container:focus-within .login-dropdown { display: none; }
+
+  /* Also show dropdown when opened via click */
+  .login-dropdown-container.dropdown-open .login-dropdown { display: block !important; }
+
+  /* Remove demo user dropdown styles */
+
+  /* Remove demo logged-in state rules */
+
+  
+
+  /* Remove demo avatar style */
+
+  /* Remove demo label switching */
+
+  .login-card-header {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  .login-card-text {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+  }
+
+  .login-card-actions {
+    display: grid;
+    gap: 8px;
+  }
+}
+
+/* Prevent dropdown on small screens (mobile has separate UI) */
+@media (max-width: 991.98px) {
+  .login-dropdown { display: none !important; }
+}
+
+

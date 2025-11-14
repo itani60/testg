@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CompareHubPrices</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com https://fonts.googleapis.com https://www.gstatic.com; img-src 'self' data: https://www.gstatic.com; font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://acc.comparehubprices.site https://accounts.google.com https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com;">
+    
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
+    
+    <style id="critical-login-css">
+      .main { padding-top: 11rem; padding-bottom: 0; }
+      .login-wrapper { width:100%; min-height:100vh; background:#f8f9fa; padding:0.5rem 0; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+      .login-container { display:flex; min-height:calc(100vh - 1rem); background:#fff; max-width:1200px; margin:0 auto; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.1); overflow:hidden; }
+    </style>
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+
+    <link href="assets/bootstrap-5.3.8-dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="assets/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js"></script>
+
+    <link href="assets/fontawesome-6.0.0/css/all.min.css" rel="stylesheet">
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    
+  
+
+    <link rel="stylesheet" href="assets/css/styles.css">
+   
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/badge.css">
+    <link rel="stylesheet" href="assets/css/test.css">       
+    <link rel="stylesheet" href="assets/css/login.css">
+    
+    
+    
+    <style>
+        .notification-buttons .header-link,
+        .categories-dropdown .header-link {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+        
+        /* MFA Method Switcher Styles */
+        #tlfBusinessMfaMethodSwitcher .btn.active {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+        
+        #tlfBusinessMfaMethodSwitcher .btn:not(.active) {
+            background-color: transparent;
+            color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        #tlfBusinessMfaMethodSwitcher .btn:not(.active):hover {
+            background-color: #f8f9fa;
+        }
+        
+
+ /* Loading Overlay */
+ .page-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .page-loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: #333;
+        }
+
+        .logo-container {
+            margin-bottom: 3rem;
+        }
+
+        .logo-container img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        /* Modern Spinner */
+        .modern-spinner {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top: 3px solid #dc3545;
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+
+        .spinner-ring:nth-child(1) {
+            animation-delay: -0.45s;
+            border-top-color: #dc3545;
+        }
+
+        .spinner-ring:nth-child(2) {
+            animation-delay: -0.3s;
+            border-top-color: #28a745;
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+        }
+
+        .spinner-ring:nth-child(3) {
+            animation-delay: -0.15s;
+            border-top-color: #007bff;
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-content h4 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .loading-content p {
+            font-size: 1rem;
+            color: #666;
+            margin: 0;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .modern-spinner {
+                width: 50px;
+                height: 50px;
+            }
+
+            .loading-content h4 {
+                font-size: 1.25rem;
+            }
+
+            .loading-content p {
+                font-size: 0.9rem;
+            }
+
+            .logo-container img {
+                max-width: 150px;
+            }
+        }
+
+
+        @media (max-width: 576px) {
+            .main { padding-top: 2rem; }
+            .tlf-visual .tlf-visual-inner { 
+                padding-top: 0.5rem; 
+                padding-bottom: 0.75rem;
+            }
+            .tlf-visual {
+                margin-bottom: 0.5rem;
+            }
+        }
+        
+        @media (min-width: 577px) and (max-width: 991.98px) {
+            .main { padding-top: 8.9rem; }
+            .tlf-visual .tlf-visual-inner { 
+                padding-top: 1.25rem; 
+                padding-bottom: 1.5rem;
+            }
+            
+            .tlf-wrapper { display: flex; justify-content: center; }
+            .tlf-card { margin-left: auto; margin-right: auto; }
+        }
+        .tlf-submit { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+        .tlf-submit .btn-text { display: inline-block; }
+        .tlf-submit .btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; visibility: hidden; display: inline-block; margin-right: 8px; }
+        .tlf-submit.loading .btn-spinner { visibility: visible; }
+        .tlf-submit.has-spinner { padding-left: 0; }
+        .tlf-input-wrap { position: relative; width: 100%; }
+        .tlf-input-wrap input { width: 100%; padding-right: 44px; }
+        .tlf-eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; color: #6c757d; cursor: pointer; }
+        .tlf-eye:focus { outline: none; }
+        /* Forgot modal: spinner inline to the right of text */
+        .btn .btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; visibility: hidden; display: inline-block; margin-left: 8px; }
+        .btn.loading .btn-spinner { visibility: visible; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Back to Home button styling - black without blue highlight */
+        a.btn[href="index.html"] {
+            color: #000 !important;
+            border-color: #000 !important;
+            background-color: transparent !important;
+        }
+        a.btn[href="index.html"]:hover,
+        a.btn[href="index.html"]:focus {
+            color: #000 !important;
+            border-color: #000 !important;
+            background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+        
+    </style>
+     
+      <link rel="stylesheet" href="assets/css/google-button.css">
+      <link rel="stylesheet" href="assets/css/footer.css">
+   
+      <link rel="stylesheet" href="assets/css/aws-auth.css">
+  
+    
+
+    
+</head>
+<body>
+
+
+    
+    <div class="page-loading-overlay" id="pageLoadingOverlay">
+        <div class="loading-content">
+            <div class="logo-container">
+                <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img">
+            </div>
+            <div class="modern-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <h4>Loading...</h4>
+            <p>Please wait while we load your account</p>
+        </div>
+    </div>
+    
+
+
+
+    
+    <div class="notification-container" id="notificationContainer"></div>
+
+
+
+
+   
+
+   
+
+
+    <main class="main">
+        <div class="tlf-shell">
+        <section class="tlf-visual">
+            <div class="tlf-visual-inner">
+                <h1>Sign in to CompareHubPrices</h1>
+                <p>Access your wishlist, price alerts, and personalized recommendations across all your devices.</p>
+            </div>
+        </section>
+        <div class="tlf-wrapper">
+            <div class="tlf-card">
+                <div class="tlf-toggle">
+                    <button type="button" class="tlf-toggle-btn active" id="tlfUserTab">User Login</button>
+                    <button type="button" class="tlf-toggle-btn" id="tlfBusinessTab">Business Login</button>
+                </div>
+
+                <div class="tlf-body">
+                    <div id="loginGlobalMessage" class="alert alert-info d-none" role="alert"></div>
+                    
+                    <form id="tlfUserForm" class="tlf-form" autocomplete="on">
+                        <div class="tlf-field">
+                            <label for="tlfUserEmail">Email address</label>
+                            <input type="email" id="tlfUserEmail" placeholder="you@example.com" required>
+                        </div>
+                        <div class="tlf-field">
+                            <label for="tlfUserPassword">Password</label>
+                            <div class="tlf-input-wrap">
+                                <input type="password" id="tlfUserPassword" placeholder="Enter your password" required>
+                                <button type="button" id="tlfUserPasswordToggle" aria-label="Show password" class="tlf-eye">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="tlf-row">
+                            <label class="tlf-checkbox">
+                                <input type="checkbox" id="tlfUserRemember"> <span>Remember me</span>
+                            </label>
+                            <a href="#" class="tlf-link" id="tlfUserForgot">Forgot password?</a>
+                        </div>
+                        <!-- Turnstile widget container -->
+                        <div id="login-turnstile-container" class="turnstile-container" aria-live="polite">
+                        </div>
+                        <button type="submit" class="tlf-submit has-spinner" id="tlfUserSubmit">
+                            <span class="btn-spinner" aria-hidden="true"></span>
+                            <span class="btn-text">Sign In</span>
+                        </button>
+                        <div class="login-divider" style="display:flex; align-items:center; justify-content:center; margin:12px 0;">
+                            <span class="divider-text" style="display:inline-block; padding:0 8px; color:#6c757d;">or</span>
+                        </div>
+                        
+                        <div class="social-login" id="googleButtonContainer" style="display: flex; justify-content: center; width: 100%;">
+                            <button class="gsi-material-button">
+                                <div class="gsi-material-button-state"></div>
+                                <div class="gsi-material-button-content-wrapper">
+                                  <div class="gsi-material-button-icon">
+                                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
+                                      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                                      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                                      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                                      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                                      <path fill="none" d="M0 0h48v48H0z"></path>
+                                    </svg>
+                                  </div>
+                                  <span class="gsi-material-button-contents">Sign in with Google</span>
+                                  <span style="display: none;">Sign in with Google</span>
+                                </div>
+                              </button>
+                        </div>
+                        <div class="tlf-foot">
+                            <span>Don't have an account?</span>
+                            <a href="register.html" class="tlf-link">Create account</a>
+                        </div>
+                    </form>
+
+                    
+                    <form id="tlfBusinessForm" class="tlf-form" style="display:none;" autocomplete="on">
+                        <div class="tlf-field">
+                            <label for="tlfBusinessEmail">Business email</label>
+                            <input type="email" id="tlfBusinessEmail" placeholder="business@example.com" required>
+                        </div>
+                        <div class="tlf-field">
+                            <label for="tlfBusinessPassword">Password</label>
+                            <div class="tlf-input-wrap">
+                                <input type="password" id="tlfBusinessPassword" placeholder="Enter your password" required>
+                                <button type="button" id="tlfBusinessPasswordToggle" aria-label="Show password" class="tlf-eye">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- MFA Code Field (hidden by default) -->
+                        <div class="tlf-field" id="tlfBusinessMfaField" style="display: none;">
+                            <!-- MFA Method Switcher (shown when both methods are available) -->
+                            <div id="tlfBusinessMfaMethodSwitcher" style="display: none; margin-bottom: 1rem;">
+                                <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                    <button type="button" id="tlfBusinessMfaSwitchEmail" class="btn btn-sm btn-outline-primary" style="flex: 1;">
+                                        <i class="fas fa-envelope me-1"></i> Email Code
+                                    </button>
+                                    <button type="button" id="tlfBusinessMfaSwitchTOTP" class="btn btn-sm btn-outline-primary" style="flex: 1;">
+                                        <i class="fas fa-mobile-alt me-1"></i> Authenticator App
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Email MFA Section -->
+                            <div id="tlfBusinessEmailMfaSection" style="display: none;">
+                                <label for="tlfBusinessEmailMfaCode">Email Verification Code</label>
+                                <input type="text" id="tlfBusinessEmailMfaCode" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" autocomplete="off" inputmode="numeric">
+                                <small class="text-muted" style="display: block; margin-top: 0.5rem; font-size: 0.875rem;">
+                                    Enter the 6-digit code sent to your email
+                                </small>
+                                <div style="margin-top: 0.75rem;">
+                                    <button type="button" id="tlfBusinessResendEmailOtp" class="btn btn-sm btn-link" style="padding: 0; font-size: 0.875rem;">
+                                        Resend code
+                                    </button>
+                                    <span id="tlfBusinessResendTimer" style="display: none; margin-left: 0.5rem; color: #6c757d; font-size: 0.875rem;"></span>
+                                </div>
+                            </div>
+                            
+                            <!-- TOTP/Authenticator App Section -->
+                            <div id="tlfBusinessTotpMfaSection" style="display: none;">
+                            <label for="tlfBusinessMfaCode">Authenticator Code</label>
+                            <input type="text" id="tlfBusinessMfaCode" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" autocomplete="off" inputmode="numeric">
+                            <small class="text-muted" style="display: block; margin-top: 0.5rem; font-size: 0.875rem;">Enter the 6-digit code from your authenticator app</small>
+                            </div>
+                        </div>
+                        <div class="tlf-row">
+                            <label class="tlf-checkbox">
+                                <input type="checkbox" id="tlfBusinessRemember"> <span>Remember me</span>
+                            </label>
+                            <a href="#" class="tlf-link" id="tlfBusinessForgot">Forgot password?</a>
+                        </div>
+                        <!-- Turnstile widget container -->
+                        <div id="business-login-turnstile-container" class="turnstile-container" aria-live="polite">
+                        </div>
+                        <button type="submit" class="tlf-submit has-spinner" id="tlfBusinessSubmit">
+                            <span class="btn-spinner" aria-hidden="true"></span>
+                            <span class="btn-text">Sign In to Business</span>
+                        </button>
+                        <div class="tlf-foot">
+                            <span>Don't have a business account?</span>
+                            <a href="register_business.html" class="tlf-link">Create account</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem; padding-bottom: 2rem;">
+            <a href="index.html" class="btn" style="text-decoration: none; color: #000; border-color: #000; background-color: transparent;">
+                Back to Home
+            </a>
+        </div>
+        
+    </main>
+
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About CompareHubPrices</h3>
+                <ul>
+                    <li><a href="about-us.html">About Us</a></li>
+                    <li><a href="articles.html">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Help & Support</h3>
+                <ul>
+                    <li><a href="contact-us.html">Contact Us</a></li>
+                    <li><a href="FAQs.html">FAQs</a></li>
+                    <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                    <li><a href="Terms-of-Service.html">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                </div>
+                <div class="newsletter-section">
+                    <h4>Get the Best Deals in Your Inbox</h4>
+                    <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                        <input type="email" placeholder="Enter your email address" required aria-label="Email address for newsletter">
+                        <button type="submit"><i class="fas fa-paper-plane"></i> Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 CompareHub Prices. All rights reserved.</p>
+        </div>
+    </footer>
+
+    
+    <div class="modal fade" id="tlfForgotPasswordModal" tabindex="-1" aria-labelledby="tlfForgotPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tlfForgotPasswordModalLabel">Reset Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-3">Enter your email address and we'll send you a verification code to reset your password.</p>
+                    <form id="tlfForgotPasswordForm">
+                        <div id="tlfForgotFeedback" class="alert alert-info d-none" role="alert"></div>
+                        <div class="mb-3">
+                            <label for="tlfForgotEmail" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="tlfForgotEmail" placeholder="you@example.com" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100" id="tlfForgotSubmit">Send Verification Code<span class="btn-spinner" aria-hidden="true"></span></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="modal fade" id="tlfBusinessForgotPasswordModal" tabindex="-1" aria-labelledby="tlfBusinessForgotPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tlfBusinessForgotPasswordModalLabel">Reset Business Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-3">Enter your business email and we'll send you a verification code to reset your password.</p>
+                    <form id="tlfBusinessForgotPasswordForm">
+                        <div id="tlfBusinessForgotFeedback" class="alert alert-info d-none" role="alert"></div>
+                        <div class="mb-3">
+                            <label for="tlfBusinessForgotEmail" class="form-label">Business Email Address</label>
+                            <input type="email" class="form-control" id="tlfBusinessForgotEmail" placeholder="business@example.com" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100" id="tlfBusinessForgotSubmit">Send Verification Code<span class="btn-spinner" aria-hidden="true"></span></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white justify-content-center position-relative">
+                    <h5 class="modal-title text-center w-100" id="logoutConfirmModalLabel">Sign Out Confirmation</h5>
+                    <button type="button" class="btn-close btn-close-white position-absolute" style="right: 15px; top: 15px;" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <div class="mb-4">
+                        <i class="fas fa-exclamation-circle text-danger" style="font-size: 48px;"></i>
+                    </div>
+                    <h5 class="mb-3">Are you sure you want to sign out?</h5>
+                    <p class="text-muted mb-4">You will need to sign in again to access your account.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger px-4" id="confirmLogoutBtn">Sign Out</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+
+    <script src="assets/scripts/device-detection.js"></script>
+    <script src="assets/scripts/script.js"></script>
+    <script src="assets/scripts/search.js"></script>
+    <script src="assets/scripts/sidebar-header.js"></script>
+    <script src="assets/scripts/sidebar-mobile.js"></script>
+  
+    <script src="assets/scripts/turnstile-config.js"></script>
+    <script src="assets/scripts/turnstile-manager.js"></script>
+    <script src="assets/scripts/aws-auth.js"></script>
+    <script src="assets/scripts/aws-auth-business.js"></script>
+    <script src="assets/scripts/lazy_loading.js"></script>
+    <script src="assets/scripts/login.js"></script>
+  
+    <script src="assets/scripts/badge-counter.js"></script>
+    <script>
+    (function(){
+      // Handle logout and update UI state
+      function handleLogout() {
+        showLogoutConfirmation();
+      }
+
+      function showLogoutConfirmation() {
+        const modal = new bootstrap.Modal(document.getElementById('logoutConfirmModal'));
+        modal.show();
+
+        // Remove any existing event listener to prevent duplicates
+        const confirmBtn = document.getElementById('confirmLogoutBtn');
+        if (confirmBtn) {
+          const newConfirmBtn = confirmBtn.cloneNode(true);
+          confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+          
+          newConfirmBtn.addEventListener('click', async function() {
+            try {
+              // Call logout API
+              if (window.awsAuthService && typeof window.awsAuthService.logout === 'function') {
+                await window.awsAuthService.logout();
+              }
+              
+              // Update UI state - show logged out, hide logged in
+              const loggedInState = document.getElementById('loggedInState');
+              const loggedOutState = document.getElementById('loggedOutState');
+              
+              if (loggedInState) loggedInState.style.display = 'none';
+              if (loggedOutState) loggedOutState.style.display = 'block';
+              
+              // Ensure login form is visible
+              const userForm = document.getElementById('tlfUserForm');
+              const tlfBody = document.querySelector('.tlf-body');
+              if (userForm) {
+                userForm.style.display = 'block';
+                userForm.style.visibility = 'visible';
+              }
+              if (tlfBody) {
+                tlfBody.style.display = 'block';
+              }
+              
+              // Ensure Google sign-in button and its container are visible
+              const googleBtn = document.querySelector('.gsi-material-button');
+              const socialLoginDiv = document.querySelector('.social-login');
+              const loginDivider = document.querySelector('.login-divider');
+              
+              if (socialLoginDiv) {
+                socialLoginDiv.style.display = 'flex';
+                socialLoginDiv.style.visibility = 'visible';
+              }
+              if (googleBtn) {
+                googleBtn.style.display = 'block';
+                googleBtn.style.visibility = 'visible';
+                googleBtn.style.opacity = '1';
+              }
+              if (loginDivider) {
+                loginDivider.style.display = 'flex';
+              }
+              
+              // Close modal
+              modal.hide();
+              
+              // Clear profile from auth service
+              if (window.awsAuthService) {
+                window.awsAuthService.clear();
+              }
+              
+              if (window.google && window.google.accounts && window.google.accounts.id) {
+                try { window.google.accounts.id.disableAutoSelect(); } catch (_) {}
+              }
+
+              // Force reload to ensure clean state (optional, but ensures all UI resets)
+              setTimeout(() => {
+                window.location.reload();
+              }, 500);
+              
+            } catch (err) {
+              console.error('Logout error:', err);
+              modal.hide();
+              // Even on error, reload to show logged out state
+              setTimeout(() => {
+                window.location.reload();
+              }, 500);
+            }
+          });
+        }
+      }
+
+      // Check authentication state on page load
+      async function checkAuthState() {
+        try {
+          if (!window.awsAuthService) {
+            // Service not available - show logged out state
+            showLoggedOutState();
+            return;
+          }
+          
+          const info = await window.awsAuthService.getUserInfo();
+          if (info && info.success && info.user) {
+            // User is logged in
+            const loggedInState = document.getElementById('loggedInState');
+            const loggedOutState = document.getElementById('loggedOutState');
+            
+            if (loggedInState) loggedInState.style.display = 'block';
+            if (loggedOutState) loggedOutState.style.display = 'none';
+          } else {
+            // User is not logged in
+            showLoggedOutState();
+          }
+        } catch (err) {
+          // User not authenticated - show logged out state
+          showLoggedOutState();
+        }
+      }
+
+      // Helper function to show logged out state and ensure Google button is visible
+      function showLoggedOutState() {
+        const loggedInState = document.getElementById('loggedInState');
+        const loggedOutState = document.getElementById('loggedOutState');
+        const userForm = document.getElementById('tlfUserForm');
+        const tlfBody = document.querySelector('.tlf-body');
+        const googleBtn = document.querySelector('.gsi-material-button');
+        const socialLoginDiv = document.querySelector('.social-login');
+        const loginDivider = document.querySelector('.login-divider');
+        
+        // Show/hide login states
+        if (loggedInState) loggedInState.style.display = 'none';
+        if (loggedOutState) loggedOutState.style.display = 'block';
+        
+        // Ensure login form is visible
+        if (userForm) {
+          userForm.style.display = 'block';
+          userForm.style.visibility = 'visible';
+        }
+        if (tlfBody) {
+          tlfBody.style.display = 'block';
+        }
+        
+        // Ensure Google sign-in button is visible
+        if (socialLoginDiv) {
+          socialLoginDiv.style.display = 'flex';
+          socialLoginDiv.style.visibility = 'visible';
+        }
+        if (googleBtn) {
+          googleBtn.style.display = 'block';
+          googleBtn.style.visibility = 'visible';
+          googleBtn.style.opacity = '1';
+        }
+        if (loginDivider) {
+          loginDivider.style.display = 'flex';
+        }
+
+        if (window.chpInitGoogleOneTap) {
+          try { setTimeout(window.chpInitGoogleOneTap, 0); } catch (_) {}
+        } else if (window.chpPromptGoogleOneTap) {
+          try { setTimeout(window.chpPromptGoogleOneTap, 0); } catch (_) {}
+        }
+      }
+
+      // Make functions available globally
+      window.handleLogout = handleLogout;
+      window.showLogoutConfirmation = showLogoutConfirmation;
+
+      // Check auth state when page loads
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          setTimeout(checkAuthState, 100); // Wait for awsAuthService to be available
+        });
+      } else {
+        setTimeout(checkAuthState, 100);
+      }
+
+      function bindForgotForms(){
+        const globalMessageEl = document.getElementById('loginGlobalMessage');
+        const forgotFeedbackEl = document.getElementById('tlfForgotFeedback');
+        const businessFeedbackEl = document.getElementById('tlfBusinessForgotFeedback');
+
+        const alertClasses = ['alert-info','alert-warning','alert-danger','alert-success'];
+
+        function resetAlert(el){
+          if(!el) return;
+          el.classList.add('d-none');
+          alertClasses.forEach(cls => el.classList.remove(cls));
+          el.textContent = '';
+        }
+
+        function showAlert(el, message, type){
+          if(!el) return;
+          resetAlert(el);
+          el.classList.remove('d-none');
+          el.classList.add(type ? `alert-${type}` : 'alert-info');
+          el.textContent = message;
+        }
+
+        function clearGlobalMessage(){
+          resetAlert(globalMessageEl);
+        }
+
+        function showGlobalMessage(message, type){
+          showAlert(globalMessageEl, message, type);
+          if(globalMessageEl){
+            try {
+              globalMessageEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch (_) {}
+          }
+        }
+
+        const googleAccountMessage = 'This email is linked to Google Sign-In. Please use the "Sign in with Google" button to access CompareHubPrices and manage your password from your Google account settings.';
+
+        var form = document.getElementById('tlfForgotPasswordForm');
+        if(form){
+          form.addEventListener('submit', async function(e){
+            e.preventDefault();
+            var emailEl = document.getElementById('tlfForgotEmail');
+            var btn = document.getElementById('tlfForgotSubmit');
+            if(!emailEl) return;
+            resetAlert(forgotFeedbackEl);
+            clearGlobalMessage();
+            try{
+              if(btn){ btn.disabled = true; btn.classList.add('loading'); }
+              const result = await (window.awsAuthService && window.awsAuthService.forgotPassword(emailEl.value.trim()));
+              if(result && result.googleAccount){
+                const message = result.message || googleAccountMessage;
+                showAlert(forgotFeedbackEl, message, 'info');
+                showGlobalMessage(message, 'info');
+                const forgotModalEl = document.getElementById('tlfForgotPasswordModal');
+                if (forgotModalEl && window.bootstrap && typeof bootstrap.Modal === 'function') {
+                  const modalInstance = bootstrap.Modal.getInstance(forgotModalEl);
+                  if (modalInstance) modalInstance.hide();
+                }
+                return;
+              }
+              window.location.href = 'reset-passwword.html?email=' + encodeURIComponent(emailEl.value.trim());
+            }catch(err){
+              const message = err && err.message ? err.message : 'Failed to send verification code. Please try again.';
+              showAlert(forgotFeedbackEl, message, 'danger');
+              showGlobalMessage(message, 'danger');
+            } finally {
+              if(btn){ btn.disabled = false; btn.classList.remove('loading'); }
+            }
+          });
+        }
+        var bForm = document.getElementById('tlfBusinessForgotPasswordForm');
+        if(bForm){
+          bForm.addEventListener('submit', async function(e){
+            e.preventDefault();
+            var emailEl2 = document.getElementById('tlfBusinessForgotEmail');
+            var btn2 = document.getElementById('tlfBusinessForgotSubmit');
+            if(!emailEl2) return;
+            resetAlert(businessFeedbackEl);
+            clearGlobalMessage();
+            try{
+              if(btn2){ btn2.disabled = true; btn2.classList.add('loading'); }
+              const result = await (window.businessAuthService && window.businessAuthService.forgotPassword(emailEl2.value.trim()));
+              if(result && result.googleAccount){
+                const message = result.message || googleAccountMessage;
+                showAlert(businessFeedbackEl, message, 'info');
+                showGlobalMessage(message, 'info');
+                const businessModalEl = document.getElementById('tlfBusinessForgotPasswordModal');
+                if (businessModalEl && window.bootstrap && typeof bootstrap.Modal === 'function') {
+                  const modalInstance = bootstrap.Modal.getInstance(businessModalEl);
+                  if (modalInstance) modalInstance.hide();
+                }
+                return;
+              }
+              window.location.href = 'reset-password-business.html?email=' + encodeURIComponent(emailEl2.value.trim());
+            }catch(err){
+              const message = err && err.message ? err.message : 'Failed to send verification code. Please try again.';
+              showAlert(businessFeedbackEl, message, 'danger');
+              showGlobalMessage(message, 'danger');
+            } finally {
+              if(btn2){ btn2.disabled = false; btn2.classList.remove('loading'); }
+            }
+          });
+        }
+      }
+      if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bindForgotForms); else bindForgotForms();
+    })();
+    </script>
+  
+  
+    
+</body>
+</html>
