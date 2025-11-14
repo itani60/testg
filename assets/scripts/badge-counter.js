@@ -263,6 +263,12 @@ class BadgeCounter {
             }
         }
         
+        // Update account dashboard badge (my_account.html)
+        const accountBadge = document.getElementById('accountWishlistCountText');
+        if (accountBadge) {
+            accountBadge.textContent = count;
+        }
+        
         // Update any generic wishlist count badges
         const wishlistLinks = document.querySelectorAll('a[href*="wishlist"], a[href*="whishlist"]');
         wishlistLinks.forEach(link => {
@@ -301,6 +307,12 @@ class BadgeCounter {
                 }
             }
         }
+        
+        // Update account dashboard badge (my_account.html)
+        const accountBadge = document.getElementById('accountPriceAlertsCountText');
+        if (accountBadge) {
+            accountBadge.textContent = count;
+        }
     }
 
     updateNotificationsBadges() {
@@ -329,6 +341,12 @@ class BadgeCounter {
                     displaySection.style.display = 'flex';
                 }
             }
+        }
+        
+        // Update account dashboard badge (my_account.html)
+        const accountBadge = document.getElementById('accountNotificationsCountText');
+        if (accountBadge) {
+            accountBadge.textContent = count;
         }
     }
 

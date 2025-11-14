@@ -697,9 +697,9 @@
                                 <h3>Price Alerts</h3>
                                 <p>Set up and manage your price drop notifications</p>
                                 <div class="card-stats">
-                                    <span class="stat-item">
+                                    <span class="stat-item" id="accountPriceAlertsCount">
                                         <i class="fas fa-tag"></i>
-                                        5 Active Alerts
+                                        <span id="accountPriceAlertsCountText">0</span> Active Alerts
                                     </span>
                                 </div>
                             </div>
@@ -719,9 +719,9 @@
                                 <h3>Wishlist</h3>
                                 <p>View and manage your saved favorite products</p>
                                 <div class="card-stats">
-                                    <span class="stat-item">
+                                    <span class="stat-item" id="accountWishlistCount">
                                         <i class="fas fa-heart"></i>
-                                        12 Saved Items
+                                        <span id="accountWishlistCountText">0</span> Saved Items
                                     </span>
                                 </div>
                             </div>
@@ -741,9 +741,9 @@
                                 <h3>Notifications</h3>
                                 <p>View and manage your notification preferences</p>
                                 <div class="card-stats">
-                                    <span class="stat-item">
+                                    <span class="stat-item" id="accountNotificationsCount">
                                         <i class="fas fa-bell"></i>
-                                        3 Unread
+                                        <span id="accountNotificationsCountText">0</span> Unread
                                     </span>
                                 </div>
                             </div>
@@ -843,7 +843,47 @@
     <script src="assets/scripts/notifications-page.js"></script>
     <script src="assets/scripts/aws-auth.js"></script>
     
-
+    <script>
+        // Update account dashboard counts from badge counter
+        function updateAccountDashboardCounts() {
+            if (!window.badgeCounter) {
+                // Wait for badge counter to initialize
+                setTimeout(updateAccountDashboardCounts, 100);
+                return;
+            }
+            
+            const counts = window.badgeCounter.getCounts();
+            
+            // Update Price Alerts count
+            const priceAlertsText = document.getElementById('accountPriceAlertsCountText');
+            if (priceAlertsText) {
+                priceAlertsText.textContent = counts.priceAlerts;
+            }
+            
+            // Update Wishlist count
+            const wishlistText = document.getElementById('accountWishlistCountText');
+            if (wishlistText) {
+                wishlistText.textContent = counts.wishlist;
+            }
+            
+            // Update Notifications count
+            const notificationsText = document.getElementById('accountNotificationsCountText');
+            if (notificationsText) {
+                notificationsText.textContent = counts.notifications;
+            }
+        }
+        
+        // Update counts when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait a bit for badge counter to initialize
+            setTimeout(updateAccountDashboardCounts, 500);
+            
+            // Also listen for badge counter updates
+            document.addEventListener('wishlistUpdated', updateAccountDashboardCounts);
+            document.addEventListener('priceAlertsUpdated', updateAccountDashboardCounts);
+            document.addEventListener('notificationsUpdated', updateAccountDashboardCounts);
+        });
+    </script>
 
 
 
