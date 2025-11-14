@@ -66,8 +66,15 @@
     margin-right: 8px !important;
 }
 
-.header.desktop-only .login-right-section i.fa-user {
+/* Hide user icon when logged in (showing initials instead) */
+.header.desktop-only .login-right-section.logged-in i.fa-user {
     display: none;
+}
+
+/* Show user icon when not logged in */
+.header.desktop-only .login-right-section:not(.logged-in) .avatar-initials i.fa-user {
+    display: inline-block !important;
+    font-size: 14px !important;
 }
 
 .header.desktop-only .login-right-section .business-account-text {
