@@ -1,30 +1,174 @@
 // Local Business Data for local-business.html
-// This file contains all the local business data
+// This file handles API integration for business marketplace
 
-// Function to get randomized business cards for index.html
-function getRandomizedBusinessCards(count = 3) {
-    const allBusinesses = getRegularBusinesses();
-    
-    // Remove duplicates by filtering unique IDs
-    const uniqueBusinesses = [];
-    const seenIds = new Set();
-    
-    allBusinesses.forEach(business => {
-        if (!seenIds.has(business.id)) {
-            seenIds.add(business.id);
-            uniqueBusinesses.push(business);
+// API Configuration
+const BUSINESS_API_BASE_URL = 'https://acc.comparehubprices.site';
+
+// API Service for Business Marketplace
+class BusinessMarketplaceAPI {
+    static async getBusiness(businessId) {
+        try {
+            const response = await fetch(`${BUSINESS_API_BASE_URL}/business/public/${businessId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok || !data.success || !data.business) {
+                throw new Error(data.message || 'Business not found');
+            }
+            
+            return this.transformBusinessData(data.business);
+        } catch (error) {
+            console.error('Error fetching business:', error);
+            throw error;
         }
-    });
-    
-    // Shuffle the array using Fisher-Yates algorithm
-    const shuffled = [...uniqueBusinesses];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     
-    // Return the requested number of businesses
-    return shuffled.slice(0, count);
+    static async listBusinesses(filters = {}) {
+        // NOTE: This requires a /business/public/list endpoint to be created in Lambda
+        // Expected endpoint: GET /business/public/list?category=...&province=...&search=...&limit=...&lastKey=...
+        // Expected response: { success: true, businesses: [...], count: number, lastKey: string | null }
+        // For now, falls back to hardcoded data if API fails
+        try {
+            const queryParams = new URLSearchParams();
+            if (filters.category) queryParams.append('category', filters.category);
+            if (filters.province) queryParams.append('province', filters.province);
+            if (filters.search) queryParams.append('search', filters.search);
+            if (filters.limit) queryParams.append('limit', filters.limit);
+            if (filters.lastKey) queryParams.append('lastKey', filters.lastKey);
+            
+            const url = `${BUSINESS_API_BASE_URL}/business/public/list${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Failed to fetch businesses');
+            }
+            
+            // Transform API response
+            const businesses = (data.businesses || []).map(b => this.transformBusinessData(b));
+            
+            return {
+                businesses: businesses,
+                count: data.count || businesses.length,
+                lastKey: data.lastKey || null
+            };
+        } catch (error) {
+            console.error('Error fetching businesses list:', error);
+            // Fallback to hardcoded data if API fails
+            console.warn('Falling back to hardcoded data');
+            return {
+                businesses: getRegularBusinesses(),
+                count: getRegularBusinesses().length,
+                lastKey: null
+            };
+        }
+    }
+    
+    static transformBusinessData(apiBusiness) {
+        const serviceGalleries = {};
+        
+        // Transform serviceGalleries from API format
+        if (apiBusiness.serviceGalleries) {
+            Object.keys(apiBusiness.serviceGalleries).forEach(serviceName => {
+                const images = apiBusiness.serviceGalleries[serviceName];
+                if (Array.isArray(images)) {
+                    serviceGalleries[serviceName] = images.map(img => ({
+                        image: typeof img === 'string' ? img : (img.image || img.url || ''),
+                        title: typeof img === 'object' ? (img.title || img.name || '') : ''
+                    }));
+                }
+            });
+        }
+        
+        // Extract location from address
+        const location = apiBusiness.businessAddress || '';
+        const province = this.extractProvince(location);
+        
+        return {
+            id: apiBusiness.businessId,
+            name: apiBusiness.businessName,
+            description: apiBusiness.businessDescription || '',
+            category: apiBusiness.businessCategory || apiBusiness.businessType || 'Service',
+            province: province,
+            location: location,
+            phone: apiBusiness.businessNumber || '',
+            hours: apiBusiness.businessHours || 'Hours not specified',
+            whatsapp: apiBusiness.socialMedia?.whatsapp || '',
+            instagram: apiBusiness.socialMedia?.instagram || '',
+            tiktok: apiBusiness.socialMedia?.tiktok || '',
+            facebook: apiBusiness.socialMedia?.facebook || '',
+            linkedin: apiBusiness.socialMedia?.linkedin || '',
+            twitter: apiBusiness.socialMedia?.twitter || '',
+            image: apiBusiness.businessLogoUrl || 'https://via.placeholder.com/400x300?text=No+Image',
+            serviceGalleries: serviceGalleries,
+            fullContent: apiBusiness.fullContent || apiBusiness.businessDescription || '',
+            rating: 0, // Will be calculated from reviews if available
+            distance: 0,
+            status: apiBusiness.status,
+            verified: apiBusiness.verified
+        };
+    }
+    
+    static extractProvince(address) {
+        const provinces = ['Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Eastern Cape', 'Free State', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape'];
+        for (const province of provinces) {
+            if (address.toLowerCase().includes(province.toLowerCase())) {
+                return province;
+            }
+        }
+        return '';
+    }
+}
+
+// Function to get randomized business cards for index.html
+async function getRandomizedBusinessCards(count = 3) {
+    try {
+        const result = await BusinessMarketplaceAPI.listBusinesses({ limit: 50 });
+        const allBusinesses = result.businesses;
+        
+        // Remove duplicates by filtering unique IDs
+        const uniqueBusinesses = [];
+        const seenIds = new Set();
+        
+        allBusinesses.forEach(business => {
+            if (!seenIds.has(business.id)) {
+                seenIds.add(business.id);
+                uniqueBusinesses.push(business);
+            }
+        });
+        
+        // Shuffle the array using Fisher-Yates algorithm
+        const shuffled = [...uniqueBusinesses];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        
+        // Return the requested number of businesses
+        return shuffled.slice(0, count);
+    } catch (error) {
+        console.error('Error fetching businesses for cards:', error);
+        // Fallback to hardcoded data
+        const allBusinesses = getRegularBusinesses();
+        const shuffled = [...allBusinesses];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled.slice(0, count);
+    }
 }
 
 // Function to render business cards for index.html
@@ -1322,17 +1466,35 @@ class LocalBusinessManager {
         this.init();
     }
     
-    init() {
-        this.loadBusinesses();
+    async init() {
+        await this.loadBusinesses();
         this.setupEventListeners();
         this.renderBusinesses();
         this.updatePagination();
         this.checkUrlParams();
     }
     
-    loadBusinesses() {
-        this.businesses = getRegularBusinesses();
-        this.applyFilters();
+    async loadBusinesses() {
+        try {
+            // Show loading state if needed
+            const businessGrid = document.getElementById('businessGrid');
+            if (businessGrid) {
+                businessGrid.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-danger" role="status"><span class="visually-hidden">Loading businesses...</span></div><p class="mt-3">Loading businesses...</p></div>';
+            }
+            
+            // Fetch businesses from API
+            const result = await BusinessMarketplaceAPI.listBusinesses({
+                limit: 100 // Fetch more businesses for filtering
+            });
+            
+            this.businesses = result.businesses;
+            this.applyFilters();
+        } catch (error) {
+            console.error('Error loading businesses:', error);
+            // Fallback to hardcoded data
+            this.businesses = getRegularBusinesses();
+            this.applyFilters();
+        }
     }
     
     setupEventListeners() {
@@ -1668,8 +1830,20 @@ class LocalBusinessManager {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
-    openBusinessModal(businessId) {
-        const business = this.businesses.find(b => b.id === businessId);
+    async openBusinessModal(businessId) {
+        let business = this.businesses.find(b => b.id === businessId);
+        
+        // If business not found in current list, try fetching from API
+        if (!business) {
+            try {
+                business = await BusinessMarketplaceAPI.getBusiness(businessId);
+            } catch (error) {
+                console.error('Error fetching business for modal:', error);
+                alert('Business not found');
+                return;
+            }
+        }
+        
         if (!business) return;
         
         const modal = document.getElementById('businessModal');

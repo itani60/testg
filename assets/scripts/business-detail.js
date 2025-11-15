@@ -31,19 +31,109 @@ class BusinessDetailManager {
         this.loadBusinessData(businessId);
     }
     
-    loadBusinessData(businessId) {
-        // Use the data from local-business2.js
-        const businesses = getRegularBusinesses();
-        const business = businesses.find(b => b.id === businessId);
+    async loadBusinessData(businessId) {
+        try {
+            // Show loading state
+            this.showLoading();
+            
+            // Fetch business data from API
+            const BASE_URL = 'https://acc.comparehubprices.site';
+            const response = await fetch(`${BASE_URL}/business/public/${businessId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok || !data.success || !data.business) {
+                this.showError('Business not found');
+                return;
+            }
+            
+            // Transform API response to match expected format
+            const business = this.transformBusinessData(data.business);
+            
+            this.currentBusiness = business;
+            this.renderBusinessPage();
+            this.updatePageMetaTags();
+        } catch (error) {
+            console.error('Error loading business data:', error);
+            this.showError('Failed to load business data. Please try again later.');
+        }
+    }
+    
+    transformBusinessData(apiBusiness) {
+        // Transform API response to match the format expected by the rest of the code
+        const serviceGalleries = {};
         
-        if (!business) {
-            this.showError('Business not found');
-            return;
+        // Transform serviceGalleries from API format
+        if (apiBusiness.serviceGalleries) {
+            Object.keys(apiBusiness.serviceGalleries).forEach(serviceName => {
+                const images = apiBusiness.serviceGalleries[serviceName];
+                if (Array.isArray(images)) {
+                    serviceGalleries[serviceName] = images.map(img => ({
+                        image: typeof img === 'string' ? img : (img.image || img.url || ''),
+                        title: typeof img === 'object' ? (img.title || img.name || '') : ''
+                    }));
+                }
+            });
         }
         
-        this.currentBusiness = business;
-        this.renderBusinessPage();
-        this.updatePageMetaTags();
+        // Extract location from address
+        const location = apiBusiness.businessAddress || '';
+        const province = this.extractProvince(location);
+        
+        return {
+            id: apiBusiness.businessId,
+            name: apiBusiness.businessName,
+            description: apiBusiness.businessDescription || '',
+            category: apiBusiness.businessCategory || apiBusiness.businessType || 'Service',
+            province: province,
+            location: location,
+            phone: apiBusiness.businessNumber || '',
+            hours: apiBusiness.businessHours || 'Hours not specified',
+            whatsapp: apiBusiness.socialMedia?.whatsapp || '',
+            instagram: apiBusiness.socialMedia?.instagram || '',
+            tiktok: apiBusiness.socialMedia?.tiktok || '',
+            facebook: apiBusiness.socialMedia?.facebook || '',
+            linkedin: apiBusiness.socialMedia?.linkedin || '',
+            twitter: apiBusiness.socialMedia?.twitter || '',
+            image: apiBusiness.businessLogoUrl || 'https://via.placeholder.com/400x300?text=No+Image',
+            serviceGalleries: serviceGalleries,
+            fullContent: apiBusiness.fullContent || apiBusiness.businessDescription || '',
+            rating: 0, // Will be calculated from reviews if available
+            distance: 0,
+            status: apiBusiness.status,
+            verified: apiBusiness.verified
+        };
+    }
+    
+    extractProvince(address) {
+        const provinces = ['Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Eastern Cape', 'Free State', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape'];
+        for (const province of provinces) {
+            if (address.toLowerCase().includes(province.toLowerCase())) {
+                return province;
+            }
+        }
+        return '';
+    }
+    
+    showLoading() {
+        const heroSection = document.getElementById('businessHero');
+        if (heroSection) {
+            heroSection.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-content">
+                        <div class="spinner-border text-danger" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p>Loading business information...</p>
+                    </div>
+                </div>
+            `;
+        }
     }
     
     renderBusinessPage() {

@@ -672,6 +672,23 @@
                             </div>
                         </div>
 
+                        <!-- View Full Catalogue -->
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>View Full Catalogue</h4>
+                                <p>See how your business appears to customers</p>
+                                <span class="notification-time">Public View</span>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn-card" onclick="viewFullCatalogue()">
+                                    View
+                                </button>
+                            </div>
+                        </div>
+
                         <!-- Business Analytics -->
                         <div class="notification-item">
                             <div class="notification-icon">
@@ -1355,6 +1372,36 @@
             
             // Load existing business description and products
             await loadExistingProductsIntoForm();
+        }
+
+        async function viewFullCatalogue() {
+            try {
+                if (!window.businessAWSAuthService) {
+                    alert('Please log in to view your catalogue.');
+                    return;
+                }
+
+                // Get user info to retrieve businessId
+                const userInfo = await window.businessAWSAuthService.getUserInfo();
+                
+                if (!userInfo.success || !userInfo.user) {
+                    alert('Please log in to view your catalogue.');
+                    return;
+                }
+
+                const businessId = userInfo.user.businessId;
+                
+                if (!businessId) {
+                    alert('Business ID not found. Please update your business information.');
+                    return;
+                }
+
+                // Navigate to the public business page
+                window.location.href = `local-business-info.html?id=${businessId}`;
+            } catch (error) {
+                console.error('Error viewing full catalogue:', error);
+                alert(`Error: ${error.message || 'Failed to load catalogue. Please try again.'}`);
+            }
         }
 
         async function viewProducts() {
