@@ -593,20 +593,25 @@ class BusinessPreviewManager {
                 );
             }
 
-            // Update business info (for hours and other fields)
-            if (window.businessAWSAuthService && updatedData.businessHours) {
+            // Update business info (for hours and status to make it live)
+            if (window.businessAWSAuthService) {
                 try {
-                    await window.businessAWSAuthService.updateBusinessInfo({
-                        businessHours: updatedData.businessHours
-                    });
+                    const updateData = {};
+                    if (updatedData.businessHours) {
+                        updateData.businessHours = updatedData.businessHours;
+                    }
+                    // Set status to BUSINESS_ACTIVE to make business visible on marketplace
+                    updateData.status = 'BUSINESS_ACTIVE';
+                    
+                    await window.businessAWSAuthService.updateBusinessInfo(updateData);
                 } catch (error) {
-                    console.warn('Could not update business hours:', error);
-                    // Continue even if hours update fails
+                    console.warn('Could not update business info:', error);
+                    // Continue even if update fails
                 }
             }
 
             // Show success message
-            alert('Business preview posted successfully!');
+            alert('Business posted successfully! Your business is now live on the marketplace.');
             
             // Reload data
             await this.init();

@@ -137,27 +137,27 @@ async function getRandomizedBusinessCards(count = 3) {
     try {
         const result = await BusinessMarketplaceAPI.listBusinesses({ limit: 50 });
         const allBusinesses = result.businesses;
-        
-        // Remove duplicates by filtering unique IDs
-        const uniqueBusinesses = [];
-        const seenIds = new Set();
-        
-        allBusinesses.forEach(business => {
-            if (!seenIds.has(business.id)) {
-                seenIds.add(business.id);
-                uniqueBusinesses.push(business);
-            }
-        });
-        
-        // Shuffle the array using Fisher-Yates algorithm
-        const shuffled = [...uniqueBusinesses];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    
+    // Remove duplicates by filtering unique IDs
+    const uniqueBusinesses = [];
+    const seenIds = new Set();
+    
+    allBusinesses.forEach(business => {
+        if (!seenIds.has(business.id)) {
+            seenIds.add(business.id);
+            uniqueBusinesses.push(business);
         }
-        
-        // Return the requested number of businesses
-        return shuffled.slice(0, count);
+    });
+    
+    // Shuffle the array using Fisher-Yates algorithm
+    const shuffled = [...uniqueBusinesses];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    // Return the requested number of businesses
+    return shuffled.slice(0, count);
     } catch (error) {
         console.error('Error fetching businesses for cards:', error);
         // Fallback to hardcoded data
@@ -1024,6 +1024,24 @@ class LocalBusinessManager {
                 businessGrid.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-danger" role="status"><span class="visually-hidden">Loading businesses...</span></div><p class="mt-3">Loading businesses...</p></div>';
             }
             
+            // Check if test mode is enabled (test-hardcoded.js is loaded)
+            const testData = window.TEST_BUSINESS_DATA || (typeof TEST_BUSINESS_DATA !== 'undefined' ? TEST_BUSINESS_DATA : null);
+            if (testData && window.USE_TEST_MODE) {
+                console.log('🧪 TEST MODE: Using hardcoded test data', testData);
+                // Transform test data to match expected format
+                const testBusiness = BusinessMarketplaceAPI.transformBusinessData(testData);
+                console.log('🧪 Transformed test business:', testBusiness);
+                this.businesses = [testBusiness];
+                this.applyFilters();
+                return;
+            } else {
+                console.log('🧪 Test mode check:', {
+                    hasTestData: !!testData,
+                    useTestMode: window.USE_TEST_MODE,
+                    testDataValue: testData
+                });
+            }
+            
             // Fetch businesses from API
             const result = await BusinessMarketplaceAPI.listBusinesses({
                 limit: 100 // Fetch more businesses for filtering
@@ -1034,8 +1052,8 @@ class LocalBusinessManager {
         } catch (error) {
             console.error('Error loading businesses:', error);
             // Fallback to hardcoded data
-            this.businesses = getRegularBusinesses();
-            this.applyFilters();
+        this.businesses = getRegularBusinesses();
+        this.applyFilters();
         }
     }
     
