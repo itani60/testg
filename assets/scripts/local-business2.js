@@ -1316,41 +1316,54 @@ class LocalBusinessManager {
         
         businessGrid.innerHTML = businessesToShow.map(business => {
             console.log('🎨 Rendering business card for:', business);
-            return `
-            <div class="business-card" data-business-id="${business.id}" onclick="localBusinessManager.openBusinessModal('${business.id}')">
-                <img src="${business.image}" alt="${business.name}" class="business-card-image" loading="lazy">
+            // Ensure all fields have fallback values
+            const businessName = business.name || 'Business Name';
+            const businessDescription = business.description || 'No description available.';
+            const businessCategory = business.category || 'Service';
+            const businessLocation = business.location || 'Location not specified';
+            const businessPhone = business.phone || 'Phone not available';
+            const businessHours = business.hours || 'Hours not specified';
+            const businessImage = business.image || 'https://via.placeholder.com/400x300?text=No+Image';
+            const businessId = business.id || '';
+            const businessRating = business.rating || 0;
+            
+            const cardHTML = `
+            <div class="business-card" data-business-id="${businessId}" onclick="localBusinessManager.openBusinessModal('${businessId}')">
+                <img src="${businessImage}" alt="${businessName}" class="business-card-image" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
                 <div class="business-card-content">
-                    <div class="business-card-category">${business.category}</div>
-                    <h3 class="business-card-title">${business.name}</h3>
-                    <p class="business-card-description">${business.description}</p>
+                    <div class="business-card-category">${businessCategory}</div>
+                    <h3 class="business-card-title">${businessName}</h3>
+                    <p class="business-card-description">${businessDescription}</p>
                     <div class="business-card-meta">
                         <div class="business-meta-item">
                             <i class="fas fa-map-marker-alt"></i>
-                            <span>${business.location}</span>
+                            <span>${businessLocation}</span>
                         </div>
                         <div class="business-meta-item">
                             <i class="fas fa-phone"></i>
-                            <span>${business.phone}</span>
+                            <span>${businessPhone}</span>
                         </div>
                         <div class="business-meta-item">
                             <i class="fas fa-clock"></i>
-                            <span>${business.hours}</span>
+                            <span>${businessHours}</span>
                         </div>
                     </div>
                     <div class="business-card-footer">
                         <div class="business-rating">
                             <div class="business-stars">
-                                ${this.renderStarsHTML(business.rating)}
+                                ${this.renderStarsHTML(businessRating)}
                             </div>
-                            <span class="business-rating-text">${business.rating}</span>
+                            <span class="business-rating-text">${businessRating}</span>
                         </div>
-                        <button class="business-view-btn" onclick="event.stopPropagation(); openBusinessFullPage('${business.id}')">
+                        <button class="business-view-btn" onclick="event.stopPropagation(); openBusinessFullPage('${businessId}')">
                             View Details
                         </button>
                     </div>
                 </div>
             </div>
         `;
+            console.log('🎨 Generated HTML for business:', businessName, cardHTML.substring(0, 200) + '...');
+            return cardHTML;
         }).join('');
         
         console.log('🎨 Business cards rendered');

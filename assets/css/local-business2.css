@@ -636,6 +636,8 @@
     cursor: pointer;
     border: 1px solid rgba(0, 123, 255, 0.1);
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .business-card:hover {
@@ -649,6 +651,8 @@
     height: 200px;
     object-fit: cover;
     transition: transform 0.3s ease;
+    display: block;
+    background-color: #f8f9fa;
 }
 
 .business-card:hover .business-card-image {
@@ -657,6 +661,11 @@
 
 .business-card-content {
     padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 300px;
+    background: white;
 }
 
 .business-card-category {
@@ -691,6 +700,7 @@
 
 .business-card-meta {
     margin-bottom: 1rem;
+    flex: 1;
 }
 
 .business-meta-item {
@@ -714,6 +724,7 @@
     align-items: center;
     padding-top: 1rem;
     border-top: 1px solid rgba(0, 123, 255, 0.1);
+    margin-top: auto;
 }
 
 .business-rating {
