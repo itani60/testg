@@ -76,6 +76,17 @@ class BusinessMarketplaceAPI {
         }
     }
     
+    // Helper function to strip HTML tags and get plain text
+    static stripHTML(html) {
+        if (!html) return '';
+        // Create a temporary div element
+        const tmp = document.createElement('DIV');
+        tmp.innerHTML = html;
+        const text = tmp.textContent || tmp.innerText || '';
+        // Trim and limit length for card display
+        return text.trim().substring(0, 200);
+    }
+    
     static transformBusinessData(apiBusiness) {
         const serviceGalleries = {};
         
@@ -96,10 +107,14 @@ class BusinessMarketplaceAPI {
         const location = apiBusiness.businessAddress || '';
         const province = this.extractProvince(location);
         
+        // Get description - prefer fullContent, strip HTML for card display
+        const rawDescription = apiBusiness.fullContent || apiBusiness.businessDescription || '';
+        const plainDescription = this.stripHTML(rawDescription);
+        
         return {
-            id: apiBusiness.businessId,
-            name: apiBusiness.businessName,
-            description: apiBusiness.businessDescription || '',
+            id: apiBusiness.businessId || '',
+            name: apiBusiness.businessName || '',
+            description: plainDescription || 'No description available.',
             category: apiBusiness.businessCategory || apiBusiness.businessType || 'Service',
             province: province,
             location: location,
