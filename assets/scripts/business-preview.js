@@ -763,6 +763,15 @@ async function saveServicesSection() {
     redirectToBusinessManagement();
 }
 
+// Global function for delete confirmation (called from modal button)
+function confirmDeleteImage() {
+    if (previewManager) {
+        previewManager.confirmDeleteImage();
+    } else if (testPreviewManager) {
+        testPreviewManager.confirmDeleteImage();
+    }
+}
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     previewManager = new BusinessPreviewManager();
