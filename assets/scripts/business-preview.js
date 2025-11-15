@@ -334,7 +334,37 @@ class BusinessPreviewManager {
     }
 
     async deleteImage(imageUrl, imageName) {
-        // Delete immediately without confirmation
+        // Store the image URL and name for the confirmation
+        this.pendingDeleteImageUrl = imageUrl;
+        this.pendingDeleteImageName = imageName;
+        
+        // Show the delete confirmation modal
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteImageModal'));
+        deleteModal.show();
+    }
+
+    async confirmDeleteImage() {
+        const imageUrl = this.pendingDeleteImageUrl;
+        const imageName = this.pendingDeleteImageName;
+        
+        if (!imageUrl) {
+            return;
+        }
+        
+        // Hide the modal
+        const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteImageModal'));
+        if (deleteModal) {
+            deleteModal.hide();
+        }
+        
+        // Disable the delete button and show loading state
+        const confirmBtn = document.getElementById('confirmDeleteImageBtn');
+        const originalText = confirmBtn ? confirmBtn.innerHTML : '';
+        if (confirmBtn) {
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = 'Deleting...';
+        }
+        
         try {
             // Get current service galleries
             const serviceGalleries = this.businessData.serviceGalleries || {};
@@ -383,9 +413,25 @@ class BusinessPreviewManager {
             // Re-render gallery
             this.renderServicesGallery();
             
+            // Show success message
+            alert('Image deleted successfully!');
+            
+            // Clear pending delete
+            this.pendingDeleteImageUrl = null;
+            this.pendingDeleteImageName = null;
+            
         } catch (error) {
             console.error('Error deleting image:', error);
             alert('Failed to delete image: ' + (error.message || 'Unknown error'));
+        } finally {
+            // Re-enable the delete button
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = originalText;
+            }
+            // Clear pending delete
+            this.pendingDeleteImageUrl = null;
+            this.pendingDeleteImageName = null;
         }
     }
 
@@ -715,6 +761,15 @@ function redirectToBusinessManagement() {
 async function saveServicesSection() {
     // Services are now deleted immediately, so this function redirects to upload
     redirectToBusinessManagement();
+}
+
+// Global function for delete confirmation (called from modal button)
+function confirmDeleteImage() {
+    if (previewManager) {
+        previewManager.confirmDeleteImage();
+    } else if (testPreviewManager) {
+        testPreviewManager.confirmDeleteImage();
+    }
 }
 
 // Initialize when DOM is ready
