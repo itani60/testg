@@ -254,11 +254,6 @@ class BusinessPreviewManager {
                 return;
             }
 
-            // Initialize deleted images tracking if not exists
-            if (!this.deletedImages) {
-                this.deletedImages = new Set();
-            }
-
             let html = '';
             serviceNames.forEach(serviceName => {
                 try {
@@ -271,26 +266,8 @@ class BusinessPreviewManager {
                         return; // Skip services with no images
                     }
                     
-                    // Filter out deleted images
-                    const visibleImages = images.filter(img => {
-                        const imageUrl = typeof img === 'string' ? img : (img.image || img.url || img);
-                        return imageUrl && !this.deletedImages.has(imageUrl);
-                    });
-                    
-                    if (visibleImages.length === 0 && images.length > 0) {
-                        // All images deleted, show message
-                        html += `
-                            <div class="service-card">
-                                <h4>${serviceName}</h4>
-                                <p class="text-muted">All images marked for deletion. Click Save to confirm.</p>
-                            </div>
-                        `;
-                        return;
-                    }
-                    
                     const isEditMode = this.editMode;
-                    const allImages = images; // Show all images in edit mode, filtered in view mode
-                    const displayImages = isEditMode ? allImages : visibleImages;
+                    const displayImages = images;
                     
                     html += `
                         <div class="service-card" data-service-name="${serviceName.replace(/"/g, '&quot;')}">
@@ -302,14 +279,13 @@ class BusinessPreviewManager {
                                         if (!imageUrl) return '';
                                         const escapedUrl = imageUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                                         const escapedName = serviceName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                                        const isDeleted = this.deletedImages.has(imageUrl);
                                         
                                         if (isEditMode) {
                                             return `
-                                                <div class="gallery-item ${isDeleted ? 'deleted' : ''}" data-image-url="${escapedUrl}">
+                                                <div class="gallery-item" data-image-url="${escapedUrl}">
                                                     <img src="${imageUrl}" alt="${escapedName}" loading="lazy" onclick="openImageModal('${escapedUrl}', '${escapedName}')" style="cursor: pointer;">
-                                                    <button type="button" class="btn-delete-image" onclick="previewManager.markImageForDeletion('${escapedUrl}', '${escapedName}')" title="Delete image">
-                                                        ${isDeleted ? 'Restore' : 'Delete'}
+                                                    <button type="button" class="btn-delete-image" onclick="previewManager.deleteImage('${escapedUrl}', '${escapedName}')" title="Delete image">
+                                                        Delete
                                                     </button>
                                                 </div>
                                             `;
@@ -327,7 +303,6 @@ class BusinessPreviewManager {
                                 }).filter(html => html !== '').join('')}
                             </div>
                             ${!isEditMode && images.length > 6 ? `<p class="text-muted mt-2">+${images.length - 6} more images</p>` : ''}
-                            ${isEditMode && this.deletedImages.size > 0 ? `<p class="text-warning mt-2"><small>${this.deletedImages.size} image(s) marked for deletion</small></p>` : ''}
                         </div>
                     `;
                 } catch (err) {
@@ -358,21 +333,65 @@ class BusinessPreviewManager {
         }
     }
 
-    markImageForDeletion(imageUrl, imageName) {
-        if (!this.deletedImages) {
-            this.deletedImages = new Set();
+    async deleteImage(imageUrl, imageName) {
+        if (!confirm(`Are you sure you want to delete this image? This action cannot be undone.`)) {
+            return;
         }
         
-        if (this.deletedImages.has(imageUrl)) {
-            // Restore image
-            this.deletedImages.delete(imageUrl);
-        } else {
-            // Mark for deletion
-            this.deletedImages.add(imageUrl);
+        try {
+            // Get current service galleries
+            const serviceGalleries = this.businessData.serviceGalleries || {};
+            const updatedServiceGalleries = {};
+            
+            // Remove the deleted image from service galleries
+            Object.keys(serviceGalleries).forEach(serviceName => {
+                const images = this.normalizeImagesArray(serviceGalleries[serviceName]);
+                const remainingImages = images.filter(img => {
+                    const imgUrl = typeof img === 'string' ? img : (img.image || img.url || img);
+                    return imgUrl && imgUrl !== imageUrl;
+                });
+                
+                if (remainingImages.length > 0) {
+                    updatedServiceGalleries[serviceName] = remainingImages;
+                }
+            });
+            
+            // Get business description
+            const servicesData = await window.businessAWSAuthService.getServices();
+            const businessDescription = servicesData.businessDescription || '';
+            
+            // Send delete request to API
+            const BASE_URL = 'https://acc.comparehubprices.site';
+            const response = await fetch(`${BASE_URL}/business/business/manage-services`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    businessDescription: businessDescription,
+                    services: [], // Empty services array
+                    updatedServiceGalleries: updatedServiceGalleries, // Send updated structure
+                    deletedImages: [imageUrl] // Send single image to delete
+                }),
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Failed to delete image');
+            }
+            
+            // Update local data
+            this.businessData.serviceGalleries = updatedServiceGalleries;
+            
+            // Re-render gallery
+            this.renderServicesGallery();
+            
+            alert('Image deleted successfully!');
+            
+        } catch (error) {
+            console.error('Error deleting image:', error);
+            alert('Failed to delete image: ' + (error.message || 'Unknown error'));
         }
-        
-        // Re-render gallery to show updated state
-        this.renderServicesGallery();
     }
 
     renderSocialMedia() {
@@ -463,16 +482,10 @@ class BusinessPreviewManager {
                 editModeBtn.classList.add('btn-danger');
                 // Save original data
                 this.originalData = JSON.parse(JSON.stringify(this.businessData));
-                // Initialize deleted images tracking
-                if (!this.deletedImages) {
-                    this.deletedImages = new Set();
-                }
             } else {
                 editModeBtn.innerHTML = 'Edit';
                 editModeBtn.classList.remove('btn-danger');
                 editModeBtn.classList.add('btn-secondary');
-                // Clear deleted images tracking
-                this.deletedImages = new Set();
                 // Restore original data
                 if (this.originalData) {
                     this.businessData = JSON.parse(JSON.stringify(this.originalData));
@@ -503,12 +516,12 @@ class BusinessPreviewManager {
             if (!this.editMode) {
                 this.toggleEditMode();
             }
-            // Show save button, hide edit button
+            // Don't show save button for services - delete is immediate
             const servicesSection = document.getElementById('businessServices');
             const editBtn = servicesSection.querySelector('.btn-edit-inline');
             const saveBtn = servicesSection.querySelector('.btn-save-inline');
-            if (editBtn) editBtn.style.display = 'none';
-            if (saveBtn) saveBtn.style.display = 'block';
+            if (editBtn) editBtn.style.display = 'block';
+            if (saveBtn) saveBtn.style.display = 'none';
         }
     }
 
@@ -703,101 +716,10 @@ function redirectToBusinessManagement() {
     window.location.href = 'business_management.html';
 }
 
-// Function to save Services section
+// Function to save Services section (not used anymore - delete is immediate)
 async function saveServicesSection() {
-    if (!previewManager) return;
-    
-    try {
-        const saveBtn = document.querySelector('.business-services .btn-save-inline');
-        const originalText = saveBtn ? saveBtn.innerHTML : '';
-        
-        if (saveBtn) {
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = 'Saving...';
-        }
-        
-        // Get deleted images
-        const deletedImages = Array.from(previewManager.deletedImages || []);
-        
-        if (deletedImages.length === 0) {
-            alert('No changes to save. No images were marked for deletion.');
-            if (saveBtn) {
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = originalText;
-            }
-            return;
-        }
-        
-        // Get current service galleries
-        const serviceGalleries = previewManager.businessData.serviceGalleries || {};
-        const updatedServiceGalleries = {};
-        
-        // Remove deleted images from service galleries
-        Object.keys(serviceGalleries).forEach(serviceName => {
-            const images = previewManager.normalizeImagesArray(serviceGalleries[serviceName]);
-            const remainingImages = images.filter(img => {
-                const imageUrl = typeof img === 'string' ? img : (img.image || img.url || img);
-                return imageUrl && !previewManager.deletedImages.has(imageUrl);
-            });
-            
-            if (remainingImages.length > 0) {
-                updatedServiceGalleries[serviceName] = remainingImages;
-            }
-        });
-        
-        // Get business description
-        const servicesData = await window.businessAWSAuthService.getServices();
-        const businessDescription = servicesData.businessDescription || '';
-        
-        // Send updated serviceGalleries directly to the API
-        // We'll send it as a special parameter that the Lambda can handle
-        const BASE_URL = 'https://acc.comparehubprices.site';
-        const response = await fetch(`${BASE_URL}/business/business/manage-services`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({
-                businessDescription: businessDescription,
-                services: [], // Empty services array
-                updatedServiceGalleries: updatedServiceGalleries, // Send updated structure
-                deletedImages: deletedImages // Send list of deleted images for S3 cleanup
-            }),
-        });
-        
-        const data = await response.json();
-        
-        if (!response.ok || !data.success) {
-            throw new Error(data.message || 'Failed to save changes');
-        }
-        
-        // Update local data
-        previewManager.businessData.serviceGalleries = updatedServiceGalleries;
-        previewManager.deletedImages.clear();
-        
-        alert(`Successfully removed ${deletedImages.length} image(s) from your gallery.`);
-        
-        // Re-render preview
-        previewManager.renderServicesGallery();
-        
-        // Hide save button, show edit button
-        const servicesSection = document.getElementById('businessServices');
-        const editBtn = servicesSection.querySelector('.btn-edit-inline');
-        if (editBtn) editBtn.style.display = 'block';
-        if (saveBtn) {
-            saveBtn.style.display = 'none';
-            saveBtn.innerHTML = originalText;
-            saveBtn.disabled = false;
-        }
-        
-    } catch (error) {
-        console.error('Error saving services section:', error);
-        alert('Failed to save changes: ' + (error.message || 'Unknown error'));
-        const saveBtn = document.querySelector('.business-services .btn-save-inline');
-        if (saveBtn) {
-            saveBtn.disabled = false;
-            saveBtn.innerHTML = 'Save';
-        }
-    }
+    // Services are now deleted immediately, so this function redirects to upload
+    redirectToBusinessManagement();
 }
 
 // Initialize when DOM is ready
