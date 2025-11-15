@@ -1288,28 +1288,12 @@
                     return;
                 }
 
-                // Call Lambda API
+                // Call Lambda API using businessAWSAuthService
                 if (!window.businessAWSAuthService) {
                     throw new Error('Business authentication service not available');
                 }
 
-                const response = await fetch('https://acc.comparehubprices.site/business/business/manage-services', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        businessDescription: businessDescription,
-                        services: products
-                    })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok || !data.success) {
-                    throw new Error(data.message || 'Failed to save services');
-                }
+                const data = await window.businessAWSAuthService.manageServices(businessDescription, products);
 
                 // Success
                 const modal = bootstrap.Modal.getInstance(document.getElementById('uploadProductModal'));

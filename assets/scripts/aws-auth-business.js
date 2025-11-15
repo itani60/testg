@@ -16,6 +16,7 @@
   const UPDATE_BUSINESS_INFO_URL = `${BASE_URL}/business/business/update-business-info`;
   const UPDATE_BUSINESS_PASSWORD_URL = `${BASE_URL}/business/business/update-business-password`;
   const RESEND_PASSWORD_UPDATE_OTP_URL = `${BASE_URL}/business/business/resend-password-update-otp`;
+  const MANAGE_SERVICES_URL = `${BASE_URL}/business/business/manage-services`;
   const MFA_REMOVE_URL = `${BASE_URL}/business/business/mfa/remove`;
   const MFA_SET_PRIMARY_URL = `${BASE_URL}/business/business/mfa/set-primary`;
   const EMAIL_MFA_LOGIN_SEND_URL = `${BASE_URL}/business/business/email-mfa/login-send`;
@@ -281,6 +282,35 @@
 
       if (data.user) this._profile = data.user;
       return { success: true, user: data.user };
+    }
+
+    async manageServices(businessDescription, services) {
+      const res = await fetch(MANAGE_SERVICES_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          businessDescription: businessDescription,
+          services: services
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || data?.success === false) {
+        const message = data?.message || `Manage services failed (HTTP ${res.status})`;
+        const error = new Error(message);
+        error.status = res.status;
+        error.response = data;
+        throw error;
+      }
+
+      return {
+        success: true,
+        servicesAdded: data.servicesAdded || 0,
+        serviceGalleries: data.serviceGalleries || {},
+        localHubInfo: data.localHubInfo || null,
+        message: data.message
+      };
     }
 
     async updatePassword(action, payload) {
