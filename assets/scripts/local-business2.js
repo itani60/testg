@@ -57,7 +57,15 @@ class BusinessMarketplaceAPI {
             }
             
             // Transform API response
-            const businesses = (data.businesses || []).map(b => this.transformBusinessData(b));
+            console.log('📊 Raw API data.businesses:', data.businesses);
+            const businesses = (data.businesses || []).map(b => {
+                console.log('📊 Transforming business:', b);
+                const transformed = this.transformBusinessData(b);
+                console.log('📊 Transformed result:', transformed);
+                return transformed;
+            });
+            
+            console.log('📊 Final businesses array:', businesses);
             
             return {
                 businesses: businesses,
@@ -1062,6 +1070,14 @@ class LocalBusinessManager {
                 limit: 100 // Fetch more businesses for filtering
             });
             
+            console.log('📊 API Response:', result);
+            console.log('📊 Businesses array:', result.businesses);
+            if (result.businesses && result.businesses.length > 0) {
+                console.log('📊 First business raw:', result.businesses[0]);
+                const transformed = BusinessMarketplaceAPI.transformBusinessData(result.businesses[0]);
+                console.log('📊 First business transformed:', transformed);
+            }
+            
             this.businesses = result.businesses;
             this.applyFilters();
         } catch (error) {
@@ -1281,6 +1297,12 @@ class LocalBusinessManager {
         const endIndex = startIndex + this.itemsPerPage;
         const businessesToShow = this.filteredBusinesses.slice(startIndex, endIndex);
         
+        console.log('🎨 Rendering businesses:', {
+            total: this.filteredBusinesses.length,
+            showing: businessesToShow.length,
+            businesses: businessesToShow
+        });
+        
         if (businessesToShow.length === 0) {
             businessGrid.innerHTML = `
                 <div class="no-results">
@@ -1292,7 +1314,9 @@ class LocalBusinessManager {
             return;
         }
         
-        businessGrid.innerHTML = businessesToShow.map(business => `
+        businessGrid.innerHTML = businessesToShow.map(business => {
+            console.log('🎨 Rendering business card for:', business);
+            return `
             <div class="business-card" data-business-id="${business.id}" onclick="localBusinessManager.openBusinessModal('${business.id}')">
                 <img src="${business.image}" alt="${business.name}" class="business-card-image" loading="lazy">
                 <div class="business-card-content">
@@ -1326,7 +1350,10 @@ class LocalBusinessManager {
                     </div>
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
+        
+        console.log('🎨 Business cards rendered');
     }
     
     renderStarsHTML(rating) {
