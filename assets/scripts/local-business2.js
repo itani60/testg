@@ -2,13 +2,13 @@
 // This file handles API integration for business marketplace
 
 // API Configuration
-const BUSINESS_API_BASE_URL = 'https://acc.comparehubprices.site';
+const BASE_URL = 'https://acc.comparehubprices.site';
 
 // API Service for Business Marketplace
 class BusinessMarketplaceAPI {
     static async getBusiness(businessId) {
         try {
-            const response = await fetch(`${BUSINESS_API_BASE_URL}/business/business/public/${businessId}`, {
+            const response = await fetch(`${BASE_URL}/business/business/public/${businessId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -41,7 +41,7 @@ class BusinessMarketplaceAPI {
             if (filters.limit) queryParams.append('limit', filters.limit);
             if (filters.lastKey) queryParams.append('lastKey', filters.lastKey);
             
-            const url = `${BUSINESS_API_BASE_URL}/business/public/list${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+            const url = `${BASE_URL}/business/business/public/list${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
             
             const response = await fetch(url, {
                 method: 'GET',
