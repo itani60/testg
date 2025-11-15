@@ -780,6 +780,24 @@
                 </div>
                 <div class="modal-body">
                     <form id="uploadProductForm">
+                        <!-- About This Business Section -->
+                        <div class="mb-4 p-3 border rounded bg-light">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-info-circle"></i> About This Business
+                            </h6>
+                            <div class="mb-3">
+                                <label class="form-label">Business Description *</label>
+                                <textarea class="form-control" id="businessDescription" rows="4" required placeholder="Tell customers about your business, what makes you unique, your experience, and what you offer..."></textarea>
+                                <div class="form-text">This description will appear on your business profile page.</div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h6 class="mb-3">
+                            <i class="fas fa-box"></i> Services & Products
+                        </h6>
+                        
                         <div id="productsContainer">
                             <!-- Product 1 -->
                             <div class="product-item mb-4 p-3 border rounded">
@@ -1183,64 +1201,149 @@
             });
         }
 
-        function saveService() {
+        async function saveService() {
             const productItems = document.querySelectorAll('.product-item');
             const products = [];
             let hasValidProducts = false;
 
-            productItems.forEach((item, index) => {
-                const name = item.querySelector('.product-name').value.trim();
-                const description = item.querySelector('.product-description').value.trim();
-                
-                let images = [];
-                
-                // All products now use 6 individual image inputs
-                const image1 = item.querySelector('.product-image-1')?.files[0];
-                const image2 = item.querySelector('.product-image-2')?.files[0];
-                const image3 = item.querySelector('.product-image-3')?.files[0];
-                const image4 = item.querySelector('.product-image-4')?.files[0];
-                const image5 = item.querySelector('.product-image-5')?.files[0];
-                const image6 = item.querySelector('.product-image-6')?.files[0];
-                
-                if (image1) images.push(image1);
-                if (image2) images.push(image2);
-                if (image3) images.push(image3);
-                if (image4) images.push(image4);
-                if (image5) images.push(image5);
-                if (image6) images.push(image6);
+            // Show loading state
+            const saveButton = document.querySelector('#uploadProductModal .btn-success');
+            const originalButtonText = saveButton.innerHTML;
+            saveButton.disabled = true;
+            saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
 
-                if (name) {
-                    products.push({
-                        productNumber: index + 1,
-                        name: name,
-                        description: description,
-                        images: images
-                    });
+            try {
+                // Get business description
+                const businessDescription = document.getElementById('businessDescription')?.value.trim();
+                
+                if (!businessDescription) {
+                    alert('Please provide a business description.');
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = originalButtonText;
+                    return;
+                }
+                
+                // Collect product data
+                for (const item of productItems) {
+                    const name = item.querySelector('.product-name')?.value.trim();
+                    const description = item.querySelector('.product-description')?.value.trim();
                     
+                    if (!name) continue;
+
+                    // Get image files
+                    const imageInputs = [
+                        item.querySelector('.product-image-1'),
+                        item.querySelector('.product-image-2'),
+                        item.querySelector('.product-image-3'),
+                        item.querySelector('.product-image-4'),
+                        item.querySelector('.product-image-5'),
+                        item.querySelector('.product-image-6')
+                    ];
+
+                    const images = [];
+                    for (const input of imageInputs) {
+                        if (input?.files?.[0]) {
+                            images.push(input.files[0]);
+                        }
+                    }
+
                     if (name && description && images.length > 0) {
                         hasValidProducts = true;
+                        
+                        // Convert images to base64
+                        const base64Images = [];
+                        for (const imageFile of images) {
+                            try {
+                                const base64 = await fileToBase64(imageFile);
+                                base64Images.push({
+                                    base64: base64,
+                                    contentType: imageFile.type || 'image/jpeg'
+                                });
+                            } catch (error) {
+                                console.error('Error converting image to base64:', error);
+                            }
+                        }
+
+                        if (base64Images.length > 0) {
+                            products.push({
+                                name: name,
+                                description: description,
+                                images: base64Images
+                            });
+                        }
                     }
                 }
+
+                if (products.length === 0) {
+                    alert('Please add at least one product/service with a name, description, and images!');
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = originalButtonText;
+                    return;
+                }
+
+                if (!hasValidProducts) {
+                    alert('Please complete at least one product/service with name, description, and images!');
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = originalButtonText;
+                    return;
+                }
+
+                // Call Lambda API
+                if (!window.businessAWSAuthService) {
+                    throw new Error('Business authentication service not available');
+                }
+
+                const response = await fetch('https://acc.comparehubprices.site/business/business/manage-services', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        businessDescription: businessDescription,
+                        services: products
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Failed to save services');
+                }
+
+                // Success
+                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadProductModal'));
+                modal.hide();
+
+                alert(`Successfully added ${data.servicesAdded || products.length} service(s)!`);
+                
+                // Reset form
+                document.getElementById('uploadProductForm').reset();
+                
+                // Optionally reload page or update UI
+                // window.location.reload();
+
+            } catch (error) {
+                console.error('Error saving services:', error);
+                alert(`Error: ${error.message || 'Failed to save services. Please try again.'}`);
+            } finally {
+                saveButton.disabled = false;
+                saveButton.innerHTML = originalButtonText;
+            }
+        }
+
+        // Helper function to convert file to base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // Remove data URL prefix, keep only base64
+                    const base64 = reader.result.split(',')[1] || reader.result;
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
             });
-
-            if (products.length === 0) {
-                alert('Please add at least one product/service with a name!');
-                return;
-            }
-
-            if (!hasValidProducts) {
-                alert('Please complete at least one product/service with name, description, and images!');
-                return;
-            }
-
-            const modal = bootstrap.Modal.getInstance(document.getElementById('uploadProductModal'));
-            modal.hide();
-
-            alert(`${products.length} product/service listing(s) added successfully!`);
-            
-            console.log('Products data:', products);
-            
-            document.getElementById('uploadProductForm').reset();
         }
 
     </script>
