@@ -77,7 +77,27 @@ class BusinessPreviewManager {
                     this.businessData = {};
                 }
                 
-                this.businessData.serviceGalleries = servicesData.services || {};
+                // Convert services array to serviceGalleries object format
+                // servicesData.services is an array: [{ name, images, ... }, ...]
+                // serviceGalleries should be an object: { "Service Name": [{ image, title }, ...] }
+                if (Array.isArray(servicesData.services)) {
+                    const serviceGalleries = {};
+                    servicesData.services.forEach(service => {
+                        if (service.name && Array.isArray(service.images)) {
+                            serviceGalleries[service.name] = service.images;
+                        }
+                    });
+                    // Merge with existing serviceGalleries from public API if any
+                    if (this.businessData.serviceGalleries) {
+                        Object.assign(this.businessData.serviceGalleries, serviceGalleries);
+                    } else {
+                        this.businessData.serviceGalleries = serviceGalleries;
+                    }
+                } else if (servicesData.services && typeof servicesData.services === 'object') {
+                    // If it's already an object, use it directly
+                    this.businessData.serviceGalleries = servicesData.services;
+                }
+                
                 this.businessData.businessDescription = servicesData.businessDescription || this.businessData.businessDescription || '';
                 this.businessData.fullContent = servicesData.fullContent || this.businessData.fullContent || '';
             }
@@ -135,15 +155,30 @@ class BusinessPreviewManager {
 
         let html = '';
         serviceNames.forEach(serviceName => {
-            const images = serviceGalleries[serviceName] || [];
-            const firstImage = images.length > 0 ? images[0].image || images[0] : null;
+            let images = serviceGalleries[serviceName];
+            
+            // Ensure images is an array
+            if (!Array.isArray(images)) {
+                if (images && typeof images === 'object') {
+                    // If it's an object, try to convert it
+                    images = Object.values(images);
+                } else {
+                    images = [];
+                }
+            }
+            
+            if (images.length === 0) {
+                return; // Skip services with no images
+            }
+            
+            const firstImage = images.length > 0 ? (typeof images[0] === 'string' ? images[0] : (images[0].image || images[0])) : null;
             
             html += `
                 <div class="service-card">
                     <h4>${serviceName}</h4>
                     <div class="service-gallery">
                         ${images.slice(0, 6).map(img => {
-                            const imageUrl = typeof img === 'string' ? img : (img.image || img);
+                            const imageUrl = typeof img === 'string' ? img : (img.image || img.url || img);
                             return `
                                 <div class="gallery-item">
                                     <img src="${imageUrl}" alt="${serviceName}" loading="lazy">
