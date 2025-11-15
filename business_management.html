@@ -1163,11 +1163,27 @@
                     return;
                 }
 
+                // Check if user is logged in first
+                try {
+                    const userInfo = await window.businessAWSAuthService.getUserInfo();
+                    if (!userInfo.success || !userInfo.user) {
+                        // User not logged in
+                        document.getElementById('productCount').textContent = '0 Active Products';
+                        return;
+                    }
+                } catch (authError) {
+                    // User not authenticated, show 0 products
+                    document.getElementById('productCount').textContent = '0 Active Products';
+                    return;
+                }
+
+                // User is logged in, fetch services
                 const data = await window.businessAWSAuthService.getServices();
                 const count = data.totalServices || 0;
                 document.getElementById('productCount').textContent = `${count} Active Product${count !== 1 ? 's' : ''}`;
             } catch (error) {
-                console.error('Error loading product count:', error);
+                // Silently handle errors (user might not be logged in)
+                console.debug('Error loading product count:', error.message);
                 document.getElementById('productCount').textContent = '0 Active Products';
             }
         }
