@@ -664,10 +664,10 @@
                             </div>
                             <div class="notification-actions">
                                 <button class="btn-card" onclick="viewProducts()" style="margin-right: 10px;">
-                                    <i class="fas fa-eye"></i> View
+                                    View
                                 </button>
                                 <button class="btn-card" onclick="uploadProduct()">
-                                    <i class="fas fa-upload"></i> Upload
+                                    Upload
                                 </button>
                             </div>
                         </div>
@@ -775,9 +775,9 @@
     <div class="modal fade" id="uploadProductModal" tabindex="-1" aria-labelledby="uploadProductModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-header bg-success text-white">
+                <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="uploadProductModalLabel">
-                        <i class="fas fa-plus"></i> Add Service/Product Listing
+                        Add Service/Product Listing
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -798,7 +798,7 @@
                         <hr class="my-4">
                         
                         <h6 class="mb-3">
-                            <i class="fas fa-box"></i> Services & Products
+                            Services & Products
                         </h6>
                         
                         <div id="productsContainer">
@@ -806,7 +806,7 @@
                             <div class="product-item mb-4 p-3 border rounded">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h6 class="text-primary mb-0">
-                                        <i class="fas fa-box"></i> Product/Service 1
+                                        Product/Service 1
                                     </h6>
                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProduct(1)" style="display: none;">
                                         <i class="fas fa-times"></i>
@@ -864,7 +864,7 @@
                             <div class="product-item mb-4 p-3 border rounded">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h6 class="text-primary mb-0">
-                                        <i class="fas fa-box"></i> Product/Service 2
+                                        Product/Service 2
                                     </h6>
                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProduct(2)" style="display: none;">
                                         <i class="fas fa-times"></i>
@@ -922,7 +922,7 @@
                             <div class="product-item mb-4 p-3 border rounded">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h6 class="text-primary mb-0">
-                                        <i class="fas fa-box"></i> Product/Service 3
+                                        Product/Service 3
                                     </h6>
                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProduct(3)" style="display: none;">
                                         <i class="fas fa-times"></i>
@@ -980,7 +980,7 @@
                             <div class="product-item mb-4 p-3 border rounded">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h6 class="text-primary mb-0">
-                                        <i class="fas fa-box"></i> Product/Service 4
+                                        Product/Service 4
                                     </h6>
                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProduct(4)" style="display: none;">
                                         <i class="fas fa-times"></i>
@@ -1038,7 +1038,7 @@
                             <div class="product-item mb-4 p-3 border rounded">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h6 class="text-primary mb-0">
-                                        <i class="fas fa-box"></i> Product/Service 5
+                                        Product/Service 5
                                     </h6>
                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProduct(5)" style="display: none;">
                                         <i class="fas fa-times"></i>
@@ -1095,7 +1095,7 @@
                         
                         <div class="text-center mb-3">
                             <button type="button" class="btn btn-outline-primary" onclick="addProduct()">
-                                <i class="fas fa-plus"></i> Add Another Product/Service
+                                Add Another Product/Service
                             </button>
                         </div>
                     </form>
@@ -1103,7 +1103,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-success" onclick="saveService()">
-                        <i class="fas fa-save"></i> Save Service
+                        Save Service
                     </button>
                 </div>
             </div>
@@ -1116,7 +1116,7 @@
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="viewProductsModalLabel">
-                        <i class="fas fa-box"></i> Your Products & Services
+                        Your Products & Services
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -1132,18 +1132,17 @@
                         <div id="productsList" class="row"></div>
                     </div>
                     <div id="productsEmpty" class="text-center py-5" style="display: none;">
-                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
                         <h5>No Products Yet</h5>
                         <p class="text-muted">You haven't uploaded any products or services yet.</p>
                         <button class="btn btn-primary" onclick="document.getElementById('viewProductsModal').querySelector('.btn-close').click(); uploadProduct();">
-                            <i class="fas fa-plus"></i> Upload Your First Product
+                            Upload Your First Product
                         </button>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-success" onclick="document.getElementById('viewProductsModal').querySelector('.btn-close').click(); uploadProduct();">
-                        <i class="fas fa-plus"></i> Add More Products
+                        Add More
                     </button>
                 </div>
             </div>
@@ -1279,7 +1278,7 @@
             newProduct.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-primary mb-0">
-                        <i class="fas fa-box"></i> Product/Service ${productCounter}
+                        Product/Service ${productCounter}
                     </h6>
                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProduct(${productCounter})">
                         <i class="fas fa-times"></i>
@@ -1350,7 +1349,7 @@
                 const header = item.querySelector('h6');
                 const removeBtn = item.querySelector('.btn-outline-danger');
                 const newNumber = index + 1;
-                header.innerHTML = `<i class="fas fa-box"></i> Product/Service ${newNumber}`;
+                header.innerHTML = `Product/Service ${newNumber}`;
                 if (removeBtn) {
                     removeBtn.setAttribute('onclick', `removeProduct(${newNumber})`);
                 }
