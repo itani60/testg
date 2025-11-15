@@ -123,6 +123,9 @@ class BusinessPreviewManager {
             return;
         }
 
+        // Render hero section
+        this.renderHero();
+        
         // Render business description
         this.renderBusinessDescription();
         
@@ -137,6 +140,54 @@ class BusinessPreviewManager {
         
         // Render business hours
         this.renderBusinessHours();
+    }
+
+    renderHero() {
+        const business = this.businessData;
+        
+        // Hero Image
+        const heroImage = document.getElementById('businessHeroImage');
+        if (heroImage) {
+            heroImage.src = business.businessLogoUrl || 'https://via.placeholder.com/300x200?text=Business+Logo';
+            heroImage.alt = business.businessName || 'Business Logo';
+        }
+        
+        // Category Badge
+        const categoryBadge = document.getElementById('businessCategoryBadge');
+        if (categoryBadge) {
+            const category = business.businessCategory || business.businessType || 'Business';
+            categoryBadge.textContent = category;
+            categoryBadge.style.display = category ? 'block' : 'none';
+        }
+        
+        // Business Title
+        const businessTitle = document.getElementById('businessTitle');
+        if (businessTitle) {
+            businessTitle.textContent = business.businessName || 'Business Name';
+        }
+        
+        // Business Subtitle
+        const businessSubtitle = document.getElementById('businessSubtitle');
+        if (businessSubtitle) {
+            const description = business.businessDescription || business.description || '';
+            businessSubtitle.textContent = description.length > 100 ? description.substring(0, 100) + '...' : description || 'No description available';
+        }
+        
+        // Business Location
+        const businessLocationText = document.getElementById('businessLocationText');
+        if (businessLocationText) {
+            businessLocationText.textContent = business.businessAddress || 'Address not provided';
+        }
+        
+        // Business Phone
+        const businessPhonePreview = document.getElementById('businessPhonePreview');
+        if (businessPhonePreview) {
+            if (business.businessNumber) {
+                businessPhonePreview.innerHTML = `<i class="fas fa-phone"></i> <a href="tel:${business.businessNumber}">${business.businessNumber}</a>`;
+            } else {
+                businessPhonePreview.textContent = '';
+            }
+        }
     }
 
     renderBusinessDescription() {
@@ -203,6 +254,11 @@ class BusinessPreviewManager {
                 return;
             }
 
+            // Initialize deleted images tracking if not exists
+            if (!this.deletedImages) {
+                this.deletedImages = new Set();
+            }
+
             let html = '';
             serviceNames.forEach(serviceName => {
                 try {
@@ -215,26 +271,63 @@ class BusinessPreviewManager {
                         return; // Skip services with no images
                     }
                     
+                    // Filter out deleted images
+                    const visibleImages = images.filter(img => {
+                        const imageUrl = typeof img === 'string' ? img : (img.image || img.url || img);
+                        return imageUrl && !this.deletedImages.has(imageUrl);
+                    });
+                    
+                    if (visibleImages.length === 0 && images.length > 0) {
+                        // All images deleted, show message
+                        html += `
+                            <div class="service-card">
+                                <h4>${serviceName}</h4>
+                                <p class="text-muted">All images marked for deletion. Click Save to confirm.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    const isEditMode = this.editMode;
+                    const allImages = images; // Show all images in edit mode, filtered in view mode
+                    const displayImages = isEditMode ? allImages : visibleImages;
+                    
                     html += `
-                        <div class="service-card">
+                        <div class="service-card" data-service-name="${serviceName.replace(/"/g, '&quot;')}">
                             <h4>${serviceName}</h4>
-                            <div class="service-gallery">
-                                ${images.slice(0, 6).map(img => {
+                            <div class="service-gallery ${isEditMode ? 'edit-mode' : ''}">
+                                ${displayImages.map((img, index) => {
                                     try {
                                         const imageUrl = typeof img === 'string' ? img : (img.image || img.url || img);
                                         if (!imageUrl) return '';
-                                        return `
-                                            <div class="gallery-item">
-                                                <img src="${imageUrl}" alt="${serviceName}" loading="lazy">
-                                            </div>
-                                        `;
+                                        const escapedUrl = imageUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                                        const escapedName = serviceName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                                        const isDeleted = this.deletedImages.has(imageUrl);
+                                        
+                                        if (isEditMode) {
+                                            return `
+                                                <div class="gallery-item ${isDeleted ? 'deleted' : ''}" data-image-url="${escapedUrl}">
+                                                    <img src="${imageUrl}" alt="${escapedName}" loading="lazy" onclick="openImageModal('${escapedUrl}', '${escapedName}')" style="cursor: pointer;">
+                                                    <button type="button" class="btn-delete-image" onclick="previewManager.markImageForDeletion('${escapedUrl}', '${escapedName}')" title="Delete image">
+                                                        ${isDeleted ? 'Restore' : 'Delete'}
+                                                    </button>
+                                                </div>
+                                            `;
+                                        } else {
+                                            return `
+                                                <div class="gallery-item">
+                                                    <img src="${imageUrl}" alt="${escapedName}" loading="lazy" onclick="openImageModal('${escapedUrl}', '${escapedName}')" style="cursor: pointer;">
+                                                </div>
+                                            `;
+                                        }
                                     } catch (err) {
                                         console.warn('Error rendering image:', err, img);
                                         return '';
                                     }
                                 }).filter(html => html !== '').join('')}
                             </div>
-                            ${images.length > 6 ? `<p class="text-muted mt-2">+${images.length - 6} more images</p>` : ''}
+                            ${!isEditMode && images.length > 6 ? `<p class="text-muted mt-2">+${images.length - 6} more images</p>` : ''}
+                            ${isEditMode && this.deletedImages.size > 0 ? `<p class="text-warning mt-2"><small>${this.deletedImages.size} image(s) marked for deletion</small></p>` : ''}
                         </div>
                     `;
                 } catch (err) {
@@ -242,6 +335,18 @@ class BusinessPreviewManager {
                     // Continue with next service
                 }
             });
+
+            // Add Upload button in edit mode
+            if (this.editMode) {
+                html += `
+                    <div class="service-card upload-card">
+                        <button type="button" class="btn-upload-new" onclick="redirectToBusinessManagement()">
+                            Upload New Images
+                        </button>
+                        <p class="text-muted mt-2"><small>Add more images to your gallery</small></p>
+                    </div>
+                `;
+            }
 
             servicesGrid.innerHTML = html || '<p class="text-muted">No services with images found.</p>';
         } catch (error) {
@@ -251,6 +356,23 @@ class BusinessPreviewManager {
                 servicesGrid.innerHTML = '<p class="text-danger">Error loading services. Please try again.</p>';
             }
         }
+    }
+
+    markImageForDeletion(imageUrl, imageName) {
+        if (!this.deletedImages) {
+            this.deletedImages = new Set();
+        }
+        
+        if (this.deletedImages.has(imageUrl)) {
+            // Restore image
+            this.deletedImages.delete(imageUrl);
+        } else {
+            // Mark for deletion
+            this.deletedImages.add(imageUrl);
+        }
+        
+        // Re-render gallery to show updated state
+        this.renderServicesGallery();
     }
 
     renderSocialMedia() {
@@ -272,7 +394,7 @@ class BusinessPreviewManager {
             const url = socialMedia[social.key];
             if (url && url.trim()) {
                 html += `
-                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="social-btn" style="background-color: ${social.color};">
+                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="social-btn ${social.key}">
                         <i class="${social.icon}"></i>
                         <span>${social.label}</span>
                     </a>
@@ -281,7 +403,7 @@ class BusinessPreviewManager {
         });
 
         if (html === '') {
-            html = '<p class="text-muted">No social media links added. Click Edit to add links.</p>';
+            html = '<p class="text-muted">No social media links added. Update your social media links in Business Account Settings.</p>';
         }
 
         socialButtons.innerHTML = html;
@@ -309,7 +431,7 @@ class BusinessPreviewManager {
         }
 
         if (html === '') {
-            html = '<p class="text-muted">No contact information available. Click Edit to add contact details.</p>';
+            html = '<p class="text-muted">No contact information available. Update your contact details in Business Account Settings.</p>';
         }
 
         contactDetails.innerHTML = html;
@@ -319,44 +441,74 @@ class BusinessPreviewManager {
         const businessHours = document.getElementById('businessHours');
         if (!businessHours) return;
 
-        const hours = this.businessData.businessHours || 'No business hours set. Click Edit to add hours.';
+        const hours = this.businessData.businessHours || 'No business hours set. Update your business hours in Business Account Settings.';
         businessHours.textContent = hours;
     }
 
     toggleEditMode() {
         this.editMode = !this.editMode;
         
-        // Show/hide edit buttons
-        const editButtons = document.querySelectorAll('.btn-edit-inline');
-        editButtons.forEach(btn => {
-            btn.style.display = this.editMode ? 'block' : 'none';
-        });
-
-        // Toggle contenteditable
-        const editableElements = document.querySelectorAll('.editable-content');
-        editableElements.forEach(el => {
-            el.contentEditable = this.editMode;
+        // Show/hide section action buttons
+        const sectionActions = document.querySelectorAll('.section-actions');
+        sectionActions.forEach(actions => {
+            actions.style.display = this.editMode ? 'flex' : 'none';
         });
 
         // Update edit mode button
         const editModeBtn = document.getElementById('editModeBtn');
         if (editModeBtn) {
             if (this.editMode) {
-                editModeBtn.innerHTML = '<i class="fas fa-times"></i> Cancel';
+                editModeBtn.innerHTML = 'Cancel';
                 editModeBtn.classList.remove('btn-secondary');
                 editModeBtn.classList.add('btn-danger');
                 // Save original data
                 this.originalData = JSON.parse(JSON.stringify(this.businessData));
+                // Initialize deleted images tracking
+                if (!this.deletedImages) {
+                    this.deletedImages = new Set();
+                }
             } else {
-                editModeBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                editModeBtn.innerHTML = 'Edit';
                 editModeBtn.classList.remove('btn-danger');
                 editModeBtn.classList.add('btn-secondary');
+                // Clear deleted images tracking
+                this.deletedImages = new Set();
                 // Restore original data
                 if (this.originalData) {
                     this.businessData = JSON.parse(JSON.stringify(this.originalData));
                     this.renderPreview();
                 }
             }
+        }
+        
+        // Re-render gallery to show/hide delete buttons
+        this.renderServicesGallery();
+    }
+
+    editSection(sectionName) {
+        if (sectionName === 'about') {
+            const descriptionEl = document.getElementById('businessDescription');
+            if (descriptionEl) {
+                descriptionEl.contentEditable = 'true';
+                // Show save button, hide edit button
+                const aboutSection = descriptionEl.closest('.business-overview');
+                const editBtn = aboutSection.querySelector('.btn-edit-inline');
+                const saveBtn = aboutSection.querySelector('.btn-save-inline');
+                if (editBtn) editBtn.style.display = 'none';
+                if (saveBtn) saveBtn.style.display = 'block';
+            }
+        } else if (sectionName === 'services') {
+            // Services editing is handled by toggleEditMode
+            // Just ensure edit mode is enabled
+            if (!this.editMode) {
+                this.toggleEditMode();
+            }
+            // Show save button, hide edit button
+            const servicesSection = document.getElementById('businessServices');
+            const editBtn = servicesSection.querySelector('.btn-edit-inline');
+            const saveBtn = servicesSection.querySelector('.btn-save-inline');
+            if (editBtn) editBtn.style.display = 'none';
+            if (saveBtn) saveBtn.style.display = 'block';
         }
     }
 
@@ -417,7 +569,7 @@ class BusinessPreviewManager {
             
             const postBtn = document.getElementById('postBtn');
             postBtn.disabled = false;
-            postBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+            postBtn.innerHTML = 'Post';
         }
     }
 
@@ -469,6 +621,182 @@ function editSection(section) {
 async function postBusiness() {
     if (previewManager) {
         await previewManager.postBusiness();
+    }
+}
+
+// Function to open image modal
+function openImageModal(imageUrl, imageAlt) {
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    
+    if (modal && modalImage) {
+        modalImage.src = imageUrl;
+        modalImage.alt = imageAlt || 'Service Image';
+        
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+    }
+}
+
+// Function to edit section
+function editSection(sectionName) {
+    if (previewManager) {
+        previewManager.editSection(sectionName);
+    }
+}
+
+// Function to save About section
+async function saveAboutSection() {
+    if (!previewManager) return;
+    
+    try {
+        const descriptionEl = document.getElementById('businessDescription');
+        if (!descriptionEl) return;
+        
+        const saveBtn = document.querySelector('.business-overview .btn-save-inline');
+        const originalText = saveBtn ? saveBtn.innerHTML : '';
+        
+        if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = 'Saving...';
+        }
+        
+        const businessDescription = descriptionEl.innerHTML.trim();
+        
+        // Save using manageServices API
+        if (window.businessAWSAuthService) {
+            await window.businessAWSAuthService.manageServices(businessDescription, []);
+            alert('Business description saved successfully!');
+            
+            // Make non-editable and hide save button
+            descriptionEl.contentEditable = 'false';
+            const aboutSection = descriptionEl.closest('.business-overview');
+            const editBtn = aboutSection.querySelector('.btn-edit-inline');
+            if (editBtn) editBtn.style.display = 'block';
+            if (saveBtn) {
+                saveBtn.style.display = 'none';
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }
+            
+            // Reload preview
+            await previewManager.loadServicesData();
+            previewManager.renderBusinessDescription();
+        } else {
+            throw new Error('Business auth service not available');
+        }
+    } catch (error) {
+        console.error('Error saving about section:', error);
+        alert('Failed to save business description: ' + (error.message || 'Unknown error'));
+        const saveBtn = document.querySelector('.business-overview .btn-save-inline');
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = 'Save';
+        }
+    }
+}
+
+// Function to redirect to business management and open upload modal
+function redirectToBusinessManagement() {
+    // Store a flag in sessionStorage to open modal on business_management.html
+    sessionStorage.setItem('openUploadModal', 'true');
+    window.location.href = 'business_management.html';
+}
+
+// Function to save Services section
+async function saveServicesSection() {
+    if (!previewManager) return;
+    
+    try {
+        const saveBtn = document.querySelector('.business-services .btn-save-inline');
+        const originalText = saveBtn ? saveBtn.innerHTML : '';
+        
+        if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = 'Saving...';
+        }
+        
+        // Get deleted images
+        const deletedImages = Array.from(previewManager.deletedImages || []);
+        
+        if (deletedImages.length === 0) {
+            alert('No changes to save. No images were marked for deletion.');
+            if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            }
+            return;
+        }
+        
+        // Get current service galleries
+        const serviceGalleries = previewManager.businessData.serviceGalleries || {};
+        const updatedServiceGalleries = {};
+        
+        // Remove deleted images from service galleries
+        Object.keys(serviceGalleries).forEach(serviceName => {
+            const images = previewManager.normalizeImagesArray(serviceGalleries[serviceName]);
+            const remainingImages = images.filter(img => {
+                const imageUrl = typeof img === 'string' ? img : (img.image || img.url || img);
+                return imageUrl && !previewManager.deletedImages.has(imageUrl);
+            });
+            
+            if (remainingImages.length > 0) {
+                updatedServiceGalleries[serviceName] = remainingImages;
+            }
+        });
+        
+        // Get business description
+        const servicesData = await window.businessAWSAuthService.getServices();
+        const businessDescription = servicesData.businessDescription || '';
+        
+        // Send updated serviceGalleries directly to the API
+        // We'll send it as a special parameter that the Lambda can handle
+        const BASE_URL = 'https://acc.comparehubprices.site';
+        const response = await fetch(`${BASE_URL}/business/business/manage-services`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                businessDescription: businessDescription,
+                services: [], // Empty services array
+                updatedServiceGalleries: updatedServiceGalleries, // Send updated structure
+                deletedImages: deletedImages // Send list of deleted images for S3 cleanup
+            }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || 'Failed to save changes');
+        }
+        
+        // Update local data
+        previewManager.businessData.serviceGalleries = updatedServiceGalleries;
+        previewManager.deletedImages.clear();
+        
+        alert(`Successfully removed ${deletedImages.length} image(s) from your gallery.`);
+        
+        // Re-render preview
+        previewManager.renderServicesGallery();
+        
+        // Hide save button, show edit button
+        const servicesSection = document.getElementById('businessServices');
+        const editBtn = servicesSection.querySelector('.btn-edit-inline');
+        if (editBtn) editBtn.style.display = 'block';
+        if (saveBtn) {
+            saveBtn.style.display = 'none';
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+        }
+        
+    } catch (error) {
+        console.error('Error saving services section:', error);
+        alert('Failed to save changes: ' + (error.message || 'Unknown error'));
+        const saveBtn = document.querySelector('.business-services .btn-save-inline');
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = 'Save';
+        }
     }
 }
 

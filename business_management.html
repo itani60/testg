@@ -1838,6 +1838,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             setupAllImageUploadHandlers();
             
+            // Check if we should open the upload modal (redirected from preview page)
+            const shouldOpenModal = sessionStorage.getItem('openUploadModal');
+            if (shouldOpenModal === 'true') {
+                sessionStorage.removeItem('openUploadModal');
+                // Wait a bit for page to fully load, then open modal
+                setTimeout(() => {
+                    uploadProduct();
+                }, 500);
+            }
+            
             // Also setup when modal is shown (in case inputs are reset)
             const uploadModal = document.getElementById('uploadProductModal');
             if (uploadModal) {

@@ -22,25 +22,15 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-    
-  
-
     <link rel="stylesheet" href="assets/css/styles.css">
-
     <link rel="stylesheet" href="assets/css/sidebar.css">
     <link rel="stylesheet" href="assets/css/test.css">
-      <link rel="stylesheet" href="assets/css/footer.css">
-      <link rel="stylesheet" href="assets/css/my-profile-2.css">
-  
-      <link rel="stylesheet" href="assets/css/badge.css">
-      <link rel="stylesheet" href="assets/css/local-business-info.css">
-      <link rel="stylesheet" href="Business_catalogue.css">
+    <link rel="stylesheet" href="assets/css/footer.css">
+    <link rel="stylesheet" href="assets/css/badge.css">
+    <link rel="stylesheet" href="assets/css/my-account.css">
+    <link rel="stylesheet" href="Business_catalogue.css">
 
-      <link rel="stylesheet" href="assets/css/footer.css">
-
-     
-      <link rel="stylesheet" href="assets/css/badge.css">
-  
+   
       <style>
       
 
@@ -607,9 +597,46 @@
     <div class="notification-container" id="notificationContainer"></div>
 
     <main class="main">
-        <div class="business-preview-container">
-            <div class="container">
-                <!-- Preview Header with Post Button -->
+        <div class="contact-hero">
+            <div class="hero-background"></div>
+            <div class="hero-content">
+                <div class="contact-card">
+                    <div class="contact-icon-large">
+                        <div class="icon-ring">
+                            <div class="icon-inner">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-details">
+                        <h1 class="contact-title">Business Preview</h1>
+                        <p class="contact-subtitle">Preview how your business will appear to customers before publishing</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Information Container -->
+        <div class="contact-container">
+            <div class="contact-content">
+                <!-- Breadcrumb -->
+                <nav class="breadcrumb-nav" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="index.html">Home</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="Business_account_manager.html">Business Account Manager</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Business Preview
+                        </li>
+                    </ol>
+                </nav>
+
+                <div class="business-preview-container">
+                    <div class="container">
+                        <!-- Preview Header with Post Button -->
                 <div class="preview-header">
                     <div class="preview-header-content">
                         <h1 class="preview-title">Business Preview</h1>
@@ -617,10 +644,10 @@
                     </div>
                     <div class="preview-actions">
                         <button class="btn btn-secondary" id="editModeBtn" onclick="toggleEditMode()">
-                            <i class="fas fa-edit"></i> Edit
+                            Edit
                         </button>
                         <button class="btn btn-primary" id="postBtn" onclick="postBusiness()">
-                            <i class="fas fa-paper-plane"></i> Post
+                            Post
                         </button>
                     </div>
                 </div>
@@ -633,9 +660,14 @@
                         <div class="business-overview">
                             <div class="section-header">
                                 <h2>About This Business</h2>
-                                <button class="btn-edit-inline" onclick="editSection('about')" style="display: none;">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
+                                <div class="section-actions" style="display: none;">
+                                    <button class="btn-edit-inline" onclick="editSection('about')">
+                                        Edit
+                                    </button>
+                                    <button class="btn-save-inline" onclick="saveAboutSection()" style="display: none;">
+                                        Save
+                                    </button>
+                                </div>
                             </div>
                             <div class="business-description editable-content" id="businessDescription" contenteditable="false">
                                 <!-- Business description will be populated here -->
@@ -646,9 +678,14 @@
                         <div class="business-services" id="businessServices">
                             <div class="section-header">
                                 <h3>Services & Gallery</h3>
-                                <button class="btn-edit-inline" onclick="editSection('services')" style="display: none;">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
+                                <div class="section-actions" style="display: none;">
+                                    <button class="btn-edit-inline" onclick="editSection('services')">
+                                        Edit
+                                    </button>
+                                    <button class="btn-save-inline" onclick="saveServicesSection()" style="display: none;">
+                                        Save
+                                    </button>
+                                </div>
                             </div>
                             <div class="services-grid" id="servicesGrid">
                                 <!-- Services and gallery will be populated here -->
@@ -661,9 +698,6 @@
                             <div class="social-links-card">
                                 <div class="section-header">
                                     <h4>Connect With Us</h4>
-                                    <button class="btn-edit-inline" onclick="editSection('social')" style="display: none;">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
                                 </div>
                                 <div class="social-buttons" id="socialButtons">
                                     <!-- Social buttons will be populated here -->
@@ -678,9 +712,6 @@
                         <div class="contact-info-card">
                             <div class="section-header">
                                 <h4>Contact Information</h4>
-                                <button class="btn-edit-inline" onclick="editSection('contact')" style="display: none;">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
                             </div>
                             <div class="contact-details" id="contactDetails">
                                 <!-- Contact details will be populated here -->
@@ -691,19 +722,32 @@
                         <div class="business-hours-card">
                             <div class="section-header">
                                 <h4>Business Hours</h4>
-                                <button class="btn-edit-inline" onclick="editSection('hours')" style="display: none;">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
                             </div>
-                            <div class="business-hours editable-content" id="businessHours" contenteditable="false">
+                            <div class="business-hours" id="businessHours">
                                 <!-- Business hours will be populated here -->
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+                </div>
+            </div>
         </div>
     </main>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="background: transparent; border: none;">
+                <div class="modal-header" style="border: none; padding: 0.5rem;">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="background-color: rgba(255, 255, 255, 0.8);"></button>
+                </div>
+                <div class="modal-body" style="padding: 0; text-align: center;">
+                    <img id="modalImage" src="" alt="Service Image" style="max-width: 100%; max-height: 80vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="footer">
         <div class="footer-content">
@@ -764,8 +808,12 @@
     <script src="assets/scripts/price-alerts.js"></script>
     <script src="assets/scripts/wishlist.js"></script>
 
-    <script src="assets/scripts/aws-auth.js"></script>
+   
+    
+    
     <script src="assets/scripts/business-preview.js"></script>
+    
+    
     
  
 
