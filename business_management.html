@@ -1396,8 +1396,8 @@
                     return;
                 }
 
-                // Navigate to the public business page
-                window.location.href = `local-business-info.html?id=${businessId}`;
+                // Navigate to the business preview page
+                window.location.href = `business_catalogue.html`;
             } catch (error) {
                 console.error('Error viewing full catalogue:', error);
                 alert(`Error: ${error.message || 'Failed to load catalogue. Please try again.'}`);
