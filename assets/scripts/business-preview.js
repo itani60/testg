@@ -334,8 +334,35 @@ class BusinessPreviewManager {
     }
 
     async deleteImage(imageUrl, imageName) {
-        if (!confirm(`Are you sure you want to delete this image? This action cannot be undone.`)) {
+        // Store the image URL and name for the confirmation
+        this.pendingDeleteImageUrl = imageUrl;
+        this.pendingDeleteImageName = imageName;
+        
+        // Show the delete confirmation modal
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteImageModal'));
+        deleteModal.show();
+    }
+
+    async confirmDeleteImage() {
+        const imageUrl = this.pendingDeleteImageUrl;
+        const imageName = this.pendingDeleteImageName;
+        
+        if (!imageUrl) {
             return;
+        }
+        
+        // Hide the modal
+        const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteImageModal'));
+        if (deleteModal) {
+            deleteModal.hide();
+        }
+        
+        // Disable the delete button and show loading state
+        const confirmBtn = document.getElementById('confirmDeleteImageBtn');
+        const originalText = confirmBtn ? confirmBtn.innerHTML : '';
+        if (confirmBtn) {
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = 'Deleting...';
         }
         
         try {
@@ -386,11 +413,25 @@ class BusinessPreviewManager {
             // Re-render gallery
             this.renderServicesGallery();
             
+            // Show success message
             alert('Image deleted successfully!');
+            
+            // Clear pending delete
+            this.pendingDeleteImageUrl = null;
+            this.pendingDeleteImageName = null;
             
         } catch (error) {
             console.error('Error deleting image:', error);
             alert('Failed to delete image: ' + (error.message || 'Unknown error'));
+        } finally {
+            // Re-enable the delete button
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = originalText;
+            }
+            // Clear pending delete
+            this.pendingDeleteImageUrl = null;
+            this.pendingDeleteImageName = null;
         }
     }
 
