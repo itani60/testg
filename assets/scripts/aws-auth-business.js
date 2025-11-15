@@ -286,15 +286,27 @@
       return { success: true, user: data.user };
     }
 
-    async manageServices(businessDescription, services) {
+    async manageServices(businessDescription, services, updatedServiceGalleries = null, deletedImages = null) {
+      const requestBody = {
+        businessDescription: businessDescription,
+        services: services
+      };
+      
+      // If updatedServiceGalleries is provided, include it to indicate this is an update request
+      if (updatedServiceGalleries !== null) {
+        requestBody.updatedServiceGalleries = updatedServiceGalleries;
+      }
+      
+      // If deletedImages is provided, include it
+      if (deletedImages !== null && Array.isArray(deletedImages)) {
+        requestBody.deletedImages = deletedImages;
+      }
+      
       const res = await fetch(MANAGE_SERVICES_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          businessDescription: businessDescription,
-          services: services
-        }),
+        body: JSON.stringify(requestBody),
       });
       const data = await res.json().catch(() => ({}));
 

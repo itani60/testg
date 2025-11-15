@@ -582,14 +582,16 @@ class BusinessPreviewManager {
 
             // Save services (which includes businessDescription)
             if (window.businessAWSAuthService) {
-                // Get current services
-                const servicesData = await window.businessAWSAuthService.getServices();
-                const services = servicesData.services || [];
+                // Get existing serviceGalleries from businessData to pass as updatedServiceGalleries
+                // This tells the Lambda it's an update request, so it won't require new services
+                const existingServiceGalleries = this.businessData?.serviceGalleries || {};
                 
-                // Update with new description
+                // Update with new description and existing galleries (to indicate it's an update)
                 await window.businessAWSAuthService.manageServices(
                     updatedData.businessDescription,
-                    services
+                    [], // Empty services array since we're just updating description
+                    existingServiceGalleries, // Pass existing galleries to indicate update
+                    [] // No images to delete
                 );
             }
 
@@ -721,7 +723,16 @@ async function saveAboutSection() {
         
         // Save using manageServices API
         if (window.businessAWSAuthService) {
-            await window.businessAWSAuthService.manageServices(businessDescription, []);
+            // Get existing serviceGalleries to pass as updatedServiceGalleries
+            // This tells the Lambda it's an update request, so it won't require new services
+            const existingServiceGalleries = previewManager.businessData?.serviceGalleries || {};
+            
+            await window.businessAWSAuthService.manageServices(
+                businessDescription, 
+                [], // Empty services array since we're just updating description
+                existingServiceGalleries, // Pass existing galleries to indicate update
+                [] // No images to delete
+            );
             alert('Business description saved successfully!');
             
             // Make non-editable and hide save button
