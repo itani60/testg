@@ -57,6 +57,16 @@ class BusinessPreviewManager {
             }
             
             this.businessData = response.business;
+            
+            // Normalize serviceGalleries structure if it exists
+            if (this.businessData.serviceGalleries && typeof this.businessData.serviceGalleries === 'object') {
+                const normalized = {};
+                Object.keys(this.businessData.serviceGalleries).forEach(serviceName => {
+                    const images = this.businessData.serviceGalleries[serviceName];
+                    normalized[serviceName] = this.normalizeImagesArray(images);
+                });
+                this.businessData.serviceGalleries = normalized;
+            }
         } catch (error) {
             console.error('Error loading business data:', error);
             throw error;
@@ -141,57 +151,106 @@ class BusinessPreviewManager {
         descriptionEl.innerHTML = description || 'No description available. Click Edit to add a description.';
     }
 
-    renderServicesGallery() {
-        const servicesGrid = document.getElementById('servicesGrid');
-        if (!servicesGrid) return;
-
-        const serviceGalleries = this.businessData.serviceGalleries || {};
-        const serviceNames = Object.keys(serviceGalleries);
-
-        if (serviceNames.length === 0) {
-            servicesGrid.innerHTML = '<p class="text-muted">No services added yet. Click Edit to add services.</p>';
-            return;
+    normalizeImagesArray(images) {
+        // Handle various data structures and ensure we always return an array
+        if (!images) {
+            return [];
         }
-
-        let html = '';
-        serviceNames.forEach(serviceName => {
-            let images = serviceGalleries[serviceName];
+        
+        if (Array.isArray(images)) {
+            return images;
+        }
+        
+        if (typeof images === 'string') {
+            return [{ image: images }];
+        }
+        
+        if (typeof images === 'object') {
+            // If it's an object, try different strategies
+            // Strategy 1: It might be an object with numeric keys (DynamoDB Map)
+            const values = Object.values(images);
+            if (values.length > 0 && (Array.isArray(values[0]) || typeof values[0] === 'object' || typeof values[0] === 'string')) {
+                return values;
+            }
             
-            // Ensure images is an array
-            if (!Array.isArray(images)) {
-                if (images && typeof images === 'object') {
-                    // If it's an object, try to convert it
-                    images = Object.values(images);
-                } else {
-                    images = [];
+            // Strategy 2: It might be a single image object
+            if (images.image || images.url) {
+                return [images];
+            }
+            
+            // Strategy 3: It might be an object with array-like structure
+            if (images.length !== undefined) {
+                return Array.from(images);
+            }
+            
+            // Strategy 4: Try to extract all values
+            return Object.values(images).filter(v => v !== null && v !== undefined);
+        }
+        
+        return [];
+    }
+
+    renderServicesGallery() {
+        try {
+            const servicesGrid = document.getElementById('servicesGrid');
+            if (!servicesGrid) return;
+
+            const serviceGalleries = this.businessData.serviceGalleries || {};
+            const serviceNames = Object.keys(serviceGalleries);
+
+            if (serviceNames.length === 0) {
+                servicesGrid.innerHTML = '<p class="text-muted">No services added yet. Click Edit to add services.</p>';
+                return;
+            }
+
+            let html = '';
+            serviceNames.forEach(serviceName => {
+                try {
+                    const rawImages = serviceGalleries[serviceName];
+                    
+                    // Normalize images to always be an array
+                    const images = this.normalizeImagesArray(rawImages);
+                    
+                    if (!Array.isArray(images) || images.length === 0) {
+                        return; // Skip services with no images
+                    }
+                    
+                    html += `
+                        <div class="service-card">
+                            <h4>${serviceName}</h4>
+                            <div class="service-gallery">
+                                ${images.slice(0, 6).map(img => {
+                                    try {
+                                        const imageUrl = typeof img === 'string' ? img : (img.image || img.url || img);
+                                        if (!imageUrl) return '';
+                                        return `
+                                            <div class="gallery-item">
+                                                <img src="${imageUrl}" alt="${serviceName}" loading="lazy">
+                                            </div>
+                                        `;
+                                    } catch (err) {
+                                        console.warn('Error rendering image:', err, img);
+                                        return '';
+                                    }
+                                }).filter(html => html !== '').join('')}
+                            </div>
+                            ${images.length > 6 ? `<p class="text-muted mt-2">+${images.length - 6} more images</p>` : ''}
+                        </div>
+                    `;
+                } catch (err) {
+                    console.error(`Error rendering service "${serviceName}":`, err);
+                    // Continue with next service
                 }
-            }
-            
-            if (images.length === 0) {
-                return; // Skip services with no images
-            }
-            
-            const firstImage = images.length > 0 ? (typeof images[0] === 'string' ? images[0] : (images[0].image || images[0])) : null;
-            
-            html += `
-                <div class="service-card">
-                    <h4>${serviceName}</h4>
-                    <div class="service-gallery">
-                        ${images.slice(0, 6).map(img => {
-                            const imageUrl = typeof img === 'string' ? img : (img.image || img.url || img);
-                            return `
-                                <div class="gallery-item">
-                                    <img src="${imageUrl}" alt="${serviceName}" loading="lazy">
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                    ${images.length > 6 ? `<p class="text-muted mt-2">+${images.length - 6} more images</p>` : ''}
-                </div>
-            `;
-        });
+            });
 
-        servicesGrid.innerHTML = html;
+            servicesGrid.innerHTML = html || '<p class="text-muted">No services with images found.</p>';
+        } catch (error) {
+            console.error('Error rendering services gallery:', error);
+            const servicesGrid = document.getElementById('servicesGrid');
+            if (servicesGrid) {
+                servicesGrid.innerHTML = '<p class="text-danger">Error loading services. Please try again.</p>';
+            }
+        }
     }
 
     renderSocialMedia() {
