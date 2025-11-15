@@ -8,7 +8,7 @@ const BUSINESS_API_BASE_URL = 'https://acc.comparehubprices.site';
 class BusinessMarketplaceAPI {
     static async getBusiness(businessId) {
         try {
-            const response = await fetch(`${BUSINESS_API_BASE_URL}/business/public/${businessId}`, {
+            const response = await fetch(`${BUSINESS_API_BASE_URL}/business/business/public/${businessId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
