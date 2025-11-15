@@ -1295,9 +1295,66 @@
             }
         }
 
-        function uploadProduct() {
+        async function loadExistingProductsIntoForm() {
+            try {
+                if (!window.businessAWSAuthService) return;
+                
+                const data = await window.businessAWSAuthService.getServices();
+                
+                // Load business description
+                const businessDescriptionField = document.getElementById('businessDescription');
+                if (businessDescriptionField && data.businessDescription) {
+                    businessDescriptionField.value = data.businessDescription;
+                }
+                
+                // Load existing products/services into form
+                if (data.services && data.services.length > 0) {
+                    const productItems = document.querySelectorAll('.product-item');
+                    const existingCount = productItems.length;
+                    const servicesCount = data.services.length;
+                    
+                    // Add more product slots if needed
+                    if (servicesCount > existingCount) {
+                        const needed = servicesCount - existingCount;
+                        for (let i = 0; i < needed; i++) {
+                            addProduct();
+                        }
+                        // Wait for DOM to update
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                    }
+                    
+                    // Now populate all products
+                    const allProductItems = document.querySelectorAll('.product-item');
+                    data.services.forEach((service, index) => {
+                        if (index < allProductItems.length) {
+                            const productItem = allProductItems[index];
+                            const nameInput = productItem.querySelector('.product-name');
+                            const descriptionInput = productItem.querySelector('.product-description');
+                            
+                            if (nameInput) {
+                                nameInput.value = service.name || '';
+                            }
+                            if (descriptionInput) {
+                                descriptionInput.value = service.description || '';
+                            }
+                        }
+                    });
+                    
+                    // Setup image upload handlers for any newly added products
+                    setupAllImageUploadHandlers();
+                }
+            } catch (error) {
+                console.debug('Error loading existing products:', error);
+                // Silently fail - user can still enter manually
+            }
+        }
+
+        async function uploadProduct() {
             const modal = new bootstrap.Modal(document.getElementById('uploadProductModal'));
             modal.show();
+            
+            // Load existing business description and products
+            await loadExistingProductsIntoForm();
         }
 
         async function viewProducts() {
@@ -1604,8 +1661,25 @@
 
                 alert(`Successfully added ${data.servicesAdded || products.length} service(s)!`);
                 
-                // Reset form
+                // Reset form but preserve business description
+                const businessDescriptionValue = document.getElementById('businessDescription')?.value || '';
                 document.getElementById('uploadProductForm').reset();
+                
+                // Restore business description after reset
+                const businessDescriptionField = document.getElementById('businessDescription');
+                if (businessDescriptionField && businessDescriptionValue) {
+                    businessDescriptionField.value = businessDescriptionValue;
+                } else {
+                    // If no value was saved, try to load from server
+                    try {
+                        const servicesData = await window.businessAWSAuthService.getServices();
+                        if (servicesData.businessDescription && businessDescriptionField) {
+                            businessDescriptionField.value = servicesData.businessDescription;
+                        }
+                    } catch (error) {
+                        console.debug('Error reloading business description:', error);
+                    }
+                }
                 
                 // Refresh products view if modal is open
                 const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewProductsModal'));
@@ -1720,8 +1794,11 @@
             // Also setup when modal is shown (in case inputs are reset)
             const uploadModal = document.getElementById('uploadProductModal');
             if (uploadModal) {
-                uploadModal.addEventListener('shown.bs.modal', function() {
+                uploadModal.addEventListener('shown.bs.modal', async function() {
                     setupAllImageUploadHandlers();
+                    
+                    // Load existing business description and products
+                    await loadExistingProductsIntoForm();
                 });
             }
         });
