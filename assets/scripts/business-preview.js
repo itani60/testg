@@ -413,9 +413,6 @@ class BusinessPreviewManager {
             // Re-render gallery
             this.renderServicesGallery();
             
-            // Show success message
-            alert('Image deleted successfully!');
-            
             // Clear pending delete
             this.pendingDeleteImageUrl = null;
             this.pendingDeleteImageName = null;
