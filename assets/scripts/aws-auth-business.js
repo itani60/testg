@@ -18,6 +18,7 @@
   const RESEND_PASSWORD_UPDATE_OTP_URL = `${BASE_URL}/business/business/resend-password-update-otp`;
   const MANAGE_SERVICES_URL = `${BASE_URL}/business/business/manage-services`;
   const GET_SERVICES_URL = `${BASE_URL}/business/business/get-services`;
+  const GET_PUBLIC_BUSINESS_URL = `${BASE_URL}/business/business/public`;
   const MFA_REMOVE_URL = `${BASE_URL}/business/business/mfa/remove`;
   const MFA_SET_PRIMARY_URL = `${BASE_URL}/business/business/mfa/set-primary`;
   const EMAIL_MFA_LOGIN_SEND_URL = `${BASE_URL}/business/business/email-mfa/login-send`;
@@ -337,6 +338,28 @@
         fullContent: data.fullContent || null,
         totalServices: data.totalServices || 0,
         totalImages: data.totalImages || 0
+      };
+    }
+
+    async getPublicBusiness(businessId) {
+      const res = await fetch(`${GET_PUBLIC_BUSINESS_URL}/${businessId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || data?.success === false) {
+        const message = data?.message || `Get public business failed (HTTP ${res.status})`;
+        const error = new Error(message);
+        error.status = res.status;
+        error.response = data;
+        throw error;
+      }
+
+      return {
+        success: true,
+        business: data.business || null
       };
     }
 

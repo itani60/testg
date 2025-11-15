@@ -46,19 +46,17 @@ class BusinessPreviewManager {
 
     async loadBusinessData(businessId) {
         try {
-            const BASE_URL = 'https://acc.comparehubprices.site';
-            const response = await fetch(`${BASE_URL}/business/public/${businessId}`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            });
+            if (!window.businessAWSAuthService) {
+                throw new Error('Business auth service not available');
+            }
+
+            const response = await window.businessAWSAuthService.getPublicBusiness(businessId);
             
-            const data = await response.json();
-            
-            if (!response.ok || !data.success || !data.business) {
+            if (!response.success || !response.business) {
                 throw new Error('Business not found');
             }
             
-            this.businessData = data.business;
+            this.businessData = response.business;
         } catch (error) {
             console.error('Error loading business data:', error);
             throw error;
