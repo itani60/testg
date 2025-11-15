@@ -660,11 +660,14 @@
                             <div class="notification-content">
                                 <h4>Product Listings</h4>
                                 <p>Manage your product inventory and listings</p>
-                                <span class="notification-time">25 Active Products</span>
+                                <span class="notification-time" id="productCount">Loading...</span>
                             </div>
                             <div class="notification-actions">
+                                <button class="btn-card" onclick="viewProducts()" style="margin-right: 10px;">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
                                 <button class="btn-card" onclick="uploadProduct()">
-                                    Upload
+                                    <i class="fas fa-upload"></i> Upload
                                 </button>
                             </div>
                         </div>
@@ -1107,10 +1110,147 @@
         </div>
     </div>
 
+    <!-- View Products Modal -->
+    <div class="modal fade" id="viewProductsModal" tabindex="-1" aria-labelledby="viewProductsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="viewProductsModalLabel">
+                        <i class="fas fa-box"></i> Your Products & Services
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="productsLoading" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">Loading your products...</p>
+                    </div>
+                    <div id="productsError" class="alert alert-danger" style="display: none;"></div>
+                    <div id="productsContent" style="display: none;">
+                        <div id="productsList" class="row"></div>
+                    </div>
+                    <div id="productsEmpty" class="text-center py-5" style="display: none;">
+                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                        <h5>No Products Yet</h5>
+                        <p class="text-muted">You haven't uploaded any products or services yet.</p>
+                        <button class="btn btn-primary" onclick="document.getElementById('viewProductsModal').querySelector('.btn-close').click(); uploadProduct();">
+                            <i class="fas fa-plus"></i> Upload Your First Product
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" onclick="document.getElementById('viewProductsModal').querySelector('.btn-close').click(); uploadProduct();">
+                        <i class="fas fa-plus"></i> Add More Products
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Load product count on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            await updateProductCount();
+        });
+
+        async function updateProductCount() {
+            try {
+                if (!window.businessAWSAuthService) {
+                    document.getElementById('productCount').textContent = '0 Active Products';
+                    return;
+                }
+
+                const data = await window.businessAWSAuthService.getServices();
+                const count = data.totalServices || 0;
+                document.getElementById('productCount').textContent = `${count} Active Product${count !== 1 ? 's' : ''}`;
+            } catch (error) {
+                console.error('Error loading product count:', error);
+                document.getElementById('productCount').textContent = '0 Active Products';
+            }
+        }
+
         function uploadProduct() {
             const modal = new bootstrap.Modal(document.getElementById('uploadProductModal'));
             modal.show();
+        }
+
+        async function viewProducts() {
+            const modal = new bootstrap.Modal(document.getElementById('viewProductsModal'));
+            modal.show();
+
+            // Show loading, hide other sections
+            document.getElementById('productsLoading').style.display = 'block';
+            document.getElementById('productsError').style.display = 'none';
+            document.getElementById('productsContent').style.display = 'none';
+            document.getElementById('productsEmpty').style.display = 'none';
+
+            try {
+                if (!window.businessAWSAuthService) {
+                    throw new Error('Business authentication service not available');
+                }
+
+                // Fetch services using businessAWSAuthService
+                const data = await window.businessAWSAuthService.getServices();
+
+                // Hide loading
+                document.getElementById('productsLoading').style.display = 'none';
+
+                if (!data.services || data.services.length === 0) {
+                    document.getElementById('productsEmpty').style.display = 'block';
+                    return;
+                }
+
+                // Display products
+                const productsList = document.getElementById('productsList');
+                productsList.innerHTML = '';
+
+                data.services.forEach((service, index) => {
+                    const serviceCard = document.createElement('div');
+                    serviceCard.className = 'col-md-6 col-lg-4 mb-4';
+                    
+                    const imagesHtml = service.images.slice(0, 4).map((img, imgIndex) => 
+                        `<img src="${img.image}" alt="${img.title || service.name}" class="img-fluid rounded mb-2" style="max-height: 150px; width: 100%; object-fit: cover;" loading="lazy">`
+                    ).join('');
+
+                    const moreImagesText = service.imageCount > 4 ? `<p class="text-muted small mb-0"><i class="fas fa-images"></i> +${service.imageCount - 4} more images</p>` : '';
+
+                    serviceCard.innerHTML = `
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-box text-primary"></i> ${service.name}
+                                </h5>
+                                ${service.description ? `<p class="card-text text-muted">${service.description}</p>` : ''}
+                                <div class="mb-3">
+                                    ${imagesHtml}
+                                    ${moreImagesText}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-images"></i> ${service.imageCount} image${service.imageCount !== 1 ? 's' : ''}
+                                    </span>
+                                    <small class="text-muted">Service ${index + 1}</small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    productsList.appendChild(serviceCard);
+                });
+
+                document.getElementById('productsContent').style.display = 'block';
+
+                // Update product count in the main page
+                await updateProductCount();
+
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('productsLoading').style.display = 'none';
+                document.getElementById('productsError').style.display = 'block';
+                document.getElementById('productsError').textContent = `Error: ${error.message || 'Failed to load products. Please try again.'}`;
+            }
         }
 
         let productCounter = 5;
@@ -1296,16 +1436,22 @@
                 const data = await window.businessAWSAuthService.manageServices(businessDescription, products);
 
                 // Success
-                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadProductModal'));
-                modal.hide();
+                const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadProductModal'));
+                uploadModal.hide();
 
                 alert(`Successfully added ${data.servicesAdded || products.length} service(s)!`);
                 
                 // Reset form
                 document.getElementById('uploadProductForm').reset();
                 
-                // Optionally reload page or update UI
-                // window.location.reload();
+                // Refresh products view if modal is open
+                const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewProductsModal'));
+                if (viewModal && viewModal._isShown) {
+                    viewProducts();
+                } else {
+                    // Update product count
+                    await updateProductCount();
+                }
 
             } catch (error) {
                 console.error('Error saving services:', error);

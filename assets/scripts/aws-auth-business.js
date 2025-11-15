@@ -17,6 +17,7 @@
   const UPDATE_BUSINESS_PASSWORD_URL = `${BASE_URL}/business/business/update-business-password`;
   const RESEND_PASSWORD_UPDATE_OTP_URL = `${BASE_URL}/business/business/resend-password-update-otp`;
   const MANAGE_SERVICES_URL = `${BASE_URL}/business/business/manage-services`;
+  const GET_SERVICES_URL = `${BASE_URL}/business/business/get-services`;
   const MFA_REMOVE_URL = `${BASE_URL}/business/business/mfa/remove`;
   const MFA_SET_PRIMARY_URL = `${BASE_URL}/business/business/mfa/set-primary`;
   const EMAIL_MFA_LOGIN_SEND_URL = `${BASE_URL}/business/business/email-mfa/login-send`;
@@ -310,6 +311,32 @@
         serviceGalleries: data.serviceGalleries || {},
         localHubInfo: data.localHubInfo || null,
         message: data.message
+      };
+    }
+
+    async getServices() {
+      const res = await fetch(GET_SERVICES_URL, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || data?.success === false) {
+        const message = data?.message || `Get services failed (HTTP ${res.status})`;
+        const error = new Error(message);
+        error.status = res.status;
+        error.response = data;
+        throw error;
+      }
+
+      return {
+        success: true,
+        services: data.services || [],
+        businessDescription: data.businessDescription || null,
+        fullContent: data.fullContent || null,
+        totalServices: data.totalServices || 0,
+        totalImages: data.totalImages || 0
       };
     }
 
