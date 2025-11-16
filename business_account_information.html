@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CompareHubPrices - Business Account Manager</title>
+    <title>CompareHubPrices - Business Account Information</title>
 
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com https://fonts.googleapis.com https://www.gstatic.com; img-src 'self' data: https://www.gstatic.com https://images.comparehubprices.site; font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://acc.comparehubprices.site https://accb.comparehubprices.site https://accounts.google.com https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com;">
     
@@ -440,7 +440,7 @@
             <div class="sidebar-section pt-0 px-3">
                 <h4>Quick Access</h4>
                 <div class="quick-access-grid">
-                    <a href="whishlist.html" class="quick-access-item new-arrivals">
+                    <a href="wishlist.html" class="quick-access-item new-arrivals">
                         <div class="quick-access-icon">
                             <i class="fas fa-heart"></i>
                         </div>
@@ -649,7 +649,6 @@
                 <div class="notifications-section">
                     <div class="section-header">
                         <h3 class="section-title">
-                            <i class="fas fa-building"></i>
                             Business Information
                         </h3>
                         <button class="btn-remove-all" onclick="updateBusinessInfo()">
@@ -849,7 +848,6 @@
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white justify-content-center position-relative">
                     <h5 class="modal-title text-center w-100" id="updateBusinessInfoModalLabel">
-                        <i class="fas fa-building me-2"></i>
                         Update Business Information
                     </h5>
                     <button type="button" class="btn-close btn-close-white position-absolute" style="right: 15px; top: 15px;" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -864,8 +862,40 @@
 
                         <!-- Business Address -->
                         <div class="mb-3">
-                            <label for="businessAddress" class="form-label">Business Address <span class="text-danger">*</span></label>
-                            <textarea class="form-control" id="businessAddress" rows="3" placeholder="Enter business address" required></textarea>
+                            <label class="form-label">Business Address <span class="text-danger">*</span></label>
+                            <div class="mb-2">
+                                <label for="streetAddress" class="form-label small">Street Address</label>
+                                <input type="text" class="form-control" id="streetAddress" placeholder="Enter street address" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="addressLine2" class="form-label small">Address Line 2</label>
+                                <input type="text" class="form-control" id="addressLine2" placeholder="Apartment, suite, unit, building, floor, etc. (optional)">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <label for="city" class="form-label small">City</label>
+                                    <input type="text" class="form-control" id="city" placeholder="Enter city" required>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <label for="province" class="form-label small">Province</label>
+                                    <select class="form-select" id="province" required>
+                                        <option value="">Select province</option>
+                                        <option value="Eastern Cape">Eastern Cape</option>
+                                        <option value="Free State">Free State</option>
+                                        <option value="Gauteng">Gauteng</option>
+                                        <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                                        <option value="Limpopo">Limpopo</option>
+                                        <option value="Mpumalanga">Mpumalanga</option>
+                                        <option value="Northern Cape">Northern Cape</option>
+                                        <option value="North West">North West</option>
+                                        <option value="Western Cape">Western Cape</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label for="postalCode" class="form-label small">Postal Code</label>
+                                <input type="text" class="form-control" id="postalCode" placeholder="Enter postal code" required>
+                            </div>
                         </div>
 
                         <!-- Business Number and Business Category Row -->
@@ -943,7 +973,6 @@
                 <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-success px-4" id="saveBusinessInfoBtn">
-                        <i class="fas fa-save me-2"></i>
                         Save Changes
                     </button>
                 </div>
@@ -1123,8 +1152,32 @@
                 if (document.getElementById('businessName')) {
                     document.getElementById('businessName').value = user.businessName || user.business_name || user.name || '';
                 }
-                if (document.getElementById('businessAddress')) {
-                    document.getElementById('businessAddress').value = user.businessAddress || user.business_address || user.address || '';
+                
+                // Populate address fields - try to parse existing address or use individual fields
+                const existingAddress = user.businessAddress || user.business_address || user.address || '';
+                if (user.streetAddress || user.street_address) {
+                    // If address is already split into fields
+                    if (document.getElementById('streetAddress')) {
+                        document.getElementById('streetAddress').value = user.streetAddress || user.street_address || '';
+                    }
+                    if (document.getElementById('addressLine2')) {
+                        document.getElementById('addressLine2').value = user.addressLine2 || user.address_line_2 || '';
+                    }
+                    if (document.getElementById('city')) {
+                        document.getElementById('city').value = user.city || '';
+                    }
+                    if (document.getElementById('province')) {
+                        document.getElementById('province').value = user.province || '';
+                    }
+                    if (document.getElementById('postalCode')) {
+                        document.getElementById('postalCode').value = user.postalCode || user.postal_code || '';
+                    }
+                } else if (existingAddress) {
+                    // If address is a single string, try to parse it (basic parsing)
+                    // For now, put the whole address in street address field
+                    if (document.getElementById('streetAddress')) {
+                        document.getElementById('streetAddress').value = existingAddress;
+                    }
                 }
                 if (document.getElementById('contactNumber')) {
                     document.getElementById('contactNumber').value = user.businessNumber || user.business_number || user.contactNumber || user.contact_number || user.phone || '';
@@ -1226,9 +1279,29 @@
                     }
                     
                 // Collect form data
+                // Combine address fields into a formatted address string
+                const streetAddress = document.getElementById('streetAddress').value.trim();
+                const addressLine2 = document.getElementById('addressLine2').value.trim();
+                const city = document.getElementById('city').value.trim();
+                const province = document.getElementById('province').value.trim();
+                const postalCode = document.getElementById('postalCode').value.trim();
+                
+                // Build full address string
+                const addressParts = [streetAddress];
+                if (addressLine2) addressParts.push(addressLine2);
+                if (city) addressParts.push(city);
+                if (province) addressParts.push(province);
+                if (postalCode) addressParts.push(postalCode);
+                const fullAddress = addressParts.join(', ');
+                
                 const businessData = {
                         businessName: document.getElementById('businessName').value.trim(),
-                        businessAddress: document.getElementById('businessAddress').value.trim(),
+                        businessAddress: fullAddress,
+                        streetAddress: streetAddress,
+                        addressLine2: addressLine2,
+                        city: city,
+                        province: province,
+                        postalCode: postalCode,
                         businessNumber: document.getElementById('contactNumber').value.trim(),
                     businessCategory: document.getElementById('businessCategory').value,
                         businessDescription: document.getElementById('businessDescription').value.trim(),
@@ -1266,15 +1339,17 @@
                     // Send the data to the backend API
                     await window.businessAWSAuthService.updateBusinessInfo(businessData);
                 
-                // Show success message
-                alert('Business information updated successfully!');
+                // Show success toast notification
+                showSuccessToast('Business information updated successfully!');
                 
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('updateBusinessInfoModal'));
                 modal.hide();
                 
-                    // Reload the page to show updated data
+                // Reload the page after a delay to allow toast to be visible
+                setTimeout(() => {
                     window.location.reload();
+                }, 2500);
                 } catch (error) {
                     console.error('Error updating business info:', error);
                     if (error.message && error.message.includes('Not authenticated')) {
@@ -1292,6 +1367,41 @@
         });
     </script>
 
+    <!-- Toast Container for Notifications -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;" id="toastContainer"></div>
+
+    <script>
+        // Function to show Bootstrap Toast notification
+        function showSuccessToast(message) {
+            const toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) return;
+            
+            const toastId = 'toast-' + Date.now();
+            
+            const toastHTML = `
+                <div class="toast" id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+                    <div class="toast-header bg-primary text-white">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong class="me-auto">Success</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+            
+            // Remove from DOM after hiding
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                toastElement.remove();
+            });
+        }
+    </script>
 
      
 </body>
