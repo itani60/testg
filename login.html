@@ -607,6 +607,90 @@
     <script src="assets/scripts/aws-auth.js"></script>
     <script src="assets/scripts/aws-auth-business.js"></script>
     <script src="assets/scripts/lazy_loading.js"></script>
+    
+    <!-- Toast Notification Functions - Load before login.js -->
+    <script>
+    // Function to show Toast notification
+    function showToast(message, type = 'success', title = null) {
+        const toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) return;
+        
+        const toastId = 'toast-' + Date.now();
+        
+        // Determine colors and icons based on type
+        let bgClass, icon, defaultTitle;
+        switch(type) {
+            case 'success':
+                bgClass = 'bg-success';
+                icon = 'fa-check-circle';
+                defaultTitle = 'Success';
+                break;
+            case 'error':
+            case 'danger':
+                bgClass = 'bg-danger';
+                icon = 'fa-exclamation-circle';
+                defaultTitle = 'Error';
+                break;
+            case 'warning':
+                bgClass = 'bg-warning';
+                icon = 'fa-exclamation-triangle';
+                defaultTitle = 'Warning';
+                break;
+            case 'info':
+                bgClass = 'bg-info';
+                icon = 'fa-info-circle';
+                defaultTitle = 'Info';
+                break;
+            default:
+                bgClass = 'bg-success';
+                icon = 'fa-check-circle';
+                defaultTitle = 'Success';
+        }
+        
+        const displayTitle = title || defaultTitle;
+        
+        const toastHTML = `
+            <div class="toast" id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+                <div class="toast-header ${bgClass} text-white">
+                    <i class="fas ${icon} me-2"></i>
+                    <strong class="me-auto">${displayTitle}</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+        
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+        const toastElement = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+        
+        // Remove from DOM after hiding
+        toastElement.addEventListener('hidden.bs.toast', function() {
+            toastElement.remove();
+        });
+    }
+    
+    // Alias functions for convenience
+    function showSuccessToast(message, title = 'Success') {
+        showToast(message, 'success', title);
+    }
+    
+    function showErrorToast(message, title = 'Error') {
+        showToast(message, 'error', title);
+    }
+    
+    function showWarningToast(message, title = 'Warning') {
+        showToast(message, 'warning', title);
+    }
+    
+    function showInfoToast(message, title = 'Info') {
+        showToast(message, 'info', title);
+    }
+    </script>
+    
     <script src="assets/scripts/login.js"></script>
   
     <script src="assets/scripts/badge-counter.js"></script>
@@ -889,86 +973,6 @@
       }
       if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bindForgotForms); else bindForgotForms();
     })();
-
-    // Function to show Toast notification
-    function showToast(message, type = 'success', title = null) {
-        const toastContainer = document.getElementById('toastContainer');
-        if (!toastContainer) return;
-        
-        const toastId = 'toast-' + Date.now();
-        
-        // Determine colors and icons based on type
-        let bgClass, icon, defaultTitle;
-        switch(type) {
-            case 'success':
-                bgClass = 'bg-success';
-                icon = 'fa-check-circle';
-                defaultTitle = 'Success';
-                break;
-            case 'error':
-            case 'danger':
-                bgClass = 'bg-danger';
-                icon = 'fa-exclamation-circle';
-                defaultTitle = 'Error';
-                break;
-            case 'warning':
-                bgClass = 'bg-warning';
-                icon = 'fa-exclamation-triangle';
-                defaultTitle = 'Warning';
-                break;
-            case 'info':
-                bgClass = 'bg-info';
-                icon = 'fa-info-circle';
-                defaultTitle = 'Info';
-                break;
-            default:
-                bgClass = 'bg-success';
-                icon = 'fa-check-circle';
-                defaultTitle = 'Success';
-        }
-        
-        const displayTitle = title || defaultTitle;
-        
-        const toastHTML = `
-            <div class="toast" id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
-                <div class="toast-header ${bgClass} text-white">
-                    <i class="fas ${icon} me-2"></i>
-                    <strong class="me-auto">${displayTitle}</strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                    ${message}
-                </div>
-            </div>
-        `;
-        
-        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
-        const toastElement = document.getElementById(toastId);
-        const toast = new bootstrap.Toast(toastElement);
-        toast.show();
-        
-        // Remove from DOM after hiding
-        toastElement.addEventListener('hidden.bs.toast', function() {
-            toastElement.remove();
-        });
-    }
-    
-    // Alias functions for convenience
-    function showSuccessToast(message, title = 'Success') {
-        showToast(message, 'success', title);
-    }
-    
-    function showErrorToast(message, title = 'Error') {
-        showToast(message, 'error', title);
-    }
-    
-    function showWarningToast(message, title = 'Warning') {
-        showToast(message, 'warning', title);
-    }
-    
-    function showInfoToast(message, title = 'Info') {
-        showToast(message, 'info', title);
-    }
     </script>
   
   
