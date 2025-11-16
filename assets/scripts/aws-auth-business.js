@@ -236,33 +236,59 @@
     }
 
     async verifyEmail(email, otp) {
-      const res = await fetch(VERIFY_EMAIL_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp, code: otp })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || data?.success === false) {
-        const message = data?.message || `Business verify email failed (HTTP ${res.status})`;
-        throw new Error(message);
+      try {
+        const res = await fetch(VERIFY_EMAIL_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp, code: otp })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data?.success === false) {
+          const message = data?.message || 'Verification failed. Please check your code and try again.';
+          const error = new Error(message);
+          error.status = res.status;
+          error.response = data;
+          // Don't expose URL in error - just throw with user-friendly message
+          throw error;
+        }
+        // allow server to return sessionId directly
+        if (data.sessionId) this._sessionId = data.sessionId;
+        return data;
+      } catch (error) {
+        // If it's already our custom error, re-throw it
+        if (error.message && error.status !== undefined) {
+          throw error;
+        }
+        // For network/fetch errors, throw a generic message without exposing URL
+        throw new Error('Verification failed. Please check your code and try again.');
       }
-      // allow server to return sessionId directly
-      if (data.sessionId) this._sessionId = data.sessionId;
-      return data;
     }
 
     async resendVerification(email) {
-      const res = await fetch(RESEND_VERIFICATION_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || data?.success === false) {
-        const message = data?.message || `Resend business verification failed (HTTP ${res.status})`;
-        throw new Error(message);
+      try {
+        const res = await fetch(RESEND_VERIFICATION_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data?.success === false) {
+          const message = data?.message || 'Failed to resend verification code. Please try again.';
+          const error = new Error(message);
+          error.status = res.status;
+          error.response = data;
+          // Don't expose URL in error - just throw with user-friendly message
+          throw error;
+        }
+        return data;
+      } catch (error) {
+        // If it's already our custom error, re-throw it
+        if (error.message && error.status !== undefined) {
+          throw error;
+        }
+        // For network/fetch errors, throw a generic message without exposing URL
+        throw new Error('Failed to resend verification code. Please try again.');
       }
-      return data;
     }
 
     async updateBusinessInfo(businessData) {

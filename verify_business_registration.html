@@ -501,11 +501,22 @@
                         window.location.href = 'login.html';
                     }, 2000);
                 } catch(err) {
-                    showErrorToast(err.message || 'Verification failed. Please try again.');
-                    msg.textContent = err.message || 'Verification failed. Please try again.';
+                    // Extract user-friendly message without exposing API details
+                    let errorMessage = 'Verification failed. Please check your code and try again.';
+                    if (err && err.message && !err.message.includes('http') && !err.message.includes('fetch') && !err.message.includes('network')) {
+                        errorMessage = err.message;
+                    }
+                    showErrorToast(errorMessage);
+                    msg.textContent = errorMessage;
                     msg.style.color = '#dc3545';
                     verifyBtn.disabled = false;
                     verifyBtn.textContent = 'Verify';
+                    // Suppress console errors that might expose API URLs
+                    if (console && console.error) {
+                        // Only log non-sensitive error details
+                        const safeError = { message: errorMessage };
+                        console.error('Verification error:', safeError);
+                    }
                 }
             }
     
@@ -530,10 +541,21 @@
                     msg.style.color = '#198754';
                     resendBtn.disabled = false;
                 } catch(err) {
-                    showErrorToast(err.message || 'Failed to resend code. Please try again.');
-                    msg.textContent = err.message || 'Failed to resend code. Please try again.';
+                    // Extract user-friendly message without exposing API details
+                    let errorMessage = 'Failed to resend code. Please try again.';
+                    if (err && err.message && !err.message.includes('http') && !err.message.includes('fetch') && !err.message.includes('network')) {
+                        errorMessage = err.message;
+                    }
+                    showErrorToast(errorMessage);
+                    msg.textContent = errorMessage;
                     msg.style.color = '#dc3545';
                     resendBtn.disabled = false;
+                    // Suppress console errors that might expose API URLs
+                    if (console && console.error) {
+                        // Only log non-sensitive error details
+                        const safeError = { message: errorMessage };
+                        console.error('Resend verification error:', safeError);
+                    }
                 }
             }
 
@@ -627,6 +649,38 @@
                     verify();
                 }
             });
+            
+            // Suppress console errors that expose API URLs
+            const originalConsoleError = console.error;
+            console.error = function(...args) {
+                // Filter out any messages that contain API URLs or sensitive endpoints
+                const filteredArgs = args.filter(function(arg) {
+                    if (typeof arg === 'string') {
+                        // Don't log if it contains API URLs or endpoints
+                        if (arg.includes('acc.comparehubprices.site') || 
+                            arg.includes('/business/business/') ||
+                            arg.includes('/verify-email') ||
+                            arg.includes('Failed to load resource')) {
+                            return false;
+                        }
+                    }
+                    if (typeof arg === 'object' && arg !== null) {
+                        // Check if object contains URL strings
+                        const str = JSON.stringify(arg);
+                        if (str.includes('acc.comparehubprices.site') || 
+                            str.includes('/business/business/') ||
+                            str.includes('/verify-email')) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+                
+                // Only log if there are non-filtered arguments
+                if (filteredArgs.length > 0) {
+                    originalConsoleError.apply(console, filteredArgs);
+                }
+            };
         })();
         </script>
     
