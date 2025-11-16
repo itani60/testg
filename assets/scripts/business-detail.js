@@ -46,18 +46,18 @@ class BusinessDetailManager {
             });
             
             const data = await response.json();
-            
+        
             if (!response.ok || !data.success || !data.business) {
-                this.showError('Business not found');
-                return;
-            }
+            this.showError('Business not found');
+            return;
+        }
             
             // Transform API response to match expected format
             const business = this.transformBusinessData(data.business);
-            
-            this.currentBusiness = business;
-            this.renderBusinessPage();
-            this.updatePageMetaTags();
+        
+        this.currentBusiness = business;
+        this.renderBusinessPage();
+        this.updatePageMetaTags();
         } catch (error) {
             console.error('Error loading business data:', error);
             this.showError('Failed to load business data. Please try again later.');
@@ -75,7 +75,8 @@ class BusinessDetailManager {
                 if (Array.isArray(images)) {
                     serviceGalleries[serviceName] = images.map(img => ({
                         image: typeof img === 'string' ? img : (img.image || img.url || ''),
-                        title: typeof img === 'object' ? (img.title || img.name || '') : ''
+                        title: typeof img === 'object' ? (img.title || img.name || '') : '',
+                        price: typeof img === 'object' && img.price !== undefined ? img.price : undefined
                     }));
                 }
             });
@@ -267,12 +268,17 @@ class BusinessDetailManager {
                     <div class="service-card">
                         <h4>${serviceName}</h4>
                         <div class="service-gallery">
-                            ${gallery.slice(0, 4).map((item, index) => `
+                            ${gallery.slice(0, 4).map((item, index) => {
+                                const price = item.price !== undefined && item.price !== null ? item.price : null;
+                                const priceDisplay = price ? `<div class="gallery-item-price">R${parseFloat(price).toFixed(2)}</div>` : '';
+                                return `
                                 <div class="gallery-item" onclick="openGalleryModal('${serviceName}', ${index})">
                                     <img src="${item.image}" alt="${item.title || ''}" loading="lazy">
+                                    ${priceDisplay}
                                     ${item.title ? `<p>${item.title}</p>` : ''}
                                 </div>
-                            `).join('')}
+                            `;
+                            }).join('')}
                             ${gallery.length > 4 ? `
                                 <div class="gallery-more" onclick="openGalleryModal('${serviceName}', 0)">
                                     <span>+${gallery.length - 4} more</span>

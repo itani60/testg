@@ -290,9 +290,14 @@ class BusinessPreviewManager {
                                                 </div>
                                             `;
                                         } else {
+                                            // Get price if available
+                                            const price = typeof img === 'object' && img.price !== undefined && img.price !== null ? img.price : null;
+                                            const priceDisplay = price ? `<div class="gallery-item-price">R${parseFloat(price).toFixed(2)}</div>` : '';
+                                            
                                             return `
                                                 <div class="gallery-item">
                                                     <img src="${imageUrl}" alt="${escapedName}" loading="lazy" onclick="openImageModal('${escapedUrl}', '${escapedName}')" style="cursor: pointer;">
+                                                    ${priceDisplay}
                                                 </div>
                                             `;
                                         }
