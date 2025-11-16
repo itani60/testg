@@ -810,6 +810,13 @@
                                 <textarea class="form-control" id="businessDescription" rows="4" required placeholder="Tell customers about your business, what makes you unique, your experience, and what you offer..."></textarea>
                                 <div class="form-text">This description will appear on your business profile page.</div>
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">Our Services</label>
+                                <textarea class="form-control" id="ourServices" rows="5" placeholder="List the services you offer (one per line):&#10;&#10;Example:&#10;• Custom Birthday Cards&#10;• Personalized Photo Frames&#10;• Wedding Invitations&#10;• Corporate Branding"></textarea>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle"></i> List your services here (one per line). You can use bullet points (•) or dashes (-). This will be displayed on your business profile.
+                                </div>
+                            </div>
                         </div>
                         
                         <hr class="my-4">
@@ -849,6 +856,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-1" accept="image/*" required>
                                                 <div class="form-text small">Image 1 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-1" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -859,6 +867,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-2" accept="image/*" required>
                                                 <div class="form-text small">Image 2 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-2" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -871,6 +880,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-3" accept="image/*" required>
                                                 <div class="form-text small">Image 3 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-3" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -881,6 +891,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-4" accept="image/*" required>
                                                 <div class="form-text small">Image 4 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-4" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -893,6 +904,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-5" accept="image/*">
                                                 <div class="form-text small">Image 5 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-5" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -903,6 +915,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-6" accept="image/*">
                                                 <div class="form-text small">Image 6 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-6" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -943,6 +956,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-1" accept="image/*" required>
                                                 <div class="form-text small">Image 1 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-1" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -953,6 +967,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-2" accept="image/*" required>
                                                 <div class="form-text small">Image 2 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-2" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -965,6 +980,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-3" accept="image/*" required>
                                                 <div class="form-text small">Image 3 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-3" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -975,6 +991,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-4" accept="image/*" required>
                                                 <div class="form-text small">Image 4 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-4" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -987,6 +1004,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-5" accept="image/*">
                                                 <div class="form-text small">Image 5 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-5" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -997,6 +1015,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-6" accept="image/*">
                                                 <div class="form-text small">Image 6 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-6" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1037,6 +1056,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-1" accept="image/*" required>
                                                 <div class="form-text small">Image 1 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-1" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1047,6 +1067,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-2" accept="image/*" required>
                                                 <div class="form-text small">Image 2 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-2" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1059,6 +1080,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-3" accept="image/*" required>
                                                 <div class="form-text small">Image 3 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-3" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1069,6 +1091,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-4" accept="image/*" required>
                                                 <div class="form-text small">Image 4 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-4" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1081,6 +1104,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-5" accept="image/*">
                                                 <div class="form-text small">Image 5 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-5" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1091,6 +1115,7 @@
                                             <div class="image-upload-container">
                                                 <input type="file" class="form-control product-image-6" accept="image/*">
                                                 <div class="form-text small">Image 6 (JPG, PNG, GIF - Max 5MB)</div>
+                                                <input type="number" class="form-control mt-2 product-price-6" placeholder="Price (optional)" step="0.01" min="0">
                                                 <div class="image-preview-container" style="display: none;">
                                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1324,6 +1349,40 @@
                     businessDescriptionField.value = data.businessDescription;
                 }
                 
+                // Load "Our Services" if available (extract from businessDescription or fullContent)
+                const ourServicesField = document.getElementById('ourServices');
+                if (ourServicesField) {
+                    // Try to extract "Our Services" section from fullContent or businessDescription
+                    const fullContent = data.fullContent || data.businessDescription || '';
+                    if (fullContent) {
+                        // Look for "Our Services" section in HTML
+                        const servicesMatch = fullContent.match(/<h3[^>]*>Our Services<\/h3>[\s\S]*?(?=<h3|$)/i) ||
+                                               fullContent.match(/<h2[^>]*>Our Services<\/h2>[\s\S]*?(?=<h2|<h3|$)/i);
+                        if (servicesMatch) {
+                            // Extract text content from HTML
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = servicesMatch[0];
+                            const servicesText = tempDiv.textContent || tempDiv.innerText || '';
+                            // Remove "Our Services" header and clean up
+                            const cleaned = servicesText.replace(/Our Services/gi, '').trim();
+                            if (cleaned) {
+                                // Convert list items back to lines
+                                const lines = cleaned.split(/\n/)
+                                    .map(line => line.trim())
+                                    .filter(line => line.length > 0)
+                                    .map(line => {
+                                        // Ensure bullet point format
+                                        if (!line.match(/^[•\-\*]/)) {
+                                            return `• ${line}`;
+                                        }
+                                        return line.replace(/^[•\-\*]\s*/, '• ');
+                                    });
+                                ourServicesField.value = lines.join('\n');
+                            }
+                        }
+                    }
+                }
+                
                 // Load existing products/services into form
                 if (data.services && data.services.length > 0) {
                     const productItems = document.querySelectorAll('.product-item');
@@ -1516,6 +1575,7 @@
                             <div class="image-upload-container">
                                 <input type="file" class="form-control product-image-1" accept="image/*" required>
                                 <div class="form-text small">Image 1 (JPG, PNG, GIF - Max 5MB)</div>
+                                <input type="number" class="form-control mt-2 product-price-1" placeholder="Price (optional)" step="0.01" min="0">
                                 <div class="image-preview-container" style="display: none;">
                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1526,6 +1586,7 @@
                             <div class="image-upload-container">
                                 <input type="file" class="form-control product-image-2" accept="image/*" required>
                                 <div class="form-text small">Image 2 (JPG, PNG, GIF - Max 5MB)</div>
+                                <input type="number" class="form-control mt-2 product-price-2" placeholder="Price (optional)" step="0.01" min="0">
                                 <div class="image-preview-container" style="display: none;">
                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1538,6 +1599,7 @@
                             <div class="image-upload-container">
                                 <input type="file" class="form-control product-image-3" accept="image/*" required>
                                 <div class="form-text small">Image 3 (JPG, PNG, GIF - Max 5MB)</div>
+                                <input type="number" class="form-control mt-2 product-price-3" placeholder="Price (optional)" step="0.01" min="0">
                                 <div class="image-preview-container" style="display: none;">
                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1548,6 +1610,7 @@
                             <div class="image-upload-container">
                                 <input type="file" class="form-control product-image-4" accept="image/*" required>
                                 <div class="form-text small">Image 4 (JPG, PNG, GIF - Max 5MB)</div>
+                                <input type="number" class="form-control mt-2 product-price-4" placeholder="Price (optional)" step="0.01" min="0">
                                 <div class="image-preview-container" style="display: none;">
                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1560,6 +1623,7 @@
                             <div class="image-upload-container">
                                 <input type="file" class="form-control product-image-5" accept="image/*">
                                 <div class="form-text small">Image 5 (JPG, PNG, GIF - Max 5MB)</div>
+                                <input type="number" class="form-control mt-2 product-price-5" placeholder="Price (optional)" step="0.01" min="0">
                                 <div class="image-preview-container" style="display: none;">
                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1570,6 +1634,7 @@
                             <div class="image-upload-container">
                                 <input type="file" class="form-control product-image-6" accept="image/*">
                                 <div class="form-text small">Image 6 (JPG, PNG, GIF - Max 5MB)</div>
+                                <input type="number" class="form-control mt-2 product-price-6" placeholder="Price (optional)" step="0.01" min="0">
                                 <div class="image-preview-container" style="display: none;">
                                     <img class="image-preview" style="max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;">
                                     <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-btn">Remove</button>
@@ -1630,6 +1695,35 @@
                     return;
                 }
                 
+                // Get "Our Services" list
+                const ourServicesText = document.getElementById('ourServices')?.value.trim() || '';
+                
+                // Combine business description with "Our Services" section
+                let finalDescription = businessDescription;
+                if (ourServicesText) {
+                    // Format the services list
+                    const servicesLines = ourServicesText.split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line.length > 0)
+                        .map(line => {
+                            // If line doesn't start with bullet or dash, add one
+                            if (!line.match(/^[•\-\*]/)) {
+                                return `• ${line}`;
+                            }
+                            return line;
+                        });
+                    
+                    if (servicesLines.length > 0) {
+                        finalDescription += '\n\n<h3>Our Services</h3>\n<ul>\n';
+                        servicesLines.forEach(service => {
+                            // Convert bullet points to list items
+                            const cleanService = service.replace(/^[•\-\*]\s*/, '');
+                            finalDescription += `<li>${cleanService}</li>\n`;
+                        });
+                        finalDescription += '</ul>';
+                    }
+                }
+                
                 // Collect product data
                 for (const item of productItems) {
                     const name = item.querySelector('.product-name')?.value.trim();
@@ -1637,7 +1731,7 @@
                     
                     if (!name) continue;
 
-                    // Get image files
+                    // Get image files and prices
                     const imageInputs = [
                         item.querySelector('.product-image-1'),
                         item.querySelector('.product-image-2'),
@@ -1646,11 +1740,26 @@
                         item.querySelector('.product-image-5'),
                         item.querySelector('.product-image-6')
                     ];
+                    
+                    const priceInputs = [
+                        item.querySelector('.product-price-1'),
+                        item.querySelector('.product-price-2'),
+                        item.querySelector('.product-price-3'),
+                        item.querySelector('.product-price-4'),
+                        item.querySelector('.product-price-5'),
+                        item.querySelector('.product-price-6')
+                    ];
 
                     const images = [];
-                    for (const input of imageInputs) {
+                    const imagePrices = [];
+                    for (let i = 0; i < imageInputs.length; i++) {
+                        const input = imageInputs[i];
+                        const priceInput = priceInputs[i];
                         if (input?.files?.[0]) {
                             images.push(input.files[0]);
+                            // Get price if provided (optional)
+                            const price = priceInput?.value?.trim();
+                            imagePrices.push(price ? parseFloat(price) : null);
                         }
                     }
 
@@ -1659,12 +1768,15 @@
                         
                         // Convert images to base64
                         const base64Images = [];
-                        for (const imageFile of images) {
+                        for (let i = 0; i < images.length; i++) {
+                            const imageFile = images[i];
+                            const price = imagePrices[i];
                             try {
                                 const base64 = await fileToBase64(imageFile);
                                 base64Images.push({
                                     base64: base64,
-                                    contentType: imageFile.type || 'image/jpeg'
+                                    contentType: imageFile.type || 'image/jpeg',
+                                    price: price !== null && !isNaN(price) ? price : undefined
                                 });
                             } catch (error) {
                                 console.error('Error converting image to base64:', error);
@@ -1700,7 +1812,7 @@
                     throw new Error('Business authentication service not available');
                 }
 
-                const data = await window.businessAWSAuthService.manageServices(businessDescription, products);
+                const data = await window.businessAWSAuthService.manageServices(finalDescription, products);
 
                 // Success
                 const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadProductModal'));
@@ -1708,20 +1820,57 @@
 
                 alert(`Successfully added ${data.servicesAdded || products.length} service(s)!`);
                 
-                // Reset form but preserve business description
+                // Reset form but preserve business description and our services
                 const businessDescriptionValue = document.getElementById('businessDescription')?.value || '';
+                const ourServicesValue = document.getElementById('ourServices')?.value || '';
                 document.getElementById('uploadProductForm').reset();
                 
                 // Restore business description after reset
                 const businessDescriptionField = document.getElementById('businessDescription');
                 if (businessDescriptionField && businessDescriptionValue) {
                     businessDescriptionField.value = businessDescriptionValue;
-                } else {
-                    // If no value was saved, try to load from server
+                }
+                
+                // Restore our services after reset
+                const ourServicesField = document.getElementById('ourServices');
+                if (ourServicesField && ourServicesValue) {
+                    ourServicesField.value = ourServicesValue;
+                }
+                
+                // If no values were saved, try to load from server
+                if (!businessDescriptionValue || !ourServicesValue) {
                     try {
                         const servicesData = await window.businessAWSAuthService.getServices();
-                        if (servicesData.businessDescription && businessDescriptionField) {
+                        if (servicesData.businessDescription && businessDescriptionField && !businessDescriptionValue) {
                             businessDescriptionField.value = servicesData.businessDescription;
+                        }
+                        
+                        // Extract and restore "Our Services" from fullContent
+                        if (ourServicesField && !ourServicesValue) {
+                            const fullContent = servicesData.fullContent || servicesData.businessDescription || '';
+                            if (fullContent) {
+                                const servicesMatch = fullContent.match(/<h3[^>]*>Our Services<\/h3>[\s\S]*?(?=<h3|$)/i) ||
+                                                   fullContent.match(/<h2[^>]*>Our Services<\/h2>[\s\S]*?(?=<h2|<h3|$)/i);
+                                if (servicesMatch) {
+                                    const tempDiv = document.createElement('div');
+                                    tempDiv.innerHTML = servicesMatch[0];
+                                    const servicesText = tempDiv.textContent || tempDiv.innerText || '';
+                                    const cleaned = servicesText.replace(/Our Services/gi, '').trim();
+                                    if (cleaned) {
+                                        // Convert list items back to lines
+                                        const lines = cleaned.split(/\n/)
+                                            .map(line => line.trim())
+                                            .filter(line => line.length > 0)
+                                            .map(line => {
+                                                if (!line.match(/^[•\-\*]/)) {
+                                                    return `• ${line}`;
+                                                }
+                                                return line.replace(/^[•\-\*]\s*/, '• ');
+                                            });
+                                        ourServicesField.value = lines.join('\n');
+                                    }
+                                }
+                            }
                         }
                     } catch (error) {
                         console.debug('Error reloading business description:', error);
