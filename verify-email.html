@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>     </title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompareHubPrices - FAQs</title>
 
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com https://fonts.googleapis.com https://www.gstatic.com; img-src 'self' data: https://www.gstatic.com https://images.comparehubprices.site; font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://acc.comparehubprices.site https://accb.comparehubprices.site https://accounts.google.com https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com;">
     
@@ -23,11 +23,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="assets/css/styles.css">
-    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/verify-email.css">
     <link rel="stylesheet" href="assets/css/test.css">
     <link rel="stylesheet" href="assets/css/footer.css">
     <link rel="stylesheet" href="assets/css/badge.css">
-    <link rel="stylesheet" href="assets/css/verify-email.css">
+
     
 
    
@@ -332,7 +332,6 @@
                 max-width: 150px;
             }
         }
-
     </style>
     
     
@@ -358,19 +357,18 @@
 
 
 
+  
+
  
 
 
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>
-
-    <!-- Toast Container for Notifications -->
-    <div class="toast-container position-fixed" style="top: 80px; right: 20px; z-index: 9999;" id="toastContainer"></div>
  
     <main class="main">
         <div class="ve-shell">
             <div class="ve-wrap">
-                <h2 class="ve-title">Verify your business email</h2>
+                <h2 class="ve-title">Verify your email</h2>
                 <div id="veEmailLine" class="ve-note"></div>
                 <div class="ve-input">
                     <label for="veCode" class="form-label">Enter 6-digit code</label>
@@ -386,6 +384,7 @@
         </div>
     </main>
 
+  
 
     <footer class="footer">
         <div class="footer-content">
@@ -435,13 +434,12 @@
 
     <script src="assets/scripts/device-detection.js"></script>
     <script src="assets/scripts/script.js"></script>
-   
+  
     <script src="assets/scripts/lazy_loading.js"></script>
-   
+  
     <script src="assets/scripts/notifications.js"></script>
-    <script src="assets/scripts/aws-auth-business.js"></script>
-    <script src="assets/scripts/chatbox.js"></script>
-    
+    <script src="assets/scripts/aws-auth.js"></script>
+ 
 
    
  
@@ -460,175 +458,39 @@
             var codeEl = document.getElementById('veCode');
             var msg = document.getElementById('veMsg');
     
-            async function verify() {
-                var code = codeEl.value.trim();
+            function verify() {
+                var code = codeEl.value;
                 if (!code) {
-                    showWarningToast('Please enter a 6-digit code.');
                     msg.textContent = 'Please enter a 6-digit code.';
                     msg.style.display = 'block';
-                    msg.style.color = '#dc3545';
                     return;
                 }
-                if (code.length !== 6) {
-                    showWarningToast('Please enter a valid 6-digit code.');
-                    msg.textContent = 'Please enter a valid 6-digit code.';
-                    msg.style.display = 'block';
-                    msg.style.color = '#dc3545';
-                    return;
-                }
-                
-                if (!window.businessAWSAuthService) {
-                    showErrorToast('Business authentication service not available. Please refresh the page.');
-                    msg.textContent = 'Business authentication service not available. Please refresh the page.';
-                    msg.style.display = 'block';
-                    msg.style.color = '#dc3545';
-                    return;
-                }
-    
-                verifyBtn.disabled = true;
-                verifyBtn.textContent = 'Verifying...';
+                // Simulate verification process
                 msg.textContent = 'Verifying...';
                 msg.style.display = 'block';
-                msg.style.color = '#666';
-    
-                try {
-                    await window.businessAWSAuthService.verifyEmail(email, code);
-                    showSuccessToast('Verification successful! Redirecting...');
+                setTimeout(function() {
                     msg.textContent = 'Verification successful! Redirecting...';
-                    msg.style.color = '#198754';
+                    msg.style.color = 'green';
                     setTimeout(function() {
-                        window.location.href = 'login.html';
+                        window.location.href = 'login.html'; // Redirect to login page
                     }, 2000);
-                } catch(err) {
-                    showErrorToast(err.message || 'Verification failed. Please try again.');
-                    msg.textContent = err.message || 'Verification failed. Please try again.';
-                    msg.style.color = '#dc3545';
-                    verifyBtn.disabled = false;
-                    verifyBtn.textContent = 'Verify';
-                }
+                }, 1000);
             }
     
-            async function resend() {
-                if (!window.businessAWSAuthService) {
-                    showErrorToast('Business authentication service not available. Please refresh the page.');
-                    msg.textContent = 'Business authentication service not available. Please refresh the page.';
-                    msg.style.display = 'block';
-                    msg.style.color = '#dc3545';
-                    return;
-                }
-    
-                resendBtn.disabled = true;
+            function resend() {
                 msg.textContent = 'Resending...';
                 msg.style.display = 'block';
-                msg.style.color = '#666';
-    
-                try {
-                    await window.businessAWSAuthService.resendVerification(email);
-                    showSuccessToast('Code resent. Please check your email.');
+                setTimeout(function() {
                     msg.textContent = 'Code resent. Please check your email.';
-                    msg.style.color = '#198754';
-                    resendBtn.disabled = false;
-                } catch(err) {
-                    showErrorToast(err.message || 'Failed to resend code. Please try again.');
-                    msg.textContent = err.message || 'Failed to resend code. Please try again.';
-                    msg.style.color = '#dc3545';
-                    resendBtn.disabled = false;
-                }
-            }
-
-            // Function to show Toast notification
-            function showToast(message, type = 'success', title = null) {
-                const toastContainer = document.getElementById('toastContainer');
-                if (!toastContainer) return;
-                
-                const toastId = 'toast-' + Date.now();
-                
-                // Determine colors and icons based on type
-                let bgClass, icon, defaultTitle;
-                switch(type) {
-                    case 'success':
-                        bgClass = 'bg-success';
-                        icon = 'fa-check-circle';
-                        defaultTitle = 'Success';
-                        break;
-                    case 'error':
-                    case 'danger':
-                        bgClass = 'bg-danger';
-                        icon = 'fa-exclamation-circle';
-                        defaultTitle = 'Error';
-                        break;
-                    case 'warning':
-                        bgClass = 'bg-warning';
-                        icon = 'fa-exclamation-triangle';
-                        defaultTitle = 'Warning';
-                        break;
-                    case 'info':
-                        bgClass = 'bg-info';
-                        icon = 'fa-info-circle';
-                        defaultTitle = 'Info';
-                        break;
-                    default:
-                        bgClass = 'bg-success';
-                        icon = 'fa-check-circle';
-                        defaultTitle = 'Success';
-                }
-                
-                const displayTitle = title || defaultTitle;
-                
-                const toastHTML = `
-                    <div class="toast" id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
-                        <div class="toast-header ${bgClass} text-white">
-                            <i class="fas ${icon} me-2"></i>
-                            <strong class="me-auto">${displayTitle}</strong>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
-                        <div class="toast-body">
-                            ${message}
-                        </div>
-                    </div>
-                `;
-                
-                toastContainer.insertAdjacentHTML('beforeend', toastHTML);
-                const toastElement = document.getElementById(toastId);
-                const toast = new bootstrap.Toast(toastElement);
-                toast.show();
-                
-                // Remove from DOM after hiding
-                toastElement.addEventListener('hidden.bs.toast', function() {
-                    toastElement.remove();
-                });
-            }
-            
-            // Alias functions for convenience
-            function showSuccessToast(message, title = 'Success') {
-                showToast(message, 'success', title);
-            }
-            
-            function showErrorToast(message, title = 'Error') {
-                showToast(message, 'error', title);
-            }
-            
-            function showWarningToast(message, title = 'Warning') {
-                showToast(message, 'warning', title);
-            }
-            
-            function showInfoToast(message, title = 'Info') {
-                showToast(message, 'info', title);
+                    msg.style.color = 'blue';
+                    msg.style.display = 'block';
+                }, 1000);
             }
     
             verifyBtn && verifyBtn.addEventListener('click', function(e){ e.preventDefault(); verify(); });
             resendBtn && resendBtn.addEventListener('click', function(e){ e.preventDefault(); resend(); });
-            
-            // Allow Enter key to submit
-            codeEl && codeEl.addEventListener('keypress', function(e){
-                if(e.key === 'Enter') {
-                    e.preventDefault();
-                    verify();
-                }
-            });
         })();
         </script>
-    
     
  
 

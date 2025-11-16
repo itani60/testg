@@ -1,0 +1,23 @@
+.main { padding-top: 11rem; }
+.ve-shell { max-width: 900px; margin: 0 auto; background:#fff; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.08); overflow:hidden; }
+.ve-wrap { padding: 2rem; }
+.ve-title { margin-bottom: .25rem; }
+.ve-note { color:#6c757d; margin-bottom: 1rem; }
+.ve-input { max-width: 420px; margin-bottom: 1rem; }
+.ve-actions { display:flex; align-items:center; gap:12px; margin-bottom: 1rem; }
+.ve-inline-msg { color:#6c757d; font-size:.95rem; }
+.ve-back { color:#6c757d; text-decoration:none; }
+.ve-back:hover { text-decoration: underline; }
+
+.ve-toast { display:none; position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #198754; color: #fff; padding: 12px 16px; border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.15); align-items:center; gap:8px; z-index: 9999; }
+.ve-toast .ve-spin { width:14px; height:14px; border:2px solid rgba(255,255,255,.5); border-top-color:#fff; border-radius:50%; animation: ve-spin .8s linear infinite; }
+@keyframes ve-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 576px) {
+  .main { padding-top: 8rem; }
+}
+
+@media (min-width: 577px) and (max-width: 991.98px) {
+  .main { padding-top: 8.9rem; }
+}
+
