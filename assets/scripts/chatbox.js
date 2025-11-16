@@ -100,6 +100,8 @@ class Chatbox {
                 .chatbox-toggle {
                     width: 60px;
                     height: 60px;
+                    min-width: 56px; /* Minimum touch target size */
+                    min-height: 56px;
                     background: linear-gradient(45deg, #007bff, #0056b3 );
                     border-radius: 50%;
                     display: flex;
@@ -109,11 +111,17 @@ class Chatbox {
                     box-shadow: 0 4px 20px rgba(234, 49, 12, 0.3);
                     transition: all 0.3s ease;
                     position: relative;
+                    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+                    touch-action: manipulation; /* Improve touch responsiveness */
                 }
 
                 .chatbox-toggle:hover {
                     transform: scale(1.1);
                     box-shadow: 0 6px 25px rgba(201, 43, 32, 0.4);
+                }
+
+                .chatbox-toggle:active {
+                    transform: scale(0.95); /* Better mobile feedback */
                 }
 
                 .chatbox-toggle i {
@@ -144,6 +152,7 @@ class Chatbox {
                     right: 0;
                     width: 350px;
                     height: 500px;
+                    max-height: calc(100vh - 100px); /* Prevent overflow on small screens */
                     background: white;
                     border-radius: 16px;
                     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
@@ -151,6 +160,7 @@ class Chatbox {
                     flex-direction: column;
                     overflow: hidden;
                     border: 1px solid rgba(32, 201, 151, 0.1);
+                    touch-action: pan-y; /* Allow vertical scrolling */
                 }
 
                 .chatbox-window.open {
@@ -242,6 +252,8 @@ class Chatbox {
                     flex-direction: column;
                     gap: 15px;
                     background: #f8f9fa;
+                    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+                    overscroll-behavior: contain; /* Prevent scroll chaining */
                 }
 
                 .chatbox-message {
@@ -294,6 +306,9 @@ class Chatbox {
                     font-size: 14px;
                     outline: none;
                     transition: border-color 0.3s ease;
+                    -webkit-appearance: none; /* Remove iOS styling */
+                    appearance: none;
+                    min-width: 0; /* Prevent flex item from overflowing */
                 }
 
                 .chatbox-input:focus {
@@ -303,6 +318,8 @@ class Chatbox {
                 .chatbox-send-btn {
                     width: 45px;
                     height: 45px;
+                    min-width: 44px; /* Minimum touch target */
+                    min-height: 44px;
                     background: linear-gradient(45deg, #007bff , #0056b3 100%);
                     border: none;
                     border-radius: 50%;
@@ -312,11 +329,18 @@ class Chatbox {
                     align-items: center;
                     justify-content: center;
                     transition: all 0.3s ease;
+                    -webkit-tap-highlight-color: transparent;
+                    touch-action: manipulation;
+                    flex-shrink: 0; /* Prevent button from shrinking */
                 }
 
                 .chatbox-send-btn:hover {
                     transform: scale(1.05);
                     box-shadow: 0 4px 15px rgba(32, 201, 151, 0.3);
+                }
+
+                .chatbox-send-btn:active {
+                    transform: scale(0.95);
                 }
 
                 .chatbox-send-btn i {
@@ -332,6 +356,7 @@ class Chatbox {
 
                 .quick-action-btn {
                     padding: 8px 12px;
+                    min-height: 40px; /* Better touch target */
                     background: #f8f9fa;
                     border: 1px solid #e9ecef;
                     border-radius: 20px;
@@ -342,6 +367,9 @@ class Chatbox {
                     gap: 6px;
                     transition: all 0.3s ease;
                     color: #6c757d;
+                    -webkit-tap-highlight-color: transparent;
+                    touch-action: manipulation;
+                    user-select: none; /* Prevent text selection on tap */
                 }
 
                 .quick-action-btn:hover {
@@ -351,33 +379,181 @@ class Chatbox {
                     transform: translateY(-2px);
                 }
 
+                .quick-action-btn:active {
+                    transform: translateY(0);
+                    opacity: 0.8;
+                }
+
                 .quick-action-btn i {
                     font-size: 12px;
                 }
 
-                /* Responsive Design */
-                @media (max-width: 480px) {
+                /* Responsive Design - Mobile First */
+                @media (max-width: 768px) {
                     .chatbox-container {
                         bottom: 15px;
                         right: 15px;
                     }
 
                     .chatbox-window {
-                        width: calc(100vw - 30px);
-                        height: calc(100vh - 100px);
-                        bottom: 85px;
-                        right: 0;
-                        left: 0;
-                        margin: 0 auto;
+                        width: calc(100vw - 20px);
+                        max-width: 100vw;
+                        height: calc(100vh - 20px);
+                        max-height: calc(100vh - 20px);
+                        bottom: 80px;
+                        right: 10px;
+                        left: 10px;
+                        margin: 0;
+                        border-radius: 12px;
                     }
 
                     .chatbox-toggle {
-                        width: 55px;
-                        height: 55px;
+                        width: 56px;
+                        height: 56px;
+                        bottom: 15px;
+                        right: 15px;
                     }
 
                     .chatbox-toggle i {
                         font-size: 22px;
+                    }
+
+                    .chatbox-header {
+                        padding: 12px 16px;
+                    }
+
+                    .chatbox-header-text h4 {
+                        font-size: 15px;
+                    }
+
+                    .chatbox-messages {
+                        padding: 15px;
+                        gap: 12px;
+                    }
+
+                    .chatbox-message {
+                        max-width: 85%;
+                        padding: 10px 14px;
+                        font-size: 14px;
+                    }
+
+                    .chatbox-input-container {
+                        padding: 12px 16px;
+                    }
+
+                    .chatbox-input {
+                        padding: 10px 14px;
+                        font-size: 16px; /* Prevents zoom on iOS */
+                    }
+
+                    .chatbox-send-btn {
+                        width: 44px;
+                        height: 44px;
+                        min-width: 44px; /* Ensure touch target size */
+                        min-height: 44px;
+                    }
+
+                    .quick-action-btn {
+                        padding: 10px 14px;
+                        font-size: 13px;
+                        min-height: 44px; /* Better touch target */
+                    }
+
+                    .chatbox-control-btn {
+                        width: 36px;
+                        height: 36px;
+                        min-width: 36px;
+                        min-height: 36px;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .chatbox-container {
+                        bottom: 10px;
+                        right: 10px;
+                    }
+
+                    .chatbox-window {
+                        width: 100vw;
+                        height: 100vh;
+                        max-height: 100vh;
+                        bottom: 0;
+                        right: 0;
+                        left: 0;
+                        top: 0;
+                        border-radius: 0;
+                        position: fixed;
+                    }
+
+                    .chatbox-toggle {
+                        width: 56px;
+                        height: 56px;
+                        bottom: 10px;
+                        right: 10px;
+                    }
+
+                    .chatbox-header {
+                        padding: 14px 16px;
+                        border-radius: 0;
+                    }
+
+                    .chatbox-messages {
+                        padding: 12px;
+                        gap: 10px;
+                    }
+
+                    .chatbox-message {
+                        max-width: 90%;
+                        padding: 12px 16px;
+                        font-size: 15px;
+                    }
+
+                    .chatbox-input-container {
+                        padding: 10px 12px;
+                        border-radius: 0;
+                    }
+
+                    .chatbox-input-wrapper {
+                        margin-bottom: 8px;
+                    }
+
+                    .chatbox-quick-actions {
+                        gap: 6px;
+                    }
+
+                    .quick-action-btn {
+                        padding: 8px 12px;
+                        font-size: 12px;
+                        flex: 1;
+                        min-width: 0;
+                        justify-content: center;
+                    }
+                }
+
+                /* Prevent layout shift when mobile keyboard appears */
+                @media (max-width: 768px) {
+                    .chatbox-window.open {
+                        position: fixed;
+                    }
+
+                    /* Adjust for mobile browser UI */
+                    @supports (-webkit-touch-callout: none) {
+                        .chatbox-window {
+                            height: -webkit-fill-available;
+                            max-height: -webkit-fill-available;
+                        }
+                    }
+                }
+
+                /* Landscape mobile optimization */
+                @media (max-width: 768px) and (orientation: landscape) {
+                    .chatbox-window {
+                        height: calc(100vh - 20px);
+                        max-height: calc(100vh - 20px);
+                    }
+
+                    .chatbox-messages {
+                        padding: 10px;
                     }
                 }
 
@@ -443,11 +619,33 @@ class Chatbox {
         });
 
         // Send message on Enter key
-        document.getElementById('chatbox-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
+        const input = document.getElementById('chatbox-input');
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
                 this.sendMessage();
             }
         });
+
+        // Handle mobile keyboard events
+        if (window.innerWidth <= 768) {
+            // Adjust chatbox when keyboard appears/disappears
+            let viewportHeight = window.innerHeight;
+            
+            window.addEventListener('resize', () => {
+                const currentHeight = window.innerHeight;
+                if (currentHeight < viewportHeight * 0.75) {
+                    // Keyboard likely appeared
+                    const messagesContainer = document.getElementById('chatbox-messages');
+                    if (messagesContainer && this.isOpen) {
+                        setTimeout(() => {
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }, 100);
+                    }
+                }
+                viewportHeight = currentHeight;
+            });
+        }
 
         // Quick action buttons
         document.querySelectorAll('.quick-action-btn').forEach(btn => {
@@ -476,11 +674,27 @@ class Chatbox {
         this.isOpen = true;
         
         // Hide badge when opened
-        document.querySelector('.chatbox-badge').style.display = 'none';
+        const badge = document.querySelector('.chatbox-badge');
+        if (badge) {
+            badge.style.display = 'none';
+        }
         
-        // Focus input
+        // Prevent body scroll on mobile when chatbox is open
+        if (window.innerWidth <= 768) {
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Focus input with delay to ensure smooth animation
         setTimeout(() => {
-            document.getElementById('chatbox-input').focus();
+            const input = document.getElementById('chatbox-input');
+            if (input) {
+                input.focus();
+                // Scroll to bottom of messages
+                const messagesContainer = document.getElementById('chatbox-messages');
+                if (messagesContainer) {
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            }
         }, 300);
     }
 
@@ -491,6 +705,17 @@ class Chatbox {
         window.classList.remove('open');
         toggle.style.display = 'flex';
         this.isOpen = false;
+        
+        // Restore body scroll on mobile
+        if (window.innerWidth <= 768) {
+            document.body.style.overflow = '';
+        }
+        
+        // Blur input to dismiss mobile keyboard
+        const input = document.getElementById('chatbox-input');
+        if (input) {
+            input.blur();
+        }
     }
 
     sendMessage() {
