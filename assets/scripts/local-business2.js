@@ -1328,7 +1328,7 @@ class LocalBusinessManager {
             const businessRating = business.rating || 0;
             
             const cardHTML = `
-            <div class="business-card" data-business-id="${businessId}" onclick="localBusinessManager.openBusinessModal('${businessId}')">
+            <div class="business-card" data-business-id="${businessId}" onclick="openBusinessFullPage('${businessId}')" style="cursor: pointer;">
                 <img src="${businessImage}" alt="${businessName}" class="business-card-image" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
                 <div class="business-card-content">
                     <div class="business-card-category">${businessCategory}</div>
@@ -1807,7 +1807,7 @@ function openBusinessFullPage(businessId = null) {
     const currentBusinessId = businessId || window.localBusinessManager?.getCurrentBusinessId();
     if (currentBusinessId) {
         // Navigate to dedicated business page
-        window.location.href = `local-business-info.html?id=${currentBusinessId}`;
+        window.location.href = `local_business_info.html?id=${currentBusinessId}`;
     }
 }
 

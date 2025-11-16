@@ -22,6 +22,17 @@ class BusinessDetailManager {
         const urlParams = new URLSearchParams(window.location.search);
         const businessId = urlParams.get('id');
         
+        // Check for test mode - use test data if available
+        // Test mode can be enabled via URL parameter ?test=true or if USE_TEST_MODE is set
+        const testMode = urlParams.get('test') === 'true' || (window.USE_TEST_MODE && window.TEST_BUSINESS_DATA);
+        
+        if (testMode && window.TEST_BUSINESS_DATA) {
+            console.log('🧪 TEST MODE: Using hardcoded test data');
+            this.currentBusinessId = window.TEST_BUSINESS_DATA.businessId || 'test-business';
+            this.loadTestBusinessData();
+            return;
+        }
+        
         if (!businessId) {
             this.showError('Business ID not found in URL');
             return;
@@ -29,6 +40,59 @@ class BusinessDetailManager {
         
         this.currentBusinessId = businessId;
         this.loadBusinessData(businessId);
+    }
+    
+    loadTestBusinessData() {
+        try {
+            // Show loading state
+            this.showLoading();
+            
+            // Use test data directly
+            const testData = window.TEST_BUSINESS_DATA;
+            
+            // Transform test data to match API format
+            const apiFormat = {
+                businessId: testData.businessId,
+                businessName: testData.businessName,
+                businessDescription: testData.businessDescription,
+                fullContent: testData.fullContent || testData.businessDescription,
+                businessCategory: testData.businessCategory,
+                businessType: testData.businessType,
+                businessAddress: testData.businessAddress,
+                businessNumber: testData.businessNumber,
+                businessHours: testData.businessHours,
+                businessLogoUrl: testData.businessLogoUrl,
+                socialMedia: testData.socialMedia || {},
+                serviceGalleries: testData.serviceGalleries || {},
+                status: testData.status,
+                verified: testData.verified
+            };
+            
+            // Transform to expected format
+            const business = this.transformBusinessData(apiFormat);
+            
+            this.currentBusiness = business;
+            this.renderBusinessPage();
+            this.updatePageMetaTags();
+            
+            // Show test mode indicator
+            this.showTestModeIndicator();
+        } catch (error) {
+            console.error('Error loading test business data:', error);
+            this.showError('Failed to load test business data.');
+        }
+    }
+    
+    showTestModeIndicator() {
+        // Add test mode badge to the page
+        const heroSection = document.querySelector('.business-hero');
+        if (heroSection) {
+            const testBadge = document.createElement('div');
+            testBadge.style.cssText = 'position: absolute; top: 20px; right: 20px; background: #ffc107; color: #000; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2);';
+            testBadge.textContent = '🧪 TEST MODE - Using Hardcoded Data';
+            heroSection.style.position = 'relative';
+            heroSection.appendChild(testBadge);
+        }
     }
     
     async loadBusinessData(businessId) {
