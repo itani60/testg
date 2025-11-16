@@ -402,9 +402,10 @@ body {
     font-weight: 500;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.25rem;
     white-space: nowrap;
     flex-shrink: 0;
+    line-height: 1.5;
 }
 
 .header-link:hover {

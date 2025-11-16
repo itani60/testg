@@ -17,6 +17,14 @@
     margin-left: 6px;
     line-height: 1;
     transition: all 0.3s ease;
+    vertical-align: middle;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* When badge is inside header-link, remove margin-left (gap handles spacing) */
+.header-link .wishlist-count-badge {
+    margin-left: 0;
 }
 
 /* Desktop header badge */
@@ -93,6 +101,14 @@
     margin-left: 6px;
     line-height: 1;
     transition: all 0.3s ease;
+    vertical-align: middle;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* When badge is inside header-link, remove margin-left (gap handles spacing) */
+.header-link .notification-badge {
+    margin-left: 0;
 }
 
 #desktopNotificationCount {
