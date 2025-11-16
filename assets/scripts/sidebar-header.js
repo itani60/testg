@@ -447,7 +447,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 } catch (err) {
                     // User not logged in as regular user - try business user
-                    if (err.status === 401 || err.status === undefined) {
+                    // Suppress expected errors (401, INVALID_SESSION, SESSION_EXPIRED) when checking regular user
+                    const isExpectedError = err.status === 401 || 
+                                          err.status === undefined || 
+                                          err.response?.error === 'INVALID_SESSION' ||
+                                          err.response?.error === 'SESSION_EXPIRED' ||
+                                          err.response?.error === 'NO_SESSION' ||
+                                          err.message?.includes('Session expired') ||
+                                          err.message?.includes('Session not found') ||
+                                          err.message?.includes('Not authenticated');
+                    
+                    if (isExpectedError) {
                         console.debug('Regular user not authenticated, checking business user...');
                     } else {
                         console.warn('Error fetching regular user info:', err.message, err.status ? `(HTTP ${err.status})` : '');
