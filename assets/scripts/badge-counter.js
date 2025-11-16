@@ -41,6 +41,21 @@ class BadgeCounter {
 
     async checkAuthStatus() {
         try {
+            // Try business auth service first (for business pages)
+            if (window.businessAWSAuthService) {
+                try {
+                    const userInfo = await window.businessAWSAuthService.getUserInfo();
+                    if (userInfo.success && userInfo.user !== null) {
+                        this.authService = window.businessAWSAuthService;
+                        this.isLoggedIn = true;
+                        return;
+                    }
+                } catch (error) {
+                    // Business auth failed, try regular auth
+                }
+            }
+            
+            // Try regular user auth service
             if (window.awsAuthService) {
                 this.authService = window.awsAuthService;
             } else if (window.AWSAuthService) {
@@ -54,7 +69,11 @@ class BadgeCounter {
                 this.isLoggedIn = false;
             }
         } catch (error) {
-            console.error('Error checking auth status:', error);
+            // Silently fail - don't log errors for unauthenticated users
+            // Only log if it's an unexpected error (not a session error)
+            if (error.message && !error.message.includes('Session expired') && !error.message.includes('Not authenticated')) {
+                console.error('Error checking auth status:', error);
+            }
             this.isLoggedIn = false;
         }
     }
@@ -93,7 +112,7 @@ class BadgeCounter {
             this.updateNotificationsBadges();
         });
         
-        // Periodically check auth status
+        // Periodically check auth status (check more frequently to catch business logins)
         setInterval(async () => {
             const wasLoggedIn = this.isLoggedIn;
             await this.checkAuthStatus();
@@ -108,7 +127,7 @@ class BadgeCounter {
                     this.updateAllBadges();
                 }
             }
-        }, 30000);
+        }, 5000); // Check every 5 seconds instead of 30 to catch business logins faster
     }
 
     async refreshAllCounts() {
