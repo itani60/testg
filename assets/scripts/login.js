@@ -100,7 +100,11 @@
       if(window.turnstileManager) {
         turnstileToken = window.turnstileManager.getToken('login-turnstile-container');
         if(!turnstileToken) {
-          alert('Please complete the security verification.');
+          if(typeof showWarningToast === 'function') {
+            showWarningToast('Please complete the security verification.');
+          } else {
+            alert('Please complete the security verification.');
+          }
           if(window.turnstileManager) {
             window.turnstileManager.reset('login-turnstile-container');
           }
@@ -128,7 +132,24 @@
         if(window.turnstileManager) {
           window.turnstileManager.reset('login-turnstile-container');
         }
-        alert('Login failed. Please check your credentials and try again.');
+        
+        // Show error message with toast notification
+        var errorMessage = 'Login failed. ';
+        if(err && err.message) {
+          if(err.message.includes('Incorrect') || err.message.includes('password') || err.message.includes('email')) {
+            errorMessage = 'Login failed. Incorrect email or password. Please try again.';
+          } else {
+            errorMessage += err.message;
+          }
+        } else {
+          errorMessage += 'Please check your credentials and try again.';
+        }
+        
+        if(typeof showErrorToast === 'function') {
+          showErrorToast(errorMessage);
+        } else {
+          alert(errorMessage);
+        }
       } finally {
         if(btn){ btn.disabled = false; btn.classList.remove('loading'); }
       }
@@ -278,7 +299,11 @@
           } else {
             startResendTimer(resendCooldown);
           }
-          alert(errorMsg);
+          if(typeof showErrorToast === 'function') {
+            showErrorToast(errorMsg);
+          } else {
+            alert(errorMsg);
+          }
         } finally {
           resendEmailOtpBtn.disabled = false;
         }
@@ -304,7 +329,11 @@
       if(!isMfaStep && window.turnstileManager) {
         turnstileToken = window.turnstileManager.getToken('business-login-turnstile-container');
         if(!turnstileToken) {
-          alert('Please complete the security verification.');
+          if(typeof showWarningToast === 'function') {
+            showWarningToast('Please complete the security verification.');
+          } else {
+            alert('Please complete the security verification.');
+          }
           if(window.turnstileManager) {
             window.turnstileManager.reset('business-login-turnstile-container');
           }
@@ -327,7 +356,11 @@
           // Email MFA verification
           var emailMfaCode = emailMfaCodeEl.value.trim();
           if(!emailMfaCode || emailMfaCode.length !== 6) {
-            alert('Please enter a valid 6-digit code from your email.');
+            if(typeof showWarningToast === 'function') {
+              showWarningToast('Please enter a valid 6-digit code from your email.');
+            } else {
+              alert('Please enter a valid 6-digit code from your email.');
+            }
             if(btn){ btn.disabled = false; btn.classList.remove('loading'); }
             return;
           }
@@ -359,7 +392,11 @@
           // TOTP MFA verification
           var mfaCode = mfaCodeEl.value.trim();
           if(!mfaCode || mfaCode.length !== 6) {
-            alert('Please enter a valid 6-digit code from your authenticator app.');
+            if(typeof showWarningToast === 'function') {
+              showWarningToast('Please enter a valid 6-digit code from your authenticator app.');
+            } else {
+              alert('Please enter a valid 6-digit code from your authenticator app.');
+            }
             if(btn){ btn.disabled = false; btn.classList.remove('loading'); }
             return;
           }
@@ -406,7 +443,11 @@
             return;
           } catch(err) {
             console.error('Error sending email MFA OTP:', err);
-            alert('Failed to send verification code. Please try again.');
+            if(typeof showErrorToast === 'function') {
+              showErrorToast('Failed to send verification code. Please try again.');
+            } else {
+              alert('Failed to send verification code. Please try again.');
+            }
             if(btn){ btn.disabled = false; btn.classList.remove('loading'); }
             return;
           }
@@ -479,7 +520,11 @@
         
         // Handle Turnstile requirement
         if(err.requiresTurnstile) {
-          alert('Security verification required. Please complete the Turnstile challenge.');
+          if(typeof showWarningToast === 'function') {
+            showWarningToast('Security verification required. Please complete the Turnstile challenge.');
+          } else {
+            alert('Security verification required. Please complete the Turnstile challenge.');
+          }
           if(window.turnstileManager) {
             window.turnstileManager.reset('business-login-turnstile-container');
           }
@@ -489,9 +534,17 @@
         // Show user-friendly error message
         var errorMsg = 'Login failed. ';
         if(err.message) {
-          errorMsg += err.message;
+          if(err.message.includes('Incorrect') || err.message.includes('password') || err.message.includes('email') || err.message.includes('Invalid')) {
+            errorMsg = 'Login failed. Incorrect email or password. Please try again.';
+          } else {
+            errorMsg += err.message;
+          }
         } else if(err.response && err.response.message) {
-          errorMsg += err.response.message;
+          if(err.response.message.includes('Incorrect') || err.response.message.includes('password') || err.response.message.includes('email') || err.response.message.includes('Invalid')) {
+            errorMsg = 'Login failed. Incorrect email or password. Please try again.';
+          } else {
+            errorMsg += err.response.message;
+          }
         } else {
           errorMsg += 'Please check your credentials and try again.';
         }
@@ -505,7 +558,11 @@
           mfaCodeEl.focus();
         }
         
-        alert(errorMsg);
+        if(typeof showErrorToast === 'function') {
+          showErrorToast(errorMsg);
+        } else {
+          alert(errorMsg);
+        }
         
       } finally {
         if(btn){ 
@@ -692,7 +749,12 @@
       window.location.href = 'test.html';
     } catch(err){
       console.error('Google One Tap login failed:', err);
-      alert('Google sign-in failed: ' + (err && err.message ? err.message : 'Unknown error'));
+      var googleErrorMsg = 'Google sign-in failed: ' + (err && err.message ? err.message : 'Unknown error');
+      if(typeof showErrorToast === 'function') {
+        showErrorToast(googleErrorMsg);
+      } else {
+        alert(googleErrorMsg);
+      }
     }
   }
 
@@ -732,7 +794,11 @@
     var error = urlParams.get('error');
     
     if(error){
-      alert('Google sign-in was cancelled or failed.');
+      if(typeof showWarningToast === 'function') {
+        showWarningToast('Google sign-in was cancelled or failed.');
+      } else {
+        alert('Google sign-in was cancelled or failed.');
+      }
       window.location.href = 'login.html';
       return;
     }
@@ -742,7 +808,11 @@
         try{
           var svc = window.awsAuthService;
           if(!svc || !svc.handleGoogleCallback){
-            alert('Google sign-in service not available.');
+            if(typeof showErrorToast === 'function') {
+              showErrorToast('Google sign-in service not available.');
+            } else {
+              alert('Google sign-in service not available.');
+            }
             window.location.href = 'login.html';
             return;
           }
@@ -757,7 +827,12 @@
           window.location.href = 'test.html';
         } catch(err){
           console.error('Google callback error:', err);
-          alert('Google sign-in failed: ' + err.message);
+          var callbackErrorMsg = 'Google sign-in failed: ' + err.message;
+          if(typeof showErrorToast === 'function') {
+            showErrorToast(callbackErrorMsg);
+          } else {
+            alert(callbackErrorMsg);
+          }
           window.location.href = 'login.html';
         }
       })();
