@@ -461,28 +461,14 @@ class BusinessDetailManager {
         const isMobile = window.innerWidth <= 768;
         const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
 
-        // Hide maps that shouldn't be shown
-        if (mapMain && mapMain.parentElement) {
-            // Hide main map - we'll use sidebar maps instead
-            mapMain.style.display = 'none';
-            mapMain.parentElement.style.display = 'none';
-        }
-
+        // Use main map as primary, fallback to sidebar maps if needed
         let targetMapElement = null;
-        if (isMobile && mapMobile) {
+        if (mapMain) {
+            targetMapElement = mapMain;
+        } else if (isMobile && mapMobile) {
             targetMapElement = mapMobile;
-            // Hide desktop map
-            if (mapDesktop && mapDesktop.parentElement) {
-                mapDesktop.style.display = 'none';
-                mapDesktop.parentElement.style.display = 'none';
-            }
         } else if (mapDesktop) {
             targetMapElement = mapDesktop;
-            // Hide mobile map
-            if (mapMobile && mapMobile.parentElement) {
-                mapMobile.style.display = 'none';
-                mapMobile.parentElement.style.display = 'none';
-            }
         }
 
         if (!targetMapElement || this.mapInitialized) return;
