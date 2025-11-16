@@ -511,8 +511,10 @@ class BusinessDetailManager {
         const businessName = encodeURIComponent(this.businessData?.name || 'Business Location');
         const encodedAddress = encodeURIComponent(address);
         
-        // Create Google Maps embed URL
-        const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${window.GOOGLE_MAPS_API_KEY}&q=${encodedAddress}`;
+        // Create Google Maps embed URL with hybrid view (satellite + labels)
+        // maptype options: roadmap (default), satellite, terrain, hybrid
+        // Using hybrid to show satellite imagery with street labels
+        const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${window.GOOGLE_MAPS_API_KEY}&q=${encodedAddress}&maptype=hybrid&zoom=15`;
         
         // Use iframe embed instead of JavaScript API
         mapElement.innerHTML = `
