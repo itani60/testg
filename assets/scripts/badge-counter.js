@@ -210,6 +210,12 @@ class BadgeCounter {
     }
 
     async fetchNotificationsCount() {
+        // Only fetch if logged in
+        if (!this.isLoggedIn) {
+            this.notificationsCount = 0;
+            return;
+        }
+        
         try {
             // Fetch unread notifications only
             const response = await fetch(`${this.NOTIFICATIONS_API}?unreadOnly=true&limit=100`, {
@@ -222,6 +228,7 @@ class BadgeCounter {
             
             if (!response.ok) {
                 if (response.status === 401 || response.status === 404) {
+                    // Silently handle auth errors - don't log to console
                     this.notificationsCount = 0;
                     return;
                 }
@@ -236,7 +243,10 @@ class BadgeCounter {
                 this.notificationsCount = 0;
             }
         } catch (error) {
-            console.error('Error fetching notifications count:', error);
+            // Only log unexpected errors (not 401/404 auth errors)
+            if (error.message && !error.message.includes('401') && !error.message.includes('404')) {
+                console.error('Error fetching notifications count:', error);
+            }
             this.notificationsCount = 0;
         }
     }

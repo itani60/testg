@@ -505,15 +505,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Hid default login label');
             }
             
-            // Show user name
+            // Show user name (first name only)
             if (userNameLabel) {
                 const givenName = (profile.givenName || profile.given_name) || '';
-                const familyName = (profile.familyName || profile.family_name) || '';
-                const fullName = profile.fullName || `${givenName} ${familyName}`.trim() || profile.email?.split('@')[0] || 'Account';
-                userNameLabel.textContent = fullName;
+                const firstName = givenName || profile.email?.split('@')[0] || 'Account';
+                userNameLabel.textContent = firstName;
                 userNameLabel.style.display = 'inline-block';
                 userNameLabel.style.visibility = 'visible';
-                console.log('Showed user name:', fullName);
+                console.log('Showed user name:', firstName);
             } else {
                 console.warn('userNameLabel element not found (ID: desktopUserName)');
             }
@@ -571,14 +570,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (dropdown) {
                 const email = profile.email || '';
                 const givenName = (profile.givenName || profile.given_name) || '';
-                const fullName = profile.fullName || `${givenName} ${(profile.familyName || profile.family_name || '')}`.trim() || 'Account';
+                const firstName = givenName || profile.email?.split('@')[0] || 'Account';
                 const accountType = isBusinessUser ? 'Business Account' : 'Account';
                 
                 dropdown.innerHTML = `
                     <div class="d-flex align-items-center mb-2" style="gap: 10px;">
                         <span class="user-avatar">${initials}</span>
                         <div>
-                            <div class="fw-bold">${fullName}</div>
+                            <div class="fw-bold">${firstName}</div>
                             <div class="text-muted" style="font-size: 0.85rem;">${email}</div>
                             ${isBusinessUser ? `<div class="text-muted" style="font-size: 0.75rem;">${accountType}</div>` : ''}
                         </div>
