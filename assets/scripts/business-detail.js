@@ -451,86 +451,45 @@ class BusinessDetailManager {
     }
 
     initializeMap() {
-        // Only initialize ONE map based on device type
-        // Hide duplicate maps
-        const mapMain = document.getElementById('businessMapMain');
-        const mapMobile = document.getElementById('businessMapMobile');
-        const mapDesktop = document.getElementById('businessMapDesktop');
+        // Render maps using simple iframe embed (like comparehubprices/local-business-info.html)
+        const business = this.businessData;
+        if (!business) return;
 
-        // Determine which map to show based on device
-        const isMobile = window.innerWidth <= 768;
-        const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+        const address = encodeURIComponent(business.location || '');
+        if (!address) return;
 
-        // Use main map as primary, fallback to sidebar maps if needed
-        let targetMapElement = null;
-        if (mapMain) {
-            targetMapElement = mapMain;
-        } else if (isMobile && mapMobile) {
-            targetMapElement = mapMobile;
-        } else if (mapDesktop) {
-            targetMapElement = mapDesktop;
-        }
-
-        if (!targetMapElement || this.mapInitialized) return;
-
-        // Get business address for geocoding
-        const address = this.businessData?.location || '';
-        if (!address) {
-            targetMapElement.innerHTML = '<p class="text-muted">Location not available</p>';
-            return;
-        }
-
-        // Initialize Google Maps
-        this.initGoogleMap(targetMapElement, address);
-        this.mapInitialized = true;
-    }
-
-    initGoogleMap(mapElement, address) {
-        // Check if Google Maps API key is configured
-        const GOOGLE_MAPS_API_KEY = window.GOOGLE_MAPS_API_KEY || '';
-        
-        // If no API key, show address text instead
-        if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY') {
-            mapElement.innerHTML = `
-                <div class="map-placeholder">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <p><strong>Location:</strong> ${address}</p>
-                    <p class="text-muted small">Map unavailable. Please configure Google Maps API key to enable map display.</p>
-                </div>
-            `;
-            return;
-        }
-
-        // Use simple iframe embed approach (simpler and avoids CSP issues)
-        this.createMap(mapElement, address);
-    }
-
-    createMap(mapElement, address) {
-        // Use a simpler iframe embed approach (like local-business-info.html)
-        // This avoids CSP issues and is more reliable
-        const businessName = encodeURIComponent(this.businessData?.name || 'Business Location');
-        const encodedAddress = encodeURIComponent(address);
-        
-        // Create Google Maps embed URL with hybrid view (satellite + labels)
-        // maptype options: roadmap (default), satellite, terrain, hybrid
-        // Using hybrid to show satellite imagery with street labels
-        const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${window.GOOGLE_MAPS_API_KEY}&q=${encodedAddress}&maptype=hybrid&zoom=15`;
-        
-        // Use iframe embed instead of JavaScript API
-        mapElement.innerHTML = `
+        const mapIframe = (addr) => `
             <iframe
+                title="Business location map"
                 width="100%"
-                height="100%"
-                style="border:0; min-height: 400px;"
+                height="260"
+                style="border:0; border-radius: 12px;"
                 loading="lazy"
-                allowfullscreen
                 referrerpolicy="no-referrer-when-downgrade"
-                src="${embedUrl}">
+                src="https://www.google.com/maps?q=${addr}&output=embed">
             </iframe>
         `;
-        
-        // Store reference for potential cleanup
-        this.mapInstance = mapElement.querySelector('iframe');
+
+        // Render all three maps (main, mobile, desktop) - they'll be shown/hidden by CSS based on device
+        const mobileMap = document.getElementById('businessMapMobile');
+        if (mobileMap && !mobileMap.dataset.rendered) {
+            mobileMap.innerHTML = mapIframe(address);
+            mobileMap.dataset.rendered = 'true';
+        }
+
+        const desktopMap = document.getElementById('businessMapDesktop');
+        if (desktopMap && !desktopMap.dataset.rendered) {
+            desktopMap.innerHTML = mapIframe(address);
+            desktopMap.dataset.rendered = 'true';
+        }
+
+        const mainMap = document.getElementById('businessMapMain');
+        if (mainMap && !mainMap.dataset.rendered) {
+            mainMap.innerHTML = mapIframe(address);
+            mainMap.dataset.rendered = 'true';
+        }
+
+        this.mapInitialized = true;
     }
 
     getCurrentBusinessId() {
