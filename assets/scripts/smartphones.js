@@ -725,6 +725,10 @@ class SmartphonesPage {
         const currentPageSmartphones = smartphones.slice(startIndex, endIndex);
 
         // Display current page products
+        if (!this.smartphonesContainer) {
+            console.warn('smartphonesContainer not found, cannot display smartphones');
+            return;
+        }
         this.smartphonesContainer.innerHTML = currentPageSmartphones.map(phone => this.createSmartphoneCard(phone)).join('');
 
         // Add pagination controls
@@ -752,7 +756,11 @@ class SmartphonesPage {
             </div>
         `;
 
-        this.smartphonesContainer.insertAdjacentHTML('afterend', paginationHTML);
+        if (this.smartphonesContainer) {
+            this.smartphonesContainer.insertAdjacentHTML('afterend', paginationHTML);
+        } else {
+            console.warn('smartphonesContainer not found, cannot add pagination controls');
+        }
     }
 
     removeExistingPagination() {
@@ -797,7 +805,9 @@ class SmartphonesPage {
         this.saveFilters();
         
         // Scroll to top of products
-        this.smartphonesContainer.scrollIntoView({ behavior: 'smooth' });
+        if (this.smartphonesContainer) {
+            this.smartphonesContainer.scrollIntoView({ behavior: 'smooth' });
+        }
     }
 
     getTotalPages() {
@@ -853,6 +863,10 @@ class SmartphonesPage {
     }
 
     showLoadingState() {
+        if (!this.smartphonesContainer) {
+            console.warn('smartphonesContainer not found, cannot show loading state');
+            return;
+        }
         this.smartphonesContainer.innerHTML = `
             <div class="loading-state">
                 <div class="modern-spinner">
@@ -867,6 +881,10 @@ class SmartphonesPage {
     }
 
     showNoResultsState() {
+        if (!this.smartphonesContainer) {
+            console.warn('smartphonesContainer not found, cannot show no results state');
+            return;
+        }
         this.smartphonesContainer.innerHTML = `
             <div class="no-results">
                 <i class="fas fa-mobile-alt fa-3x mb-3"></i>
@@ -877,6 +895,10 @@ class SmartphonesPage {
     }
 
     showErrorState(message) {
+        if (!this.smartphonesContainer) {
+            console.warn('smartphonesContainer not found, cannot show error state');
+            return;
+        }
         this.smartphonesContainer.innerHTML = `
             <div class="error-message">
                 <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
