@@ -36,15 +36,22 @@ class WishlistManager {
     
     async checkAuthStatus() {
         try {
+            // Check for regular user auth service first
             if (window.awsAuthService) {
                 this.authService = window.awsAuthService;
             } else if (window.AWSAuthService) {
                 this.authService = new window.AWSAuthService();
             }
+            // If no regular user service, check for business user service
+            else if (window.businessAWSAuthService) {
+                this.authService = window.businessAWSAuthService;
+            }
             
             if (this.authService) {
                 const userInfo = await this.authService.getUserInfo();
                 this.isLoggedIn = userInfo.success && userInfo.user !== null;
+            } else {
+                this.isLoggedIn = false;
             }
         } catch (error) {
             this.isLoggedIn = false;
@@ -52,23 +59,31 @@ class WishlistManager {
     }
     
     setupAuthListeners() {
+        // Listen for regular user login/logout events
         document.addEventListener('userLoggedIn', async () => {
-            this.isLoggedIn = true;
-            await this.loadWishlist();
-            this.displayWishlist();
-            this.updateAllWishlistButtonStates();
-            this.updateWishlistCount();
-            // Dispatch event for badge counter
-            document.dispatchEvent(new CustomEvent('wishlistUpdated'));
+            await this.checkAuthStatus(); // Re-check to get the correct auth service
+            if (this.isLoggedIn) {
+                await this.loadWishlist();
+                this.displayWishlist();
+                this.updateAllWishlistButtonStates();
+                this.updateWishlistCount();
+                // Dispatch event for badge counter
+                document.dispatchEvent(new CustomEvent('wishlistUpdated'));
+            }
         });
         
         document.addEventListener('userLoggedOut', () => {
             this.isLoggedIn = false;
+            this.authService = null;
             this.wishlistItems = [];
             this.displayWishlist();
             this.updateAllWishlistButtonStates();
             this.updateWishlistCount();
         });
+        
+        // Listen for business user login/logout events (if they exist)
+        // Business users might use the same events or different ones
+        // We'll also check periodically to catch any auth changes
         
         setInterval(async () => {
             const wasLoggedIn = this.isLoggedIn;
