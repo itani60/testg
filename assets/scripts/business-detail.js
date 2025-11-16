@@ -489,12 +489,6 @@ class BusinessDetailManager {
             desktopMap.innerHTML = mapIframe(address);
             desktopMap.dataset.rendered = 'true';
         }
-
-        const mainMap = document.getElementById('businessMapMain');
-        if (mainMap && !mainMap.dataset.rendered) {
-            mainMap.innerHTML = mapIframe(address);
-            mainMap.dataset.rendered = 'true';
-        }
     }
     
     loadBusinessReviews() {
