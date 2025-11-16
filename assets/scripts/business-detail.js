@@ -38,7 +38,7 @@ class BusinessDetailManager {
             
             // Fetch business data from API
             const BASE_URL = 'https://acc.comparehubprices.site';
-            const response = await fetch(`${BASE_URL}/business/public/${businessId}`, {
+            const response = await fetch(`${BASE_URL}/business/business/public/${businessId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
