@@ -82,15 +82,32 @@
           debug: data?.debug,
           response: data,
         };
-        console.error('getUserInfo error:', errorDetails);
-        if (data?.debug) {
-          console.error('Cookie debug details:', {
-            cookieHeaderPresent: data.debug.cookieHeaderPresent,
-            cookieHeaderLength: data.debug.cookieHeaderLength,
-            parsedCookieKeys: data.debug.parsedCookieKeys,
-            allHeaderKeys: data.debug.allHeaderKeys,
-          });
+        
+        // Check if this is an expected session error (common when checking regular auth for business users)
+        const isExpectedSessionError = data?.error === 'INVALID_SESSION' ||
+                                      data?.error === 'SESSION_EXPIRED' ||
+                                      data?.error === 'NO_SESSION' ||
+                                      data?.error === 'SESSION_NOT_FOUND' ||
+                                      data?.unauthenticated === true ||
+                                      (data?.message && (
+                                        data.message.includes('Session expired') ||
+                                        data.message.includes('Session not found') ||
+                                        data.message.includes('Not authenticated')
+                                      ));
+        
+        // Only log unexpected errors to console
+        if (!isExpectedSessionError) {
+          console.error('getUserInfo error:', errorDetails);
+          if (data?.debug) {
+            console.error('Cookie debug details:', {
+              cookieHeaderPresent: data.debug.cookieHeaderPresent,
+              cookieHeaderLength: data.debug.cookieHeaderLength,
+              parsedCookieKeys: data.debug.parsedCookieKeys,
+              allHeaderKeys: data.debug.allHeaderKeys,
+            });
+          }
         }
+        
         const error = new Error(data?.message || data?.error || `Get user info failed (HTTP ${res.status})`);
         error.status = res.status;
         error.response = data;
