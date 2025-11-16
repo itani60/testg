@@ -166,8 +166,40 @@
                                 <input type="text" id="trfBusinessNumber" placeholder="Business Registration Number" required maxlength="50">
                             </div>
                             <div class="trf-field">
-                                <label for="trfBusinessAddress">Business Address</label>
-                                <textarea id="trfBusinessAddress" placeholder="Enter your business address" required maxlength="500" rows="3"></textarea>
+                                <label>Business Address <span class="text-danger">*</span></label>
+                                <div style="margin-bottom: 0.75rem;">
+                                    <label for="trfBusinessStreetAddress" class="small" style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Street Address</label>
+                                    <input type="text" id="trfBusinessStreetAddress" placeholder="Enter street address" required>
+                                </div>
+                                <div style="margin-bottom: 0.75rem;">
+                                    <label for="trfBusinessAddressLine2" class="small" style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Address Line 2</label>
+                                    <input type="text" id="trfBusinessAddressLine2" placeholder="Apartment, suite, unit, building, floor, etc. (optional)">
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                    <div>
+                                        <label for="trfBusinessCity" class="small" style="display: block; margin-bottom: 0.25rem; font-weight: 500;">City</label>
+                                        <input type="text" id="trfBusinessCity" placeholder="Enter city" required>
+                                    </div>
+                                    <div>
+                                        <label for="trfBusinessProvince" class="small" style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Province</label>
+                                        <select id="trfBusinessProvince" required style="width: 100%; padding: 0.5rem; border: 1px solid #ced4da; border-radius: 4px;">
+                                            <option value="">Select province</option>
+                                            <option value="Eastern Cape">Eastern Cape</option>
+                                            <option value="Free State">Free State</option>
+                                            <option value="Gauteng">Gauteng</option>
+                                            <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                                            <option value="Limpopo">Limpopo</option>
+                                            <option value="Mpumalanga">Mpumalanga</option>
+                                            <option value="Northern Cape">Northern Cape</option>
+                                            <option value="North West">North West</option>
+                                            <option value="Western Cape">Western Cape</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="trfBusinessPostalCode" class="small" style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Postal Code</label>
+                                    <input type="text" id="trfBusinessPostalCode" placeholder="Enter postal code" required>
+                                </div>
                             </div>
                             <div class="trf-field">
                                 <label for="trfBusinessType">Business Type</label>
@@ -405,11 +437,15 @@
             var confirm = document.getElementById('trfBusinessConfirm');
             var businessName = document.getElementById('trfBusinessName');
             var businessNumber = document.getElementById('trfBusinessNumber');
-            var businessAddress = document.getElementById('trfBusinessAddress');
+            var businessStreetAddress = document.getElementById('trfBusinessStreetAddress');
+            var businessAddressLine2 = document.getElementById('trfBusinessAddressLine2');
+            var businessCity = document.getElementById('trfBusinessCity');
+            var businessProvince = document.getElementById('trfBusinessProvince');
+            var businessPostalCode = document.getElementById('trfBusinessPostalCode');
             var businessType = document.getElementById('trfBusinessType');
             var agree = document.getElementById('trfBusinessAgree');
             
-            if(!firstName || !lastName || !email || !password || !confirm || !businessName || !businessNumber || !businessAddress || !businessType || !agree) return;
+            if(!firstName || !lastName || !email || !password || !confirm || !businessName || !businessNumber || !businessStreetAddress || !businessCity || !businessProvince || !businessPostalCode || !businessType || !agree) return;
             
             resetMessage();
             
@@ -446,8 +482,20 @@
                 var emailVal = email.value.trim();
                 var businessNameVal = businessName.value.trim();
                 var businessNumberVal = businessNumber.value.trim();
-                var businessAddressVal = businessAddress.value.trim();
+                var businessStreetAddressVal = businessStreetAddress.value.trim();
+                var businessAddressLine2Val = businessAddressLine2.value.trim();
+                var businessCityVal = businessCity.value.trim();
+                var businessProvinceVal = businessProvince.value.trim();
+                var businessPostalCodeVal = businessPostalCode.value.trim();
                 var businessTypeVal = businessType.value.trim();
+                
+                // Combine address fields into a single address string
+                var addressParts = [businessStreetAddressVal];
+                if (businessAddressLine2Val) {
+                    addressParts.push(businessAddressLine2Val);
+                }
+                addressParts.push(businessCityVal, businessProvinceVal, businessPostalCodeVal);
+                var businessAddressVal = addressParts.join(', ');
                 
                 await window.businessAWSAuthService.registerUser({
                     email: emailVal,
@@ -457,6 +505,11 @@
                     businessName: businessNameVal,
                     businessNumber: businessNumberVal,
                     businessAddress: businessAddressVal,
+                    streetAddress: businessStreetAddressVal,
+                    addressLine2: businessAddressLine2Val,
+                    city: businessCityVal,
+                    province: businessProvinceVal,
+                    postalCode: businessPostalCodeVal,
                     businessType: businessTypeVal,
                     turnstileToken: turnstileToken
                 });
