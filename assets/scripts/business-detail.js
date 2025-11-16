@@ -486,29 +486,61 @@ class BusinessDetailManager {
     }
 
     initGoogleMap(mapElement, address) {
-        // Check if Google Maps is loaded
-        if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
-            // Load Google Maps script
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initBusinessMap`;
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
-
-            // Set callback
-            window.initBusinessMap = () => {
-                this.createMap(mapElement, address);
-            };
-
-            // Fallback: show address if maps fail to load
-            setTimeout(() => {
-                if (!this.mapInstance) {
-                    mapElement.innerHTML = `<p class="text-muted">Map unavailable. Address: ${address}</p>`;
-                }
-            }, 5000);
-        } else {
+        // Check if Google Maps API key is configured
+        // You can set this in a config or environment variable
+        const GOOGLE_MAPS_API_KEY = window.GOOGLE_MAPS_API_KEY || '';
+        
+        // Check if Google Maps is already loaded
+        if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
             this.createMap(mapElement, address);
+            return;
         }
+
+        // If no API key, show address text instead
+        if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY') {
+            mapElement.innerHTML = `
+                <div class="map-placeholder">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <p><strong>Location:</strong> ${address}</p>
+                    <p class="text-muted small">Map unavailable. Please configure Google Maps API key to enable map display.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Load Google Maps script
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=initBusinessMap`;
+        script.async = true;
+        script.defer = true;
+        script.onerror = () => {
+            mapElement.innerHTML = `
+                <div class="map-placeholder">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <p><strong>Location:</strong> ${address}</p>
+                    <p class="text-muted small">Failed to load map. Please check your API key configuration.</p>
+                </div>
+            `;
+        };
+        document.head.appendChild(script);
+
+        // Set callback
+        window.initBusinessMap = () => {
+            this.createMap(mapElement, address);
+        };
+
+        // Fallback: show address if maps fail to load after timeout
+        setTimeout(() => {
+            if (!this.mapInstance) {
+                mapElement.innerHTML = `
+                    <div class="map-placeholder">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p><strong>Location:</strong> ${address}</p>
+                        <p class="text-muted small">Map loading timeout. Address: ${address}</p>
+                    </div>
+                `;
+            }
+        }, 10000);
     }
 
     createMap(mapElement, address) {
