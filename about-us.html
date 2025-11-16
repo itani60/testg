@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CompareHubPrices - Wishlist</title>
+    <title>CompareHubPrices - About Us</title>
 
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com https://fonts.googleapis.com https://www.gstatic.com; img-src 'self' data: https://www.gstatic.com https://images.comparehubprices.site; font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://acc.comparehubprices.site https://accb.comparehubprices.site https://accounts.google.com https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com;">
     
@@ -22,18 +22,16 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-    
-  
-
     <link rel="stylesheet" href="assets/css/styles.css">
-
     <link rel="stylesheet" href="assets/css/sidebar.css">
     <link rel="stylesheet" href="assets/css/test.css">
+    <link rel="stylesheet" href="assets/css/footer.css">
+    <link rel="stylesheet" href="assets/css/badge.css">
+    <link rel="stylesheet" href="assets/css/about-us-2.css">
     
-    <link rel="stylesheet" href="assets/css/wishlist-2.css">
-    <link rel="stylesheet" href="assets/css/wishlist.css">
-    <!-- Header Navigation Font -->
-    <style>
+
+   
+      <style>
       
 
         /* Loading Overlay */
@@ -184,64 +182,7 @@
                 max-width: 150px;
             }
         }
-
-        /* Toast Notification Styling */
-        .toast-container {
-            z-index: 9999 !important;
-        }
-
-        .toast {
-            min-width: 350px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-            border-radius: 8px !important;
-            overflow: hidden;
-            border: none !important;
-            animation: slideInRight 0.3s ease-out;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .toast-header {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-            padding: 12px 16px !important;
-            font-weight: 600;
-        }
-
-        .toast-body {
-            padding: 16px !important;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #333;
-        }
-
-        @media (max-width: 576px) {
-            .toast {
-                min-width: calc(100vw - 40px);
-                max-width: calc(100vw - 40px);
-            }
-            
-            .toast-container {
-                top: 70px !important;
-                right: 10px !important;
-            }
-        }
     </style>
-
-      <link rel="stylesheet" href="assets/css/footer.css">
-
-     
-      <link rel="stylesheet" href="assets/css/badge.css">
-  
-
     
     
 </head>
@@ -655,12 +596,8 @@
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>
 
-    <!-- Toast Container for Notifications -->
-    <div class="toast-container position-fixed" style="top: 80px; right: 20px; z-index: 9999;" id="toastContainer"></div>
-
-
     <main class="main">
-        <!-- Wishlist Hero Section -->
+        <!-- About Us Hero Section -->
         <div class="contact-hero">
             <div class="hero-background"></div>
             <div class="hero-content">
@@ -668,23 +605,19 @@
                     <div class="contact-icon-large">
                         <div class="icon-ring">
                             <div class="icon-inner">
-                                <i class="fas fa-heart"></i>
+                                <i class="fas fa-info-circle"></i>
                             </div>
                         </div>
                     </div>
                     <div class="contact-details">
-                        <h1 class="contact-title">My Wishlist</h1>
-                        <p class="contact-subtitle">Your saved items are waiting for you. Keep track of your favorite products and never miss a great deal.</p>
-                        <div class="wishlist-count-display">
-                            <span class="wishlist-count-badge page-badge" id="pageWishlistCount">0</span>
-                            <span class="wishlist-count-text">items in your wishlist</span>
-                        </div>
+                        <h1 class="contact-title">About Us</h1>
+                        <p class="contact-subtitle">Discover the story behind CompareHubPrices and our mission to help you find the best deals on technology and electronics.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Wishlist Container -->
+        <!-- About Us Container -->
         <div class="contact-container">
             <div class="contact-content">
                 <!-- Breadcrumb -->
@@ -693,94 +626,143 @@
                         <li class="breadcrumb-item">
                             <a href="index.html">Home</a>
                         </li>
-                        <li class="breadcrumb-item">
-                            <a href="my-account.html">My Account</a>
-                        </li>
                         <li class="breadcrumb-item active" aria-current="page">
-                            My Wishlist
+                            About Us
                         </li>
                     </ol>
                 </nav>
 
-                <!-- Search & Sort Section -->
-                <div class="search-sort-section">
-                    <div class="section-header">
+                <!-- About Us Content -->
+                <div class="about-content">
+                    <div class="about-section">
                         <h3 class="section-title">
-                            <i class="fas fa-search"></i>
-                            Search & Sort
+                            <i class="fas fa-book-open"></i>
+                            Our Story
                         </h3>
-                        <button class="btn btn-danger btn-remove-all" id="removeAllBtn" onclick="clearWishlist()">
-                            <i class="fas fa-trash"></i>
-                            Remove All
-                        </button>
+                        <div class="content-card">
+                            <p>Our story started this year with a clear vision: to create a comprehensive platform that compares different products from different retailers, showing price comparisons from different stores along with detailed specifications.</p>
+                            <p>From concept to reality, we've built a platform that puts consumers first, making price comparison simple and transparent.</p>
+                            <p>Our main goal was to provide users with essential features including wishlist functionality and drop price alerts, making it easier for consumers to track their favorite products and get notified when prices drop.</p>
+                            <p>We believe that shopping for technology should be straightforward and transparent. By aggregating prices from trusted retailers across South Africa, we empower you to find the best deals without the hassle of visiting multiple websites.</p>
+                            <p>Why Choose CompareHub? We're committed to saving you time and money by bringing all the best deals to one convenient location.</p>
+                        </div>
                     </div>
-                    <div class="search-sort-grid">
-                        <div class="search-box">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Search your wishlist...">
-                                <button class="btn btn-search" type="button">
-                                    <i class="fas fa-search"></i>
-                                </button>
+
+                    <div class="about-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-bullseye"></i>
+                            Our Mission & Vision
+                        </h3>
+                        <div class="mission-vision-grid">
+                            <div class="mission-card">
+                                <h4><i class="fas fa-rocket"></i> Our Mission</h4>
+                                <p>To simplify the shopping experience by providing consumers with transparent, comprehensive price comparisons and product information, enabling them to make confident, informed purchasing decisions.</p>
+                            </div>
+                            <div class="vision-card">
+                                <h4><i class="fas fa-eye"></i> Our Vision</h4>
+                                <p>To become the most trusted and comprehensive price comparison platform in South Africa, known for our accuracy, transparency, and commitment to consumer empowerment.</p>
                             </div>
                         </div>
-                        <div class="sort-box">
-                            <select class="form-select">
-                                <option>Date Added</option>
-                                <option>Price: Low to High</option>
-                                <option>Price: High to Low</option>
-                                <option>Name: A to Z</option>
-                                <option>Name: Z to A</option>
-                            </select>
-                        </div>
                     </div>
-                </div>
 
-                <!-- Empty Wishlist Message -->
-                <div class="empty-wishlist">
-                    <div class="empty-wishlist-content">
-                        <div class="empty-wishlist-icon">
-                            <i class="fas fa-shopping-bag"></i>
+                    <div class="about-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-heart"></i>
+                            Our Values
+                        </h3>
+                        <div class="values-intro">
+                            <p>Our core values guide everything we do and shape how we serve our customers every day.</p>
                         </div>
-                        <h3>Your wishlist is empty</h3>
-                        <p>Start adding products to your wishlist to save them for later.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Simple Confirmation Modal -->
-        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmModalLabel">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Confirm Action
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="confirm-content">
-                            <div class="confirm-icon">
-                                <i class="fas fa-question-circle"></i>
+                        <div class="values-grid">
+                            <div class="value-card">
+                                <div class="value-icon">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <h4>Transparency</h4>
+                                <p>We believe in complete transparency in all our operations, from how we collect data to how we present information to our users.</p>
                             </div>
-                            <p class="confirm-message" id="confirmMessage"></p>
+                            <div class="value-card">
+                                <div class="value-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <h4>Accuracy</h4>
+                                <p>We are committed to providing the most accurate and up-to-date information possible, ensuring our users can trust the data they see.</p>
+                            </div>
+                            <div class="value-card">
+                                <div class="value-icon">
+                                    <i class="fas fa-user-friends"></i>
+                                </div>
+                                <h4>User-Centric</h4>
+                                <p>Everything we do is focused on creating the best possible experience for our users, making comparison shopping simple and effective.</p>
+                            </div>
+                            <div class="value-card">
+                                <div class="value-icon">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <h4>Innovation</h4>
+                                <p>We continuously strive to improve our platform with new features and technologies that enhance the user experience.</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            No
-                        </button>
-                        <button type="button" class="btn btn-danger" id="confirmBtn">
-                            Yes
-                        </button>
+
+                    <div class="about-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-envelope"></i>
+                            Contact Information
+                        </h3>
+                        <div class="contact-info-content">
+                            <p>Have questions, feedback, or suggestions? We'd love to hear from you and are here to help with any inquiries you may have.</p>
+                        </div>
+                        <div class="contact-info-grid">
+                            <div class="contact-info-card">
+                                <div class="contact-info-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="contact-info-details">
+                                    <h4>Email Support</h4>
+                                    <p>Coming Soon</p>
+                                </div>
+                            </div>
+                            <div class="contact-info-card">
+                                <div class="contact-info-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="contact-info-details">
+                                    <h4>Phone Support</h4>
+                                    <p>Coming Soon</p>
+                                </div>
+                            </div>
+                            <div class="contact-info-card">
+                                <div class="contact-info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="contact-info-details">
+                                    <h4>Address</h4>
+                                    <p>Coming Soon</p>
+                                </div>
+                            </div>
+                            <div class="contact-info-card">
+                                <div class="contact-info-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="contact-info-details">
+                                    <h4>Business Hours</h4>
+                                    <p>Coming Soon</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="response-time-info">
+                            <h4><i class="fas fa-info-circle"></i> Response Time</h4>
+                            <p>We strive to respond to all inquiries within 24-48 hours during business days.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
             </div>
         </div>
     </main>
+
+
+
 
     <footer class="footer">
         <div class="footer-content">
@@ -823,7 +805,7 @@
     </footer>
 
    
-
+    
  
  
  
@@ -840,91 +822,16 @@
     <script src="assets/scripts/chatbox.js"></script>
     <script src="assets/scripts/price-alerts.js"></script>
     <script src="assets/scripts/wishlist.js"></script>
-    <script src="assets/scripts/notifications-page.js"></script>
-    <script src="assets/scripts/aws-auth.js"></script>
 
-    <script>
-        // Function to show Toast notification
-        function showToast(message, type = 'success', title = null) {
-            const toastContainer = document.getElementById('toastContainer');
-            if (!toastContainer) return;
-            
-            const toastId = 'toast-' + Date.now();
-            
-            // Determine colors and icons based on type
-            let bgClass, icon, defaultTitle;
-            switch(type) {
-                case 'success':
-                    bgClass = 'bg-success';
-                    icon = 'fa-check-circle';
-                    defaultTitle = 'Success';
-                    break;
-                case 'error':
-                case 'danger':
-                    bgClass = 'bg-danger';
-                    icon = 'fa-exclamation-circle';
-                    defaultTitle = 'Error';
-                    break;
-                case 'warning':
-                    bgClass = 'bg-warning';
-                    icon = 'fa-exclamation-triangle';
-                    defaultTitle = 'Warning';
-                    break;
-                case 'info':
-                    bgClass = 'bg-info';
-                    icon = 'fa-info-circle';
-                    defaultTitle = 'Info';
-                    break;
-                default:
-                    bgClass = 'bg-success';
-                    icon = 'fa-check-circle';
-                    defaultTitle = 'Success';
-            }
-            
-            const displayTitle = title || defaultTitle;
-            
-            const toastHTML = `
-                <div class="toast" id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
-                    <div class="toast-header ${bgClass} text-white">
-                        <i class="fas ${icon} me-2"></i>
-                        <strong class="me-auto">${displayTitle}</strong>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                    <div class="toast-body">
-                        ${message}
-                    </div>
-                </div>
-            `;
-            
-            toastContainer.insertAdjacentHTML('beforeend', toastHTML);
-            const toastElement = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastElement);
-            toast.show();
-            
-            // Remove from DOM after hiding
-            toastElement.addEventListener('hidden.bs.toast', function() {
-                toastElement.remove();
-            });
-        }
-        
-        // Alias functions for convenience
-        function showSuccessToast(message, title = 'Success') {
-            showToast(message, 'success', title);
-        }
-        
-        function showErrorToast(message, title = 'Error') {
-            showToast(message, 'error', title);
-        }
-        
-        function showWarningToast(message, title = 'Warning') {
-            showToast(message, 'warning', title);
-        }
-        
-        function showInfoToast(message, title = 'Info') {
-            showToast(message, 'info', title);
-        }
-    </script>
+   
+ 
     
+    
+ 
+
+
+
+
      
 </body>
 </html>

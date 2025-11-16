@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - CompareHubPrices</title>
+    <title>CompareHubPrices - Login</title>
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com https://fonts.googleapis.com https://www.gstatic.com; img-src 'self' data: https://www.gstatic.com; font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://acc.comparehubprices.site https://accounts.google.com https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com;">
     
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -183,6 +183,56 @@
             }
         }
 
+        /* Toast Notification Styling */
+        .toast-container {
+            z-index: 9999 !important;
+        }
+
+        .toast {
+            min-width: 350px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            border-radius: 8px !important;
+            overflow: hidden;
+            border: none !important;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+            padding: 12px 16px !important;
+            font-weight: 600;
+        }
+
+        .toast-body {
+            padding: 16px !important;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        @media (max-width: 576px) {
+            .toast {
+                min-width: calc(100vw - 40px);
+                max-width: calc(100vw - 40px);
+            }
+            
+            .toast-container {
+                top: 70px !important;
+                right: 10px !important;
+            }
+        }
+
 
         @media (max-width: 576px) {
             .main { padding-top: 2rem; }
@@ -267,6 +317,9 @@
 
     
     <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Toast Container for Notifications -->
+    <div class="toast-container position-fixed" style="top: 80px; right: 20px; z-index: 9999;" id="toastContainer"></div>
 
 
 
@@ -836,6 +889,86 @@
       }
       if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bindForgotForms); else bindForgotForms();
     })();
+
+    // Function to show Toast notification
+    function showToast(message, type = 'success', title = null) {
+        const toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) return;
+        
+        const toastId = 'toast-' + Date.now();
+        
+        // Determine colors and icons based on type
+        let bgClass, icon, defaultTitle;
+        switch(type) {
+            case 'success':
+                bgClass = 'bg-success';
+                icon = 'fa-check-circle';
+                defaultTitle = 'Success';
+                break;
+            case 'error':
+            case 'danger':
+                bgClass = 'bg-danger';
+                icon = 'fa-exclamation-circle';
+                defaultTitle = 'Error';
+                break;
+            case 'warning':
+                bgClass = 'bg-warning';
+                icon = 'fa-exclamation-triangle';
+                defaultTitle = 'Warning';
+                break;
+            case 'info':
+                bgClass = 'bg-info';
+                icon = 'fa-info-circle';
+                defaultTitle = 'Info';
+                break;
+            default:
+                bgClass = 'bg-success';
+                icon = 'fa-check-circle';
+                defaultTitle = 'Success';
+        }
+        
+        const displayTitle = title || defaultTitle;
+        
+        const toastHTML = `
+            <div class="toast" id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+                <div class="toast-header ${bgClass} text-white">
+                    <i class="fas ${icon} me-2"></i>
+                    <strong class="me-auto">${displayTitle}</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+        
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+        const toastElement = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+        
+        // Remove from DOM after hiding
+        toastElement.addEventListener('hidden.bs.toast', function() {
+            toastElement.remove();
+        });
+    }
+    
+    // Alias functions for convenience
+    function showSuccessToast(message, title = 'Success') {
+        showToast(message, 'success', title);
+    }
+    
+    function showErrorToast(message, title = 'Error') {
+        showToast(message, 'error', title);
+    }
+    
+    function showWarningToast(message, title = 'Warning') {
+        showToast(message, 'warning', title);
+    }
+    
+    function showInfoToast(message, title = 'Info') {
+        showToast(message, 'info', title);
+    }
     </script>
   
   
