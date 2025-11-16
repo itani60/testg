@@ -231,7 +231,7 @@ class NotificationViewManager {
                                 <a href="my-account.html">My Account</a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a href="notifications.html">Notifications</a>
+                                <a href="notifications">Notifications</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">
                                 Notification Not Found
@@ -245,7 +245,7 @@ class NotificationViewManager {
                         </div>
                         <h2>Notification Not Found</h2>
                         <p>We couldn't find the notification you're looking for.</p>
-                        <a href="notifications.html" class="btn-view-all">
+                        <a href="notifications" class="btn-view-all">
                             <i class="fas fa-list"></i> View All Notifications
                         </a>
                     </div>
@@ -329,7 +329,7 @@ class NotificationViewManager {
 
                     ${(this.notificationData.type === 'price-alert' || this.notificationData.type === 'new-product') && this.notificationData.productImage ? `
                     <div class="notification-view-back-button">
-                        <a href="notifications.html" class="btn-back-to-notifications">
+                        <a href="notifications" class="btn-back-to-notifications">
                             <i class="fas fa-arrow-left"></i>
                             Back to Notifications
                         </a>
@@ -367,7 +367,7 @@ class NotificationViewManager {
 function markAsReadAndGoBack() {
     // You can add logic here to mark the notification as read via API
     // For now, just navigate back
-    window.location.href = 'notifications.html';
+    window.location.href = 'notifications';
 }
 
 // Initialize notification view manager

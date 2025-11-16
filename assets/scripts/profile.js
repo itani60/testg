@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // My Wishlist -> wishlist.html
     wireNav('#my-wishlist', 'wishlist.html');
 
-    // Notifications -> notifications.html
-    wireNav('#notifications', 'notifications.html');
+    // Notifications -> notifications
+    wireNav('#notifications', 'notifications');
 
     // Price Alerts -> price alerts.html (kept as requested, including space)
     wireNav('#price-alerts', 'price-alerts.html');

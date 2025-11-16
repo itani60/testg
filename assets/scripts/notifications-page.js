@@ -15,8 +15,8 @@ class NotificationsPageManager {
     }
 
     async init() {
-        // Only run on notifications.html page
-        if (!window.location.pathname.includes('notifications.html')) return;
+        // Only run on notifications page (with or without .html extension)
+        if (!window.location.pathname.includes('notifications')) return;
 
         // Show loading state
         this.showLoadingState();

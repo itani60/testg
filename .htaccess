@@ -1,16 +1,17 @@
 # Enable Rewrite Engine
 RewriteEngine On
 
-# Remove .html extension from URLs
+# Redirect .html extension to clean URL (301 permanent redirect)
+# This must come before the internal rewrite rule
+RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
+RewriteRule ^ /%1? [NC,L,R=301]
+
+# Internal rewrite: serve .html files for clean URLs
 # If the request is for a file that exists with .html extension, serve it without the extension
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME}.html -f
 RewriteRule ^(.*)$ $1.html [L]
-
-# Redirect .html extension to clean URL (optional - removes .html from visible URL)
-RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
-RewriteRule ^ /%1? [NC,L,R=301]
 
 # Prevent directory listing
 Options -Indexes

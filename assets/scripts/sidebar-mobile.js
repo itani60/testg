@@ -671,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (qaNotifications) {
         qaNotifications.addEventListener('click', function(e) {
             e.preventDefault();
-            goToMobile('notifications.html');
+            goToMobile('notifications');
         });
     }
 
@@ -685,8 +685,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // My Profile - redirect based on user type (business or regular)
-    // Use .my-profile-link selector to specifically target My Profile (not Help)
-    const qaProfile = root.querySelector('.quick-access-item.my-profile-link, .quick-access-item.help[href="#"]');
+    const qaProfile = root.querySelector('.quick-access-item.help');
     if (qaProfile) {
         qaProfile.addEventListener('click', async function(e) {
             e.preventDefault();
