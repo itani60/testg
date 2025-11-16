@@ -570,29 +570,21 @@ class WishlistManager {
     }
 
     showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `alert alert-${type === 'success' ? 'success' : type === 'info' ? 'info' : 'warning'} alert-dismissible fade show`;
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            min-width: 300px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        `;
-        
-        notification.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 3000);
+        // Use the new toast notification system
+        if (typeof showToast === 'function') {
+            showToast(message, type);
+        } else if (typeof showSuccessToast === 'function' && type === 'success') {
+            showSuccessToast(message);
+        } else if (typeof showErrorToast === 'function' && (type === 'error' || type === 'danger')) {
+            showErrorToast(message);
+        } else if (typeof showWarningToast === 'function' && type === 'warning') {
+            showWarningToast(message);
+        } else if (typeof showInfoToast === 'function' && type === 'info') {
+            showInfoToast(message);
+        } else {
+            // Fallback to console if toast functions not available
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
     }
 
     async clearWishlist() {
