@@ -159,6 +159,56 @@
             }
         }
 
+        /* Toast Notification Styling */
+        .toast-container {
+            z-index: 9999 !important;
+        }
+
+        .toast {
+            min-width: 350px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            border-radius: 8px !important;
+            overflow: hidden;
+            border: none !important;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+            padding: 12px 16px !important;
+            font-weight: 600;
+        }
+
+        .toast-body {
+            padding: 16px !important;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        @media (max-width: 576px) {
+            .toast {
+                min-width: calc(100vw - 40px);
+                max-width: calc(100vw - 40px);
+            }
+            
+            .toast-container {
+                top: 70px !important;
+                right: 10px !important;
+            }
+        }
+
         .loading-content p {
             font-size: 1rem;
             color: #666;
@@ -1368,7 +1418,7 @@
     </script>
 
     <!-- Toast Container for Notifications -->
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;" id="toastContainer"></div>
+    <div class="toast-container position-fixed" style="top: 80px; right: 20px; z-index: 9999;" id="toastContainer"></div>
 
     <script>
         // Function to show Bootstrap Toast notification
