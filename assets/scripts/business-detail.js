@@ -1,545 +1,354 @@
-// Business Detail Page Functionality
-// This file handles the dedicated business detail page
-// DEPENDENCY: Requires local-business2.js to be loaded first for data and utility functions
+// Business Detail Page Manager
+// Handles loading and displaying business information on local_business_info.html
 
 class BusinessDetailManager {
     constructor() {
-        this.currentBusiness = null;
-        this.currentGallery = null;
-        this.currentGalleryIndex = 0;
-        this.currentBusinessId = null;
-        
+        this.businessId = null;
+        this.businessData = null;
+        this.mapInstance = null;
+        this.mapInitialized = false;
         this.init();
     }
-    
-    init() {
-        this.loadBusinessFromUrl();
-        this.setupEventListeners();
-        this.updatePageMetaTags();
-    }
-    
-    loadBusinessFromUrl() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const businessId = urlParams.get('id');
+
+    async init() {
+        // Show loader
+        this.showLoader();
         
-        // Check for test mode - use test data if available
-        // Test mode can be enabled via URL parameter ?test=true or if USE_TEST_MODE is set
-        const testMode = urlParams.get('test') === 'true' || (window.USE_TEST_MODE && window.TEST_BUSINESS_DATA);
+        // Get business ID from URL
+        this.businessId = this.getBusinessIdFromUrl();
         
-        if (testMode && window.TEST_BUSINESS_DATA) {
-            console.log('🧪 TEST MODE: Using hardcoded test data');
-            this.currentBusinessId = window.TEST_BUSINESS_DATA.businessId || 'test-business';
-            this.loadTestBusinessData();
-            return;
-        }
-        
-        if (!businessId) {
+        if (!this.businessId) {
+            this.hideLoader();
             this.showError('Business ID not found in URL');
             return;
         }
-        
-        this.currentBusinessId = businessId;
-        this.loadBusinessData(businessId);
-    }
-    
-    loadTestBusinessData() {
+
+        // Load business data
         try {
-            // Show loading state
-            this.showLoading();
-            
-            // Use test data directly
-            const testData = window.TEST_BUSINESS_DATA;
-            
-            // Transform test data to match API format
-            const apiFormat = {
-                businessId: testData.businessId,
-                businessName: testData.businessName,
-                businessDescription: testData.businessDescription,
-                fullContent: testData.fullContent || testData.businessDescription,
-                businessCategory: testData.businessCategory,
-                businessType: testData.businessType,
-                businessAddress: testData.businessAddress,
-                businessNumber: testData.businessNumber,
-                businessHours: testData.businessHours,
-                businessLogoUrl: testData.businessLogoUrl,
-                socialMedia: testData.socialMedia || {},
-                serviceGalleries: testData.serviceGalleries || {},
-                status: testData.status,
-                verified: testData.verified
-            };
-            
-            // Transform to expected format
-            const business = this.transformBusinessData(apiFormat);
-            
-            this.currentBusiness = business;
-            this.renderBusinessPage();
-            this.updatePageMetaTags();
-            
-            // Show test mode indicator
-            this.showTestModeIndicator();
+            await this.loadBusinessData(this.businessId);
+            this.renderBusinessData();
+            this.initializeMap();
+            this.hideLoader();
         } catch (error) {
-            console.error('Error loading test business data:', error);
-            this.showError('Failed to load test business data.');
+            console.error('Error loading business:', error);
+            this.hideLoader();
+            this.showError('Failed to load business information. Please try again.');
         }
     }
-    
-    showTestModeIndicator() {
-        // Add test mode badge to the page
-        const heroSection = document.querySelector('.business-hero');
-        if (heroSection) {
-            const testBadge = document.createElement('div');
-            testBadge.style.cssText = 'position: absolute; top: 20px; right: 20px; background: #ffc107; color: #000; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2);';
-            testBadge.textContent = '🧪 TEST MODE - Using Hardcoded Data';
-            heroSection.style.position = 'relative';
-            heroSection.appendChild(testBadge);
-        }
+
+    getBusinessIdFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('id') || urlParams.get('businessId');
     }
-    
+
     async loadBusinessData(businessId) {
         try {
-            // Show loading state
-            this.showLoading();
-            
-            // Fetch business data from API
-            const BASE_URL = 'https://acc.comparehubprices.site';
-            const response = await fetch(`${BASE_URL}/business/business/public/${businessId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            const data = await response.json();
-        
-            if (!response.ok || !data.success || !data.business) {
-            this.showError('Business not found');
-            return;
-        }
-            
-            // Transform API response to match expected format
-            const business = this.transformBusinessData(data.business);
-        
-        this.currentBusiness = business;
-        this.renderBusinessPage();
-        this.updatePageMetaTags();
-        } catch (error) {
-            console.error('Error loading business data:', error);
-            this.showError('Failed to load business data. Please try again later.');
-        }
-    }
-    
-    transformBusinessData(apiBusiness) {
-        // Transform API response to match the format expected by the rest of the code
-        const serviceGalleries = {};
-        
-        // Transform serviceGalleries from API format
-        if (apiBusiness.serviceGalleries) {
-            Object.keys(apiBusiness.serviceGalleries).forEach(serviceName => {
-                const images = apiBusiness.serviceGalleries[serviceName];
-                if (Array.isArray(images)) {
-                    serviceGalleries[serviceName] = images.map(img => ({
-                        image: typeof img === 'string' ? img : (img.image || img.url || ''),
-                        title: typeof img === 'object' ? (img.title || img.name || '') : '',
-                        price: typeof img === 'object' && img.price !== undefined ? img.price : undefined
-                    }));
-                }
-            });
-        }
-        
-        // Extract location from address
-        const location = apiBusiness.businessAddress || '';
-        const province = this.extractProvince(location);
-        
-        return {
-            id: apiBusiness.businessId,
-            name: apiBusiness.businessName,
-            description: apiBusiness.businessDescription || '',
-            category: apiBusiness.businessCategory || apiBusiness.businessType || 'Service',
-            province: province,
-            location: location,
-            phone: apiBusiness.businessNumber || '',
-            hours: apiBusiness.businessHours || 'Hours not specified',
-            whatsapp: apiBusiness.socialMedia?.whatsapp || '',
-            instagram: apiBusiness.socialMedia?.instagram || '',
-            tiktok: apiBusiness.socialMedia?.tiktok || '',
-            facebook: apiBusiness.socialMedia?.facebook || '',
-            linkedin: apiBusiness.socialMedia?.linkedin || '',
-            twitter: apiBusiness.socialMedia?.twitter || '',
-            image: apiBusiness.businessLogoUrl || 'https://via.placeholder.com/400x300?text=No+Image',
-            serviceGalleries: serviceGalleries,
-            fullContent: apiBusiness.fullContent || apiBusiness.businessDescription || '',
-            rating: 0, // Will be calculated from reviews if available
-            distance: 0,
-            status: apiBusiness.status,
-            verified: apiBusiness.verified
-        };
-    }
-    
-    extractProvince(address) {
-        const provinces = ['Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Eastern Cape', 'Free State', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape'];
-        for (const province of provinces) {
-            if (address.toLowerCase().includes(province.toLowerCase())) {
-                return province;
+            // Use the BusinessMarketplaceAPI from local-business2.js
+            if (typeof BusinessMarketplaceAPI === 'undefined') {
+                throw new Error('BusinessMarketplaceAPI not available');
             }
+
+            const business = await BusinessMarketplaceAPI.getBusiness(businessId);
+            this.businessData = business;
+            console.log('Business data loaded:', business);
+        } catch (error) {
+            console.error('Error fetching business:', error);
+            throw error;
         }
-        return '';
     }
-    
-    showLoading() {
-        const heroSection = document.getElementById('businessHero');
-        if (heroSection) {
-            heroSection.innerHTML = `
-                <div class="loading-container">
-                    <div class="loading-content">
-                        <div class="spinner-border text-danger" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p>Loading business information...</p>
+
+    showLoader() {
+        const loader = document.getElementById('pageLoadingOverlay');
+        if (loader) {
+            loader.classList.remove('hidden');
+        }
+    }
+
+    hideLoader() {
+        const loader = document.getElementById('pageLoadingOverlay');
+        if (loader) {
+            loader.classList.add('hidden');
+        }
+    }
+
+    showError(message) {
+        const mainContent = document.querySelector('.business-detail-container');
+        if (mainContent) {
+            mainContent.innerHTML = `
+                <div class="container">
+                    <div class="alert alert-danger" role="alert">
+                        <h4 class="alert-heading">Error</h4>
+                        <p>${message}</p>
+                        <hr>
+                        <p class="mb-0">
+                            <a href="local-business2.html" class="btn btn-primary">Go Back to Business List</a>
+                        </p>
                     </div>
                 </div>
             `;
         }
     }
-    
-    renderBusinessPage() {
-        if (!this.currentBusiness) return;
-        
-        // Update hero section
-        this.updateHeroSection();
-        
-        // Update breadcrumb
-        this.updateBreadcrumb();
-        
-        // Update main content
-        this.updateMainContent();
-        
-        // Update sidebar
-        this.updateSidebar();
-        
-        // Load reviews
-        this.loadBusinessReviews();
-    }
-    
-    updateHeroSection() {
-        const business = this.currentBusiness;
-        
-        // Update hero image
-        const heroImage = document.getElementById('businessHeroImage');
-        if (heroImage) {
-            heroImage.src = business.image;
-            heroImage.alt = business.name;
-        }
-        
-        // Update category badge
-        const categoryBadge = document.getElementById('businessCategoryBadge');
-        if (categoryBadge) {
-            categoryBadge.textContent = business.category;
-        }
-        
-        // Update title
-        const title = document.getElementById('businessTitle');
-        if (title) {
-            title.textContent = business.name;
-        }
-        
-        // Update subtitle
-        const subtitle = document.getElementById('businessSubtitle');
-        if (subtitle) {
-            subtitle.textContent = business.description;
-        }
-        
-        // Update rating
-        this.updateBusinessRating();
-        
-        // Update location
-        const locationText = document.getElementById('businessLocationText');
-        if (locationText) {
-            locationText.textContent = business.location;
+
+    renderBusinessData() {
+        if (!this.businessData) return;
+
+        const business = this.businessData;
+
+        // Hero Section
+        this.updateElement('businessHeroImage', 'src', business.image || 'https://via.placeholder.com/400x300?text=No+Image');
+        this.updateElement('businessHeroImage', 'alt', business.name);
+        this.updateElement('businessCategoryBadge', 'textContent', business.category || 'Business');
+        this.updateElement('businessTitle', 'textContent', business.name || 'Business Name');
+        this.updateElement('businessSubtitle', 'textContent', business.description || '');
+        this.updateElement('businessLocationText', 'textContent', 
+            `${business.province ? business.province + ', ' : ''}${business.location || 'Location not specified'}`);
+
+        // Rating
+        const averageRating = this.getAverageRating(business.id);
+        const totalRatings = this.getTotalRatings(business.id);
+        this.renderRatingStars('businessRatingStars', averageRating);
+        this.updateElement('businessRatingText', 'textContent', 
+            `${averageRating.toFixed(1)} (${totalRatings} ${totalRatings === 1 ? 'review' : 'reviews'})`);
+
+        // Breadcrumb
+        this.updateElement('breadcrumbBusinessName', 'textContent', business.name || 'Business Details');
+
+        // Description
+        const descriptionElement = document.getElementById('businessDescription');
+        if (descriptionElement) {
+            descriptionElement.innerHTML = business.fullContent || business.description || 'No description available.';
         }
 
-        // Setup follow UI
-        this.setupFollowUI();
+        // Services & Gallery
+        this.renderServicesAndGallery(business);
+
+        // Contact Information
+        this.renderContactInfo(business);
+
+        // Business Hours
+        this.renderBusinessHours(business);
+
+        // Social Buttons
+        this.renderSocialButtons(business);
+
+        // Reviews
+        this.renderReviews(business.id);
     }
-    
-    updateBusinessRating() {
-        const business = this.currentBusiness;
-        const averageRating = getAverageRating(business.id);
-        const totalRatings = getTotalRatings(business.id);
-        
-        // Update rating stars
-        const ratingStars = document.getElementById('businessRatingStars');
-        if (ratingStars) {
-            ratingStars.innerHTML = renderStarsHTML(averageRating);
-        }
-        
-        // Update rating text
-        const ratingText = document.getElementById('businessRatingText');
-        if (ratingText) {
-            ratingText.textContent = `${averageRating.toFixed(1)} (${totalRatings} ${totalRatings === 1 ? 'review' : 'reviews'})`;
-        }
-    }
-    
-    updateBreadcrumb() {
-        const business = this.currentBusiness;
-        const breadcrumbName = document.getElementById('breadcrumbBusinessName');
-        if (breadcrumbName) {
-            breadcrumbName.textContent = business.name;
-        }
-    }
-    
-    updateMainContent() {
-        const business = this.currentBusiness;
-        
-        // Update business description (filter out "Our Work Gallery" section)
-        const description = document.getElementById('businessDescription');
-        if (description) {
-            let content = business.fullContent || business.description;
-            
-            // Remove "Our Work Gallery" section if it exists
-            if (content.includes('<h3>Our Work Gallery</h3>')) {
-                const galleryStart = content.indexOf('<h3>Our Work Gallery</h3>');
-                const galleryEnd = content.indexOf('<h3>Business Hours</h3>');
-                
-                if (galleryStart !== -1 && galleryEnd !== -1) {
-                    content = content.substring(0, galleryStart) + content.substring(galleryEnd);
-                } else if (galleryStart !== -1) {
-                    // If no "Business Hours" section, remove everything from "Our Work Gallery" onwards
-                    content = content.substring(0, galleryStart);
-                }
+
+    updateElement(id, property, value) {
+        const element = document.getElementById(id);
+        if (element) {
+            if (property === 'textContent' || property === 'innerHTML') {
+                element[property] = value;
+            } else {
+                element.setAttribute(property, value);
             }
-            
-            description.innerHTML = content;
         }
-        
-        // Update services/gallery
-        this.updateServicesGallery();
     }
-    
-    updateServicesGallery() {
-        const business = this.currentBusiness;
+
+    renderRatingStars(containerId, rating) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+        let starsHTML = '';
+        for (let i = 0; i < fullStars; i++) {
+            starsHTML += '<i class="fas fa-star"></i>';
+        }
+        if (hasHalfStar) {
+            starsHTML += '<i class="fas fa-star-half-alt"></i>';
+        }
+        for (let i = 0; i < emptyStars; i++) {
+            starsHTML += '<i class="far fa-star"></i>';
+        }
+
+        container.innerHTML = starsHTML;
+    }
+
+    renderServicesAndGallery(business) {
         const servicesGrid = document.getElementById('servicesGrid');
-        
-        if (!servicesGrid || !business.serviceGalleries) {
+        if (!servicesGrid) return;
+
+        if (!business.serviceGalleries || Object.keys(business.serviceGalleries).length === 0) {
+            servicesGrid.innerHTML = '<p class="text-muted">No services or gallery items available.</p>';
             return;
         }
-        
+
         let servicesHTML = '';
-        
         Object.keys(business.serviceGalleries).forEach(serviceName => {
-            const gallery = business.serviceGalleries[serviceName];
-            if (gallery && gallery.length > 0) {
+            const images = business.serviceGalleries[serviceName];
+            if (images && images.length > 0) {
                 servicesHTML += `
-                    <div class="service-card">
+                    <div class="service-item">
                         <h4>${serviceName}</h4>
                         <div class="service-gallery">
-                            ${gallery.slice(0, 4).map((item, index) => {
-                                const price = item.price !== undefined && item.price !== null ? item.price : null;
-                                const priceDisplay = price ? `<div class="gallery-item-price">R${parseFloat(price).toFixed(2)}</div>` : '';
-                                return `
-                                <div class="gallery-item" onclick="openGalleryModal('${serviceName}', ${index})">
-                                    <img src="${item.image}" alt="${item.title || ''}" loading="lazy">
-                                    ${priceDisplay}
-                                    ${item.title ? `<p>${item.title}</p>` : ''}
+                            ${images.map((img, index) => `
+                                <div class="gallery-item" onclick="openGalleryImage('${img.image}', '${serviceName}', ${index})">
+                                    <img src="${img.image}" alt="${img.title || serviceName}" loading="lazy">
+                                    ${img.title ? `<div class="gallery-item-title">${img.title}</div>` : ''}
                                 </div>
-                            `;
-                            }).join('')}
-                            ${gallery.length > 4 ? `
-                                <div class="gallery-more" onclick="openGalleryModal('${serviceName}', 0)">
-                                    <span>+${gallery.length - 4} more</span>
-                                </div>
-                            ` : ''}
+                            `).join('')}
                         </div>
                     </div>
                 `;
             }
         });
-        
-        servicesGrid.innerHTML = servicesHTML;
+
+        servicesGrid.innerHTML = servicesHTML || '<p class="text-muted">No services or gallery items available.</p>';
     }
-    
-    updateSidebar() {
-        const business = this.currentBusiness;
-        
-        // Update contact details
-        this.updateContactDetails();
-        
-        // Update social buttons
-        this.updateSocialButtons();
-        
-        // Update business hours
-        this.updateBusinessHours();
-        
-        // Render map
-        this.renderBusinessMap();
-    }
-    
-    updateContactDetails() {
-        const business = this.currentBusiness;
-        const contactDetails = document.getElementById('contactDetails') || document.getElementById('contactDetailsDesktop');
-        
-        if (contactDetails) {
-            contactDetails.innerHTML = `
+
+    renderContactInfo(business) {
+        const contactHTML = `
+            <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <div class="contact-info">
+                    <strong>Phone</strong>
+                    <a href="tel:${business.phone || ''}">${business.phone || 'Not available'}</a>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <div class="contact-info">
+                    <strong>Address</strong>
+                    <span>${business.location || 'Address not available'}</span>
+                </div>
+            </div>
+            ${business.province ? `
                 <div class="contact-item">
-                    <i class="fas fa-phone"></i>
-                    <div>
-                        <strong>Phone</strong>
-                        <p><a href="tel:${business.phone}">${business.phone}</a></p>
+                    <i class="fas fa-building"></i>
+                    <div class="contact-info">
+                        <strong>Province</strong>
+                        <span>${business.province}</span>
                     </div>
                 </div>
-                <div class="contact-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <div>
-                        <strong>Location</strong>
-                        <p>${business.province ? business.province + ', ' : ''}${business.location}</p>
-                    </div>
-                </div>
-            `;
-        }
-    }
-    
-    updateSocialButtons() {
-        const business = this.currentBusiness;
-        const socialButtons = document.getElementById('socialButtons') || document.getElementById('socialButtonsDesktop');
-        
-        if (socialButtons) {
-            let socialHTML = '';
-            
-            // Add phone number as a contact button
-            if (business.phone) {
-                socialHTML += `
-                    <a href="tel:${business.phone}" class="social-btn phone">
-                        <i class="fas fa-phone"></i>
-                        ${business.phone}
-                    </a>
-                `;
-            }
-            
-            if (business.whatsapp) {
-                socialHTML += `
-                    <a href="https://wa.me/${business.whatsapp}" class="social-btn whatsapp" target="_blank">
-                        <i class="fab fa-whatsapp"></i>
-                        WhatsApp
-                    </a>
-                `;
-            }
-            
-            if (business.instagram) {
-                socialHTML += `
-                    <a href="https://instagram.com/${business.instagram.replace('@', '')}" class="social-btn instagram" target="_blank">
-                        <i class="fab fa-instagram"></i>
-                        Instagram
-                    </a>
-                `;
-            }
-            
-            if (business.tiktok) {
-                socialHTML += `
-                    <a href="https://tiktok.com/@${business.tiktok.replace('@', '')}" class="social-btn tiktok" target="_blank">
-                        <i class="fab fa-tiktok"></i>
-                        TikTok
-                    </a>
-                `;
-            }
-            
-            socialButtons.innerHTML = socialHTML;
-        }
-    }
-    
-    updateBusinessHours() {
-        const business = this.currentBusiness;
-        const businessHours = document.getElementById('businessHours') || document.getElementById('businessHoursDesktop');
-        
-        if (businessHours) {
-            businessHours.innerHTML = `
-                <div class="hours-item">
-                    <span>Business Hours</span>
-                    <span>${business.hours}</span>
-                </div>
-            `;
-        }
-    }
-    
-    renderBusinessMap() {
-        const business = this.currentBusiness;
-        if (!business) return;
-
-        const address = encodeURIComponent(business.location || '');
-        if (!address) return;
-
-        const mapIframe = (addr) => `
-            <iframe
-                title="Business location map"
-                width="100%"
-                height="260"
-                style="border:0; border-radius: 12px;"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                src="https://www.google.com/maps?q=${addr}&output=embed">
-            </iframe>
+            ` : ''}
         `;
 
-        const mobileMap = document.getElementById('businessMapMobile');
-        if (mobileMap && !mobileMap.dataset.rendered) {
-            mobileMap.innerHTML = mapIframe(address);
-            mobileMap.dataset.rendered = 'true';
+        // Update both mobile and desktop contact sections
+        const contactDetails = document.getElementById('contactDetails');
+        const contactDetailsDesktop = document.getElementById('contactDetailsDesktop');
+        if (contactDetails) contactDetails.innerHTML = contactHTML;
+        if (contactDetailsDesktop) contactDetailsDesktop.innerHTML = contactHTML;
+    }
+
+    renderBusinessHours(business) {
+        const hoursHTML = business.hours ? `
+            <div class="hours-item">
+                ${business.hours}
+            </div>
+        ` : `
+            <div class="hours-item">
+                <p class="text-muted">Business hours not specified</p>
+            </div>
+        `;
+
+        const businessHours = document.getElementById('businessHours');
+        const businessHoursDesktop = document.getElementById('businessHoursDesktop');
+        if (businessHours) businessHours.innerHTML = hoursHTML;
+        if (businessHoursDesktop) businessHoursDesktop.innerHTML = hoursHTML;
+    }
+
+    renderSocialButtons(business) {
+        let socialHTML = '';
+
+        if (business.whatsapp) {
+            socialHTML += `
+                <a href="https://wa.me/${business.whatsapp.replace(/[^0-9]/g, '')}" class="social-btn" target="_blank" rel="noopener">
+                    <i class="fab fa-whatsapp"></i>
+                    WhatsApp
+                </a>
+            `;
         }
 
-        const desktopMap = document.getElementById('businessMapDesktop');
-        if (desktopMap && !desktopMap.dataset.rendered) {
-            desktopMap.innerHTML = mapIframe(address);
-            desktopMap.dataset.rendered = 'true';
+        if (business.instagram) {
+            const instagramHandle = business.instagram.replace('@', '').replace('https://instagram.com/', '').replace('https://www.instagram.com/', '');
+            socialHTML += `
+                <a href="https://instagram.com/${instagramHandle}" class="social-btn" target="_blank" rel="noopener">
+                    <i class="fab fa-instagram"></i>
+                    Instagram
+                </a>
+            `;
         }
+
+        if (business.tiktok) {
+            const tiktokHandle = business.tiktok.replace('@', '').replace('https://tiktok.com/@', '').replace('https://www.tiktok.com/@', '');
+            socialHTML += `
+                <a href="https://tiktok.com/@${tiktokHandle}" class="social-btn" target="_blank" rel="noopener">
+                    <i class="fab fa-tiktok"></i>
+                    TikTok
+                </a>
+            `;
+        }
+
+        if (business.facebook) {
+            socialHTML += `
+                <a href="${business.facebook.startsWith('http') ? business.facebook : 'https://facebook.com/' + business.facebook}" class="social-btn" target="_blank" rel="noopener">
+                    <i class="fab fa-facebook"></i>
+                    Facebook
+                </a>
+            `;
+        }
+
+        if (business.linkedin) {
+            socialHTML += `
+                <a href="${business.linkedin.startsWith('http') ? business.linkedin : 'https://linkedin.com/company/' + business.linkedin}" class="social-btn" target="_blank" rel="noopener">
+                    <i class="fab fa-linkedin"></i>
+                    LinkedIn
+                </a>
+            `;
+        }
+
+        if (business.twitter) {
+            const twitterHandle = business.twitter.replace('@', '').replace('https://twitter.com/', '').replace('https://www.twitter.com/', '');
+            socialHTML += `
+                <a href="https://twitter.com/${twitterHandle}" class="social-btn" target="_blank" rel="noopener">
+                    <i class="fab fa-twitter"></i>
+                    Twitter
+                </a>
+            `;
+        }
+
+        if (!socialHTML) {
+            socialHTML = '<p class="text-muted">No social media links available</p>';
+        }
+
+        // Update all social button containers
+        const socialButtons = document.getElementById('socialButtons');
+        const socialButtonsDesktop = document.getElementById('socialButtonsDesktop');
+        if (socialButtons) socialButtons.innerHTML = socialHTML;
+        if (socialButtonsDesktop) socialButtonsDesktop.innerHTML = socialHTML;
     }
-    
-    loadBusinessReviews() {
-        const business = this.currentBusiness;
-        if (!business) return;
-        
-        // Use functions from local-business2.js
-        const reviews = getReviewsForBusiness(business.id);
-        const stats = getReviewStatistics(business.id);
-        
+
+    renderReviews(businessId) {
+        const reviews = this.getReviewsForBusiness(businessId);
+        const averageRating = this.getAverageRating(businessId);
+        const totalRatings = reviews.length;
+
         // Update reviews summary
-        this.updateReviewsSummary(stats);
-        
+        const reviewsSummary = document.getElementById('reviewsSummary');
+        if (reviewsSummary) {
+            reviewsSummary.innerHTML = `
+                <div class="rating-stats">
+                    <div class="rating-score-large">${averageRating.toFixed(1)}</div>
+                    <div class="rating-stars large">
+                        ${this.renderStarsHTML(averageRating)}
+                    </div>
+                    <div class="rating-count">${totalRatings} ${totalRatings === 1 ? 'rating' : 'ratings'}</div>
+                </div>
+            `;
+        }
+
         // Render reviews list
         this.renderReviewsList(reviews);
     }
-    
-    updateReviewsSummary(stats) {
-        const reviewsSummary = document.getElementById('reviewsSummary');
-        if (!reviewsSummary) return;
-        
-        reviewsSummary.innerHTML = `
-            <div class="rating-stats">
-                <div class="rating-score-large">${stats.averageRating.toFixed(1)}</div>
-                <div class="rating-stars large">
-                    ${renderStarsHTML(stats.averageRating)}
-                </div>
-                <div class="rating-count">${stats.totalReviews} ${stats.totalReviews === 1 ? 'review' : 'reviews'}</div>
-            </div>
-            <div class="rating-breakdown">
-                ${stats.ratingDistribution.map((count, index) => {
-                    const percentage = stats.totalReviews > 0 ? (count / stats.totalReviews) * 100 : 0;
-                    const stars = 5 - index;
-                    return `
-                        <div class="rating-bar">
-                            <span class="star-label">${stars} star${stars > 1 ? 's' : ''}</span>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${percentage}%"></div>
-                            </div>
-                            <span class="count">${count}</span>
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-        `;
-    }
-    
+
     renderReviewsList(reviews) {
         const reviewsList = document.getElementById('reviewsList');
         if (!reviewsList) return;
-        
+
         if (reviews.length === 0) {
             reviewsList.innerHTML = `
                 <div class="no-reviews">
@@ -549,7 +358,7 @@ class BusinessDetailManager {
             `;
             return;
         }
-        
+
         const reviewsHTML = reviews.map(review => `
             <div class="review-card ${review.isUserReview ? 'user-review' : ''}">
                 <div class="review-header">
@@ -560,544 +369,240 @@ class BusinessDetailManager {
                         <div class="reviewer-details">
                             <h4>${review.userName}</h4>
                             <div class="review-rating">
-                                <div class="rating-stars">${renderStarsHTML(review.rating)}</div>
+                                <div class="rating-stars">
+                                    ${this.renderStarsHTML(review.rating)}
+                                </div>
+                                <span class="review-date">${this.formatReviewDate(review.date)}</span>
                             </div>
                         </div>
                     </div>
-                    <div class="review-meta">
-                        <div class="review-date">${formatReviewDate(review.date)}</div>
-                        ${review.isUserReview ? '<div class="your-review-badge">Your Review</div>' : ''}
-                    </div>
+                    ${review.isUserReview ? '<span class="your-review-badge">Your Review</span>' : ''}
                 </div>
                 <div class="review-content">
                     <p>${review.review || 'No review text provided.'}</p>
                 </div>
                 <div class="review-actions">
-                    <button class="helpful-btn" onclick="markReviewHelpful('${review.id}')">
+                    <button class="helpful-btn" onclick="markReviewHelpfulDetail('${review.id}')">
                         <i class="fas fa-thumbs-up"></i>
                         Helpful (${review.helpfulCount || 0})
                     </button>
-                    ${!review.isUserReview ? `
-                        <button class="report-btn" onclick="reportReview('${review.id}')">
-                            <i class="fas fa-flag"></i>
-                            Report
-                        </button>
-                    ` : ''}
                 </div>
             </div>
         `).join('');
-        
+
         reviewsList.innerHTML = reviewsHTML;
     }
-    
-    updatePageMetaTags() {
-        if (!this.currentBusiness) return;
-        
-        const business = this.currentBusiness;
-        
-        // Update page title
-        document.title = `${business.name} - ${business.category} | CompareHubPrices`;
-        
-        // Update meta description
-        const metaDescription = document.querySelector('meta[name="description"]');
-        if (metaDescription) {
-            metaDescription.content = `${business.description} - Located in ${business.location}. Contact: ${business.phone}. Read reviews and ratings on CompareHubPrices.`;
+
+    renderStarsHTML(rating) {
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+        let starsHTML = '';
+        for (let i = 0; i < fullStars; i++) {
+            starsHTML += '<i class="fas fa-star"></i>';
         }
-        
-        // Update Open Graph tags
-        const ogTitle = document.querySelector('meta[property="og:title"]');
-        if (ogTitle) {
-            ogTitle.content = `${business.name} - ${business.category}`;
+        if (hasHalfStar) {
+            starsHTML += '<i class="fas fa-star-half-alt"></i>';
         }
-        
-        const ogDescription = document.querySelector('meta[property="og:description"]');
-        if (ogDescription) {
-            ogDescription.content = business.description;
+        for (let i = 0; i < emptyStars; i++) {
+            starsHTML += '<i class="far fa-star"></i>';
         }
-        
-        const ogImage = document.querySelector('meta[property="og:image"]');
-        if (ogImage) {
-            ogImage.content = business.image;
-        }
-        
-        // Update canonical URL
-        const canonical = document.querySelector('link[rel="canonical"]');
-        if (canonical) {
-            canonical.href = window.location.href;
-        }
-        
-        // Update structured data
-        this.updateStructuredData();
+        return starsHTML;
     }
 
-    // Follow feature (local-only using localStorage)
-    getFollowersKey(businessId) {
-        return `businessFollowers:${businessId}`;
-    }
+    formatReviewDate(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    getFollowStateKey(businessId) {
-        return `businessFollowState:${businessId}`;
-    }
-
-    readFollowersCount(businessId) {
-        const val = localStorage.getItem(this.getFollowersKey(businessId));
-        const num = parseInt(val || '0', 10);
-        return Number.isNaN(num) ? 0 : Math.max(0, num);
-    }
-
-    writeFollowersCount(businessId, count) {
-        localStorage.setItem(this.getFollowersKey(businessId), String(Math.max(0, count | 0)));
-    }
-
-    isFollowing(businessId) {
-        return localStorage.getItem(this.getFollowStateKey(businessId)) === '1';
-    }
-
-    setFollowing(businessId, following) {
-        localStorage.setItem(this.getFollowStateKey(businessId), following ? '1' : '0');
-    }
-
-    getFollowersListKey(businessId) {
-        return `businessFollowersList:${businessId}`;
-    }
-
-    readFollowersList(businessId) {
-        try {
-            const raw = localStorage.getItem(this.getFollowersListKey(businessId));
-            const arr = raw ? JSON.parse(raw) : [];
-            return Array.isArray(arr) ? arr : [];
-        } catch (_) {
-            return [];
-        }
-    }
-
-    writeFollowersList(businessId, list) {
-        localStorage.setItem(this.getFollowersListKey(businessId), JSON.stringify(list.slice(0, 500)));
-    }
-
-    formatFollowers(count) {
-        if (count >= 1_000_000) return (count / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M followers';
-        if (count >= 1_000) return (count / 1_000).toFixed(1).replace(/\.0$/, '') + 'k followers';
-        return `${count} follower${count === 1 ? '' : 's'}`;
-    }
-
-    setupFollowUI() {
-        const business = this.currentBusiness;
-        const btn = document.getElementById('followBusinessBtn');
-        const countEl = document.getElementById('followersCount');
-        if (!btn || !countEl || !business) return;
-
-        const syncUI = () => {
-            const following = this.isFollowing(business.id);
-            const count = this.readFollowersCount(business.id);
-            btn.classList.toggle('is-following', following);
-            btn.innerHTML = following
-                ? '<i class="fas fa-check"></i> <span class="follow-btn-text">Following</span>'
-                : '<i class="fas fa-plus"></i> <span class="follow-btn-text">Follow</span>';
-            countEl.textContent = this.formatFollowers(count);
-        };
-
-        // Initialize defaults if not present
-        if (localStorage.getItem(this.getFollowersKey(business.id)) === null) {
-            this.writeFollowersCount(business.id, Math.floor(Math.random() * 20));
-        }
-
-        syncUI();
-
-        btn.onclick = (e) => {
-            e.preventDefault();
-            const currentlyFollowing = this.isFollowing(business.id);
-            const currentCount = this.readFollowersCount(business.id);
-            const nextFollowing = !currentlyFollowing;
-            const nextCount = Math.max(0, currentCount + (nextFollowing ? 1 : -1));
-            this.setFollowing(business.id, nextFollowing);
-            this.writeFollowersCount(business.id, nextCount);
-            this.updateFollowersListMutation(business.id, nextFollowing);
-            syncUI();
-        };
-    }
-
-    updateFollowersListMutation(businessId, nowFollowing) {
-        let list = this.readFollowersList(businessId);
-        const youId = 'you';
-        if (nowFollowing) {
-            // add if missing
-            if (!list.find(x => x.id === youId)) {
-                list.unshift({ id: youId, name: 'You', initials: 'YOU' });
-            }
+        if (diffDays === 1) {
+            return 'Yesterday';
+        } else if (diffDays < 7) {
+            return `${diffDays} days ago`;
+        } else if (diffDays < 30) {
+            const weeks = Math.floor(diffDays / 7);
+            return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
         } else {
-            // remove
-            list = list.filter(x => x.id !== youId);
-        }
-        this.writeFollowersList(businessId, list);
-    }
-
-    seedFollowersIfNeeded(businessId) {
-        // If no list, seed with a few sample followers to demo UI
-        if (!localStorage.getItem(this.getFollowersListKey(businessId))) {
-            const sampleNames = ['Alice','Ben','Carla','Diego','Ella','Farid','Gwen','Hassan','Ivy','Jules'];
-            const count = Math.min(6, Math.max(2, Math.floor(Math.random() * 6) + 2));
-            const list = Array.from({ length: count }, (_, i) => {
-                const name = sampleNames[(Math.floor(Math.random()*sampleNames.length))];
-                const initials = name.slice(0, 2).toUpperCase();
-                return { id: `seed_${i}_${Date.now()}`, name, initials };
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
             });
-            this.writeFollowersList(businessId, list);
         }
     }
 
-    openFollowersModal() {
-        const business = this.currentBusiness;
-        if (!business) return;
-        this.seedFollowersIfNeeded(business.id);
-        this.renderFollowersList();
-        const modal = document.getElementById('followersModal');
-        if (modal) {
-            const bootstrapModal = new bootstrap.Modal(modal);
-            bootstrapModal.show();
-        }
+    getReviewsForBusiness(businessId) {
+        const allReviews = JSON.parse(localStorage.getItem('businessReviews') || '{}');
+        const reviews = allReviews[businessId] || [];
+        return reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
 
-    renderFollowersList() {
-        const listEl = document.getElementById('followersList');
-        if (!listEl || !this.currentBusiness) return;
-        const list = this.readFollowersList(this.currentBusiness.id);
-        if (list.length === 0) {
-            listEl.innerHTML = '<div class="text-muted">No followers yet.</div>';
+    getAverageRating(businessId) {
+        const reviews = this.getReviewsForBusiness(businessId);
+        if (reviews.length === 0) return 0;
+        const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+        return totalRating / reviews.length;
+    }
+
+    getTotalRatings(businessId) {
+        return this.getReviewsForBusiness(businessId).length;
+    }
+
+    initializeMap() {
+        // Only initialize ONE map based on device type
+        // Hide duplicate maps
+        const mapMain = document.getElementById('businessMapMain');
+        const mapMobile = document.getElementById('businessMapMobile');
+        const mapDesktop = document.getElementById('businessMapDesktop');
+
+        // Determine which map to show based on device
+        const isMobile = window.innerWidth <= 768;
+        const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+
+        // Hide maps that shouldn't be shown
+        if (mapMain && mapMain.parentElement) {
+            // Hide main map - we'll use sidebar maps instead
+            mapMain.style.display = 'none';
+            mapMain.parentElement.style.display = 'none';
+        }
+
+        let targetMapElement = null;
+        if (isMobile && mapMobile) {
+            targetMapElement = mapMobile;
+            // Hide desktop map
+            if (mapDesktop && mapDesktop.parentElement) {
+                mapDesktop.style.display = 'none';
+                mapDesktop.parentElement.style.display = 'none';
+            }
+        } else if (mapDesktop) {
+            targetMapElement = mapDesktop;
+            // Hide mobile map
+            if (mapMobile && mapMobile.parentElement) {
+                mapMobile.style.display = 'none';
+                mapMobile.parentElement.style.display = 'none';
+            }
+        }
+
+        if (!targetMapElement || this.mapInitialized) return;
+
+        // Get business address for geocoding
+        const address = this.businessData?.location || '';
+        if (!address) {
+            targetMapElement.innerHTML = '<p class="text-muted">Location not available</p>';
             return;
         }
-        listEl.innerHTML = list.map(f => `
-            <div class="follower-item">
-                <div class="avatar">${(f.initials || f.name || '?').toString().slice(0,2).toUpperCase()}</div>
-                <div class="name">${f.name || 'User'}</div>
-            </div>
-        `).join('');
-    }
-    
-    updateStructuredData() {
-        const business = this.currentBusiness;
-        if (!business) return;
-        
-        const structuredData = {
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            "name": business.name,
-            "description": business.description,
-            "image": business.image,
-            "telephone": business.phone,
-            "address": {
-                "@type": "PostalAddress",
-                "addressLocality": business.location
-            },
-            "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": getAverageRating(business.id).toFixed(1),
-                "reviewCount": getTotalRatings(business.id)
-            },
-            "url": window.location.href
-        };
-        
-        // Add social media links if available
-        if (business.instagram || business.tiktok || business.whatsapp) {
-            structuredData.sameAs = [];
-            if (business.instagram) {
-                structuredData.sameAs.push(`https://instagram.com/${business.instagram.replace('@', '')}`);
-            }
-            if (business.tiktok) {
-                structuredData.sameAs.push(`https://tiktok.com/@${business.tiktok.replace('@', '')}`);
-            }
-        }
-        
-        // Remove existing structured data
-        const existingScript = document.querySelector('script[type="application/ld+json"]');
-        if (existingScript) {
-            existingScript.remove();
-        }
-        
-        // Add new structured data
-        const script = document.createElement('script');
-        script.type = 'application/ld+json';
-        script.textContent = JSON.stringify(structuredData);
-        document.head.appendChild(script);
-    }
-    
-    setupEventListeners() {
-        // Gallery modal events
-        const galleryModal = document.getElementById('galleryModal');
-        const galleryModalClose = document.getElementById('galleryModalClose');
-        const modalImage = document.getElementById('galleryModalImage');
-        
-        if (galleryModalClose) {
-            galleryModalClose.addEventListener('click', () => {
-                this.closeGalleryModal();
-            });
-        }
-        
-        if (galleryModal) {
-            galleryModal.addEventListener('click', (e) => {
-                if (e.target === galleryModal) {
-                    this.closeGalleryModal();
-                }
-            });
 
-            // Keyboard navigation when modal is open
-            galleryModal.addEventListener('shown.bs.modal', () => {
-                this._handleKeyDown = (ev) => {
-                    if (ev.key === 'ArrowLeft') {
-                        this.previousGalleryImage();
-                    } else if (ev.key === 'ArrowRight') {
-                        this.nextGalleryImage();
-                    } else if (ev.key === 'Escape') {
-                        this.closeGalleryModal();
-                    }
+        // Initialize Google Maps
+        this.initGoogleMap(targetMapElement, address);
+        this.mapInitialized = true;
+    }
+
+    initGoogleMap(mapElement, address) {
+        // Check if Google Maps is loaded
+        if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
+            // Load Google Maps script
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initBusinessMap`;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+
+            // Set callback
+            window.initBusinessMap = () => {
+                this.createMap(mapElement, address);
+            };
+
+            // Fallback: show address if maps fail to load
+            setTimeout(() => {
+                if (!this.mapInstance) {
+                    mapElement.innerHTML = `<p class="text-muted">Map unavailable. Address: ${address}</p>`;
+                }
+            }, 5000);
+        } else {
+            this.createMap(mapElement, address);
+        }
+    }
+
+    createMap(mapElement, address) {
+        // Use geocoding to get coordinates
+        const geocoder = new google.maps.Geocoder();
+        
+        geocoder.geocode({ address: address }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+                const location = results[0].geometry.location;
+                
+                const mapOptions = {
+                    zoom: 15,
+                    center: location,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    styles: [
+                        {
+                            featureType: 'poi',
+                            elementType: 'labels',
+                            stylers: [{ visibility: 'off' }]
+                        }
+                    ]
                 };
-                document.addEventListener('keydown', this._handleKeyDown);
-            });
-            galleryModal.addEventListener('hidden.bs.modal', () => {
-                if (this._handleKeyDown) {
-                    document.removeEventListener('keydown', this._handleKeyDown);
-                    this._handleKeyDown = null;
-                }
-            });
 
-            // Basic swipe support
-            let touchStartX = 0;
-            galleryModal.addEventListener('touchstart', (ev) => {
-                touchStartX = ev.changedTouches?.[0]?.clientX || 0;
-            }, { passive: true });
-            galleryModal.addEventListener('touchend', (ev) => {
-                const endX = ev.changedTouches?.[0]?.clientX || 0;
-                const deltaX = endX - touchStartX;
-                if (Math.abs(deltaX) > 30) {
-                    if (deltaX > 0) this.previousGalleryImage();
-                    else this.nextGalleryImage();
-                }
-            }, { passive: true });
-        }
+                this.mapInstance = new google.maps.Map(mapElement, mapOptions);
 
-        // Image load/error state handling
-        if (modalImage) {
-            modalImage.addEventListener('load', () => {
-                modalImage.classList.remove('loading');
-                modalImage.classList.add('loaded');
-            });
-            modalImage.addEventListener('error', () => {
-                modalImage.classList.remove('loading');
-                modalImage.classList.add('loaded');
-                modalImage.alt = 'Image failed to load';
-            });
-        }
-        // Rating modal events
-        const ratingModal = document.getElementById('ratingModal');
-        
-        if (ratingModal) {
-            ratingModal.addEventListener('click', (e) => {
-                if (e.target === ratingModal) {
-                    this.closeRatingModal();
-                }
-            });
-        }
-    }
-    
-    showError(message) {
-        const heroSection = document.getElementById('businessHero');
-        if (heroSection) {
-            heroSection.innerHTML = `
-                <div class="error-container">
-                    <div class="error-content">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h2>Business Not Found</h2>
-                        <p>${message}</p>
-                        <a href="local-business2.html" class="btn btn-primary">Back to Business Directory</a>
-                    </div>
-                </div>
-            `;
-        }
-    }
-    
-    openGalleryModal(serviceName, imageIndex = 0) {
-        const business = this.currentBusiness;
-        if (!business || !business.serviceGalleries || !business.serviceGalleries[serviceName]) return;
-        
-        this.currentGallery = business.serviceGalleries[serviceName];
-        this.currentGalleryIndex = imageIndex;
-        
-        const modal = document.getElementById('galleryModal');
-        const modalTitle = document.getElementById('galleryModalTitle');
-        
-        if (modalTitle) {
-            modalTitle.textContent = serviceName;
-        }
-        
-        this.updateGalleryImage();
-        
-        if (modal) {
-            // Use Bootstrap modal show method
-            const bootstrapModal = new bootstrap.Modal(modal);
-            bootstrapModal.show();
-        }
-    }
-    
-    updateGalleryImage() {
-        if (!this.currentGallery || this.currentGalleryIndex === undefined) return;
-        
-        const modalImage = document.getElementById('galleryModalImage');
-        const modalCounter = document.getElementById('galleryCounter');
-        const prevBtn = document.getElementById('galleryPrevBtn');
-        const nextBtn = document.getElementById('galleryNextBtn');
-        
-        const currentImage = this.currentGallery[this.currentGalleryIndex];
-        
-        if (modalImage) {
-            // Apply loading state while switching images
-            modalImage.classList.remove('loaded');
-            modalImage.classList.add('loading');
-            // Force reload by updating src after clearing
-            modalImage.src = '';
-            modalImage.src = currentImage.image;
-            modalImage.alt = currentImage.title || '';
-        }
-        
-        if (modalCounter) {
-            modalCounter.textContent = `${this.currentGalleryIndex + 1} / ${this.currentGallery.length}`;
-        }
-        
-        if (prevBtn) {
-            prevBtn.disabled = this.currentGalleryIndex === 0;
-        }
-        
-        if (nextBtn) {
-            nextBtn.disabled = this.currentGalleryIndex === this.currentGallery.length - 1;
-        }
-    }
-    
-    previousGalleryImage() {
-        if (this.currentGalleryIndex > 0) {
-            this.currentGalleryIndex--;
-            this.updateGalleryImage();
-        }
-    }
-    
-    nextGalleryImage() {
-        if (this.currentGalleryIndex < this.currentGallery.length - 1) {
-            this.currentGalleryIndex++;
-            this.updateGalleryImage();
-        }
-    }
-    
-    closeGalleryModal() {
-        const modal = document.getElementById('galleryModal');
-        if (modal) {
-            // Use Bootstrap modal hide method
-            const bootstrapModal = bootstrap.Modal.getInstance(modal);
-            if (bootstrapModal) {
-                bootstrapModal.hide();
+                // Add marker
+                new google.maps.Marker({
+                    position: location,
+                    map: this.mapInstance,
+                    title: this.businessData?.name || 'Business Location'
+                });
+            } else {
+                // Fallback: show address text
+                mapElement.innerHTML = `<p class="text-muted">Map unavailable. Address: ${address}</p>`;
             }
+        });
+    }
+
+    getCurrentBusinessId() {
+        return this.businessId;
+    }
+}
+
+// Global functions for HTML onclick events
+// Note: openRatingModal is defined in local-business2.js and will be available
+// This function is overridden here to use the current business ID
+function openRatingModalDetail() {
+    if (window.businessDetailManager && window.businessDetailManager.businessData) {
+        const businessId = window.businessDetailManager.getCurrentBusinessId();
+        // Use the openRatingModal function from local-business2.js if available
+        if (typeof openRatingModal === 'function') {
+            openRatingModal(businessId);
+        } else {
+            alert('Rating functionality will be available soon.');
         }
     }
-    
-    openRatingModal() {
-        if (!this.currentBusiness) return;
+}
+
+function shareBusiness() {
+    if (window.businessDetailManager && window.businessDetailManager.businessData) {
+        const business = window.businessDetailManager.businessData;
+        const businessId = window.businessDetailManager.getCurrentBusinessId();
         
-        const business = this.currentBusiness;
-        // Use functions from local-business2.js
-        const currentUserRating = getUserRating(business.id);
-        const averageRating = getAverageRating(business.id);
-        const totalRatings = getTotalRatings(business.id);
-        
-        const modal = document.getElementById('ratingModal');
-        const modalContent = document.getElementById('ratingModalContent');
-        
-        if (modalContent) {
-            modalContent.innerHTML = `
-                <div class="rating-modal-header">
-                    <h3>Rate ${business.name}</h3>
-                    <button class="rating-modal-close" onclick="businessDetailManager.closeRatingModal()">&times;</button>
-                </div>
-                <div class="rating-modal-body">
-                    <div class="current-rating">
-                        <div class="rating-stars large">
-                            ${renderStarsHTML(averageRating)}
-                        </div>
-                        <div class="rating-info">
-                            <span class="rating-score">${averageRating.toFixed(1)}</span>
-                            <span class="rating-count">${totalRatings} ${totalRatings === 1 ? 'rating' : 'ratings'}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="user-rating-section">
-                        <h4>${currentUserRating ? 'Update Your Rating' : 'Rate This Business'}</h4>
-                        <div class="interactive-rating" id="interactiveRating">
-                            ${renderInteractiveStars(business.id, currentUserRating?.rating || 0)}
-                        </div>
-                        <div class="rating-labels">
-                            <span class="rating-label" data-rating="1">Poor</span>
-                            <span class="rating-label" data-rating="2">Fair</span>
-                            <span class="rating-label" data-rating="3">Good</span>
-                            <span class="rating-label" data-rating="4">Very Good</span>
-                            <span class="rating-label" data-rating="5">Excellent</span>
-                        </div>
-                    </div>
-                    
-                    <div class="review-section">
-                        <label for="ratingReview">Write a review (optional):</label>
-                        <textarea id="ratingReview" placeholder="Share your experience with this business..." rows="4">${currentUserRating?.review || ''}</textarea>
-                    </div>
-                    
-                    <div class="rating-actions">
-                        <button class="btn-secondary" onclick="businessDetailManager.closeRatingModal()">Cancel</button>
-                        <button class="btn-primary" onclick="submitRatingWithReview('${business.id}')">
-                            ${currentUserRating ? 'Update Rating' : 'Submit Rating'}
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-        
-        if (modal) {
-            // Use Bootstrap modal show method
-            const bootstrapModal = new bootstrap.Modal(modal);
-            bootstrapModal.show();
-        }
-        
-        // Add hover effects to rating labels
-        addRatingLabelHoverEffects();
-    }
-    
-    closeRatingModal() {
-        const modal = document.getElementById('ratingModal');
-        if (modal) {
-            // Use Bootstrap modal hide method
-            const bootstrapModal = bootstrap.Modal.getInstance(modal);
-            if (bootstrapModal) {
-                bootstrapModal.hide();
-            }
-        }
-    }
-    
-    shareBusiness() {
-        if (!this.currentBusiness) return;
-        
-        const business = this.currentBusiness;
         const shareData = {
             title: business.name,
             text: business.description,
             url: window.location.href
         };
-        
+
         if (navigator.share) {
             navigator.share(shareData)
                 .then(() => console.log('Business shared successfully'))
                 .catch((error) => console.log('Error sharing business:', error));
         } else {
-            // Fallback for browsers that don't support Web Share API
-            const shareUrl = shareData.url;
-            navigator.clipboard.writeText(shareUrl).then(() => {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(shareData.url).then(() => {
                 alert('Business link copied to clipboard!');
             }).catch(() => {
-                // Fallback if clipboard API is not available
                 const textArea = document.createElement('textarea');
-                textArea.value = shareUrl;
+                textArea.value = shareData.url;
                 document.body.appendChild(textArea);
                 textArea.select();
                 document.execCommand('copy');
@@ -1106,14 +611,49 @@ class BusinessDetailManager {
             });
         }
     }
-    
-    sortReviews() {
+}
+
+function openGalleryImage(imageUrl, serviceName, index) {
+    // Open image in modal or new tab
+    const modal = document.getElementById('galleryModal');
+    if (modal) {
+        const modalImage = document.getElementById('galleryModalImage');
+        const modalTitle = document.getElementById('galleryModalTitle');
+        if (modalImage) modalImage.src = imageUrl;
+        if (modalTitle) modalTitle.textContent = serviceName;
+        
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+    } else {
+        window.open(imageUrl, '_blank');
+    }
+}
+
+function markReviewHelpfulDetail(reviewId) {
+    if (window.businessDetailManager) {
+        const businessId = window.businessDetailManager.getCurrentBusinessId();
+        const allReviews = JSON.parse(localStorage.getItem('businessReviews') || '{}');
+        const businessReviews = allReviews[businessId] || [];
+        
+        const reviewIndex = businessReviews.findIndex(review => review.id === reviewId);
+        if (reviewIndex !== -1) {
+            businessReviews[reviewIndex].helpfulCount = (businessReviews[reviewIndex].helpfulCount || 0) + 1;
+            allReviews[businessId] = businessReviews;
+            localStorage.setItem('businessReviews', JSON.stringify(allReviews));
+            
+            // Refresh reviews display
+            window.businessDetailManager.renderReviews(businessId);
+        }
+    }
+}
+
+function sortReviews() {
+    if (window.businessDetailManager) {
+        const businessId = window.businessDetailManager.getCurrentBusinessId();
         const sortBy = document.getElementById('reviewSort')?.value || 'newest';
-        // Use function from local-business2.js
-        const reviews = getReviewsForBusiness(this.currentBusinessId);
+        const reviews = window.businessDetailManager.getReviewsForBusiness(businessId);
         
         let sortedReviews = [...reviews];
-        
         switch(sortBy) {
             case 'newest':
                 sortedReviews.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -1132,156 +672,29 @@ class BusinessDetailManager {
                 break;
         }
         
-        this.renderReviewsList(sortedReviews);
-    }
-    
-    filterReviews() {
-        const filterBy = document.getElementById('reviewFilter')?.value || 'all';
-        // Use function from local-business2.js
-        const reviews = getReviewsForBusiness(this.currentBusinessId);
-        
-        let filteredReviews = reviews;
-        if (filterBy !== 'all') {
-            filteredReviews = reviews.filter(review => review.rating === parseInt(filterBy));
-        }
-        
-        this.renderReviewsList(filteredReviews);
-    }
-}
-
-// Global functions for HTML onclick events
-function openGalleryModal(serviceName, imageIndex = 0) {
-    if (window.businessDetailManager) {
-        window.businessDetailManager.openGalleryModal(serviceName, imageIndex);
-    }
-}
-
-function previousGalleryImage() {
-    if (window.businessDetailManager) {
-        window.businessDetailManager.previousGalleryImage();
-    }
-}
-
-function nextGalleryImage() {
-    if (window.businessDetailManager) {
-        window.businessDetailManager.nextGalleryImage();
-    }
-}
-
-function openRatingModal() {
-    if (window.businessDetailManager) {
-        window.businessDetailManager.openRatingModal();
-    }
-}
-
-function openFollowersModal() {
-    if (window.businessDetailManager) {
-        window.businessDetailManager.openFollowersModal();
-    }
-}
-
-function shareBusiness() {
-    if (window.businessDetailManager) {
-        window.businessDetailManager.shareBusiness();
-    }
-}
-
-function sortReviews() {
-    if (window.businessDetailManager) {
-        window.businessDetailManager.sortReviews();
+        window.businessDetailManager.renderReviewsList(sortedReviews);
     }
 }
 
 function filterReviews() {
     if (window.businessDetailManager) {
-        window.businessDetailManager.filterReviews();
-    }
-}
-
-// Use functions from local-business2.js for rating and review functionality
-function submitRatingWithReview(businessId) {
-    const rating = window.selectedRating || 0;
-    const review = document.getElementById('ratingReview').value.trim();
-    
-    if (rating === 0) {
-        alert('Please select a rating before submitting.');
-        return;
-    }
-    
-    // Use function from local-business2.js
-    if (submitRating(businessId, rating, review)) {
-        if (window.businessDetailManager) {
-            window.businessDetailManager.closeRatingModal();
-        }
-        showRatingSuccess();
+        const businessId = window.businessDetailManager.getCurrentBusinessId();
+        const filterBy = document.getElementById('reviewFilter')?.value || 'all';
+        let reviews = window.businessDetailManager.getReviewsForBusiness(businessId);
         
-        // Refresh the business detail page
-        if (window.businessDetailManager) {
-            window.businessDetailManager.loadBusinessReviews();
+        if (filterBy !== 'all') {
+            reviews = reviews.filter(review => review.rating === parseInt(filterBy));
         }
+        
+        window.businessDetailManager.renderReviewsList(reviews);
     }
 }
 
-// Note: markReviewHelpful and reportReview functions are available from local-business2.js
-
-// Additional rating functions needed for business detail page
-function renderInteractiveStars(businessId, currentRating = 0) {
-    let starsHTML = '';
-    for (let i = 1; i <= 5; i++) {
-        const starClass = i <= currentRating ? 'fas fa-star' : 'far fa-star';
-        starsHTML += `<i class="${starClass} interactive-star" data-rating="${i}" onclick="selectRating('${businessId}', ${i})"></i>`;
-    }
-    return starsHTML;
-}
-
-function selectRating(businessId, rating) {
-    const stars = document.querySelectorAll('.interactive-star');
-    stars.forEach((star, index) => {
-        if (index < rating) {
-            star.className = 'fas fa-star interactive-star';
-        } else {
-            star.className = 'far fa-star interactive-star';
-        }
-    });
-    
-    // Update rating labels
-    const labels = document.querySelectorAll('.rating-label');
-    labels.forEach(label => {
-        label.classList.remove('active');
-        if (parseInt(label.dataset.rating) === rating) {
-            label.classList.add('active');
-        }
-    });
-    
-    // Store selected rating
-    window.selectedRating = rating;
-}
-
-function addRatingLabelHoverEffects() {
-    const stars = document.querySelectorAll('.interactive-star');
-    const labels = document.querySelectorAll('.rating-label');
-    
-    stars.forEach((star, index) => {
-        star.addEventListener('mouseenter', () => {
-            labels.forEach((label, labelIndex) => {
-                if (labelIndex <= index) {
-                    label.classList.add('hover');
-                } else {
-                    label.classList.remove('hover');
-                }
-            });
-        });
-    });
-    
-    const interactiveRating = document.querySelector('.interactive-rating');
-    if (interactiveRating) {
-        interactiveRating.addEventListener('mouseleave', () => {
-            labels.forEach(label => label.classList.remove('hover'));
-        });
-    }
-}
-
-// Initialize the business detail manager when the page loads
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    window.businessDetailManager = new BusinessDetailManager();
+    // Only initialize on the business detail page
+    if (document.getElementById('businessHero')) {
+        window.businessDetailManager = new BusinessDetailManager();
+    }
 });
+
