@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CompareHubPrices - Business Account Manager</title>
+    <title>CompareHubPrices - Business Management</title>
 
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com https://fonts.googleapis.com https://www.gstatic.com; img-src 'self' data: https://www.gstatic.com https://images.comparehubprices.site; font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://acc.comparehubprices.site https://accb.comparehubprices.site https://accounts.google.com https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com;">
     
@@ -162,6 +162,56 @@
         @media (max-height: 600px) {
             .modal-body {
                 max-height: calc(100vh - 150px);
+            }
+        }
+
+        /* Toast Notification Styling */
+        .toast-container {
+            z-index: 9999 !important;
+        }
+
+        .toast {
+            min-width: 350px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            border-radius: 8px !important;
+            overflow: hidden;
+            border: none !important;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+            padding: 12px 16px !important;
+            font-weight: 600;
+        }
+
+        .toast-body {
+            padding: 16px !important;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        @media (max-width: 576px) {
+            .toast {
+                min-width: calc(100vw - 40px);
+                max-width: calc(100vw - 40px);
+            }
+            
+            .toast-container {
+                top: 70px !important;
+                right: 10px !important;
             }
         }
 
@@ -445,7 +495,7 @@
             <div class="sidebar-section pt-0 px-3">
                 <h4>Quick Access</h4>
                 <div class="quick-access-grid">
-                    <a href="whishlist.html" class="quick-access-item new-arrivals">
+                    <a href="wishlist.html" class="quick-access-item new-arrivals">
                         <div class="quick-access-icon">
                             <i class="fas fa-heart"></i>
                         </div>
@@ -1436,7 +1486,7 @@
         async function viewFullCatalogue() {
             try {
                 if (!window.businessAWSAuthService) {
-                    alert('Please log in to view your catalogue.');
+                    showWarningToast('Please log in to view your catalogue.');
                     return;
                 }
 
@@ -1444,14 +1494,14 @@
                 const userInfo = await window.businessAWSAuthService.getUserInfo();
                 
                 if (!userInfo.success || !userInfo.user) {
-                    alert('Please log in to view your catalogue.');
+                    showWarningToast('Please log in to view your catalogue.');
                     return;
                 }
 
                 const businessId = userInfo.user.businessId;
                 
                 if (!businessId) {
-                    alert('Business ID not found. Please update your business information.');
+                    showErrorToast('Business ID not found. Please update your business information.');
                     return;
                 }
 
@@ -1459,7 +1509,7 @@
                 window.location.href = `business_catalogue.html`;
             } catch (error) {
                 console.error('Error viewing full catalogue:', error);
-                alert(`Error: ${error.message || 'Failed to load catalogue. Please try again.'}`);
+                showErrorToast(`Error: ${error.message || 'Failed to load catalogue. Please try again.'}`);
             }
         }
 
@@ -1689,7 +1739,7 @@
                 const businessDescription = document.getElementById('businessDescription')?.value.trim();
                 
                 if (!businessDescription) {
-                    alert('Please provide a business description.');
+                    showWarningToast('Please provide a business description.');
                     saveButton.disabled = false;
                     saveButton.innerHTML = originalButtonText;
                     return;
@@ -1794,14 +1844,14 @@
                 }
 
                 if (products.length === 0) {
-                    alert('Please add at least one product/service with a name, description, and images!');
+                    showWarningToast('Please add at least one product/service with a name, description, and images!');
                     saveButton.disabled = false;
                     saveButton.innerHTML = originalButtonText;
                     return;
                 }
 
                 if (!hasValidProducts) {
-                    alert('Please complete at least one product/service with name, description, and images!');
+                    showWarningToast('Please complete at least one product/service with name, description, and images!');
                     saveButton.disabled = false;
                     saveButton.innerHTML = originalButtonText;
                     return;
@@ -1818,7 +1868,7 @@
                 const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadProductModal'));
                 uploadModal.hide();
 
-                alert(`Successfully added ${data.servicesAdded || products.length} service(s)!`);
+                showSuccessToast(`Successfully added ${data.servicesAdded || products.length} service(s)!`);
                 
                 // Reset form but preserve business description and our services
                 const businessDescriptionValue = document.getElementById('businessDescription')?.value || '';
@@ -1888,7 +1938,7 @@
 
             } catch (error) {
                 console.error('Error saving services:', error);
-                alert(`Error: ${error.message || 'Failed to save services. Please try again.'}`);
+                showErrorToast(`Error: ${error.message || 'Failed to save services. Please try again.'}`);
             } finally {
                 saveButton.disabled = false;
                 saveButton.innerHTML = originalButtonText;
@@ -1923,7 +1973,7 @@
 
                 // Validate file size (5MB max)
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('Image size must be less than 5MB');
+                    showWarningToast('Image size must be less than 5MB');
                     e.target.value = '';
                     return;
                 }
@@ -2009,6 +2059,91 @@
             }
         });
 
+    </script>
+
+    <!-- Toast Container for Notifications -->
+    <div class="toast-container position-fixed" style="top: 80px; right: 20px; z-index: 9999;" id="toastContainer"></div>
+
+    <script>
+        // Function to show Toast notification
+        function showToast(message, type = 'success', title = null) {
+            const toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) return;
+            
+            const toastId = 'toast-' + Date.now();
+            
+            // Determine colors and icons based on type
+            let bgClass, icon, defaultTitle;
+            switch(type) {
+                case 'success':
+                    bgClass = 'bg-success';
+                    icon = 'fa-check-circle';
+                    defaultTitle = 'Success';
+                    break;
+                case 'error':
+                case 'danger':
+                    bgClass = 'bg-danger';
+                    icon = 'fa-exclamation-circle';
+                    defaultTitle = 'Error';
+                    break;
+                case 'warning':
+                    bgClass = 'bg-warning';
+                    icon = 'fa-exclamation-triangle';
+                    defaultTitle = 'Warning';
+                    break;
+                case 'info':
+                    bgClass = 'bg-info';
+                    icon = 'fa-info-circle';
+                    defaultTitle = 'Info';
+                    break;
+                default:
+                    bgClass = 'bg-success';
+                    icon = 'fa-check-circle';
+                    defaultTitle = 'Success';
+            }
+            
+            const displayTitle = title || defaultTitle;
+            
+            const toastHTML = `
+                <div class="toast" id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+                    <div class="toast-header ${bgClass} text-white">
+                        <i class="fas ${icon} me-2"></i>
+                        <strong class="me-auto">${displayTitle}</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+            
+            // Remove from DOM after hiding
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                toastElement.remove();
+            });
+        }
+        
+        // Alias functions for convenience
+        function showSuccessToast(message, title = 'Success') {
+            showToast(message, 'success', title);
+        }
+        
+        function showErrorToast(message, title = 'Error') {
+            showToast(message, 'error', title);
+        }
+        
+        function showWarningToast(message, title = 'Warning') {
+            showToast(message, 'warning', title);
+        }
+        
+        function showInfoToast(message, title = 'Info') {
+            showToast(message, 'info', title);
+        }
     </script>
     
      
