@@ -6,7 +6,48 @@
     <title>CompareHubPrices - Business Account Manager</title>
 
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com https://fonts.googleapis.com https://www.gstatic.com; img-src 'self' data: https://www.gstatic.com https://images.comparehubprices.site; font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://acc.comparehubprices.site https://accb.comparehubprices.site https://accounts.google.com https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com;">
-    
+     <!-- SEO Meta Tags -->
+     <meta name="description" content="Discover local businesses, services, and reviews on CompareHubPrices. Find the best businesses near you with detailed information, ratings, and contact details.">
+     <meta name="keywords" content="local business, business directory, reviews, ratings, services, CompareHubPrices">
+     <meta name="author" content="CompareHubPrices">
+     <meta name="robots" content="index, follow">
+     
+     <!-- Open Graph Meta Tags for Social Sharing -->
+     <meta property="og:title" content="Business Details - CompareHubPrices">
+     <meta property="og:description" content="Discover local businesses, services, and reviews on CompareHubPrices. Find the best businesses near you with detailed information, ratings, and contact details.">
+     <meta property="og:type" content="website">
+     <meta property="og:url" content="">
+     <meta property="og:image" content="assets/logo .png">
+     <meta property="og:site_name" content="CompareHubPrices">
+     
+     <!-- Twitter Card Meta Tags -->
+     <meta name="twitter:card" content="summary_large_image">
+     <meta name="twitter:title" content="Business Details - CompareHubPrices">
+     <meta name="twitter:description" content="Discover local businesses, services, and reviews on CompareHubPrices. Find the best businesses near you with detailed information, ratings, and contact details.">
+     <meta name="twitter:image" content="assets/logo .png">
+     
+     <!-- Canonical URL -->
+     <link rel="canonical" href="">
+     
+     <!-- Structured Data for SEO -->
+     <script type="application/ld+json">
+     {
+         "@context": "https://schema.org",
+         "@type": "WebPage",
+         "name": "Business Details - CompareHubPrices",
+         "description": "Discover local businesses, services, and reviews on CompareHubPrices",
+         "url": "",
+         "publisher": {
+             "@type": "Organization",
+             "name": "CompareHubPrices",
+             "logo": {
+                 "@type": "ImageObject",
+                 "url": "assets/logo .png"
+             }
+         }
+     }
+     </script>
+ 
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
@@ -596,7 +637,6 @@
 
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>
-
     <main class="main">
         <!-- Business Hero Section -->
         <div class="business-hero" id="businessHero">
@@ -638,7 +678,7 @@
                 <nav class="breadcrumb-nav">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="local-business.html">Local Business</a></li>
+                        <li class="breadcrumb-item"><a href="local-business2.html">Local Business</a></li>
                         <li class="breadcrumb-item active" id="breadcrumbBusinessName">Business Details</li>
                     </ol>
                 </nav>
@@ -684,6 +724,12 @@
                                     Share Business
                                 </button>
                             </div>
+                        </div>
+
+                        <!-- Location Map (visible on all devices) -->
+                        <div class="business-hours-card">
+                            <h4>Location Map</h4>
+                            <div id="businessMapMain" class="business-map"></div>
                         </div>
                     </div>
 
@@ -875,6 +921,9 @@
         </div>
     </div>
 
+  
+   
+
 
     <footer class="footer">
         <div class="footer-content">
@@ -934,15 +983,6 @@
     <script src="assets/scripts/chatbox.js"></script>
     <script src="assets/scripts/price-alerts.js"></script>
     <script src="assets/scripts/wishlist.js"></script>
-<<<<<<< HEAD
-=======
-    
-  
-
-    <script src="assets/scripts/business-detail.js"></script>
-   
- 
->>>>>>> bf2aec37886a5729d7d2402c8b4018abe455e35a
     <script src="assets/scripts/local-business2.js"></script>
     <script src="assets/scripts/business-detail.js"></script>
     
