@@ -487,15 +487,8 @@ class BusinessDetailManager {
 
     initGoogleMap(mapElement, address) {
         // Check if Google Maps API key is configured
-        // You can set this in a config or environment variable
         const GOOGLE_MAPS_API_KEY = window.GOOGLE_MAPS_API_KEY || '';
         
-        // Check if Google Maps is already loaded
-        if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
-            this.createMap(mapElement, address);
-            return;
-        }
-
         // If no API key, show address text instead
         if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY') {
             mapElement.innerHTML = `
@@ -508,75 +501,34 @@ class BusinessDetailManager {
             return;
         }
 
-        // Load Google Maps script
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=initBusinessMap`;
-        script.async = true;
-        script.defer = true;
-        script.onerror = () => {
-            mapElement.innerHTML = `
-                <div class="map-placeholder">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <p><strong>Location:</strong> ${address}</p>
-                    <p class="text-muted small">Failed to load map. Please check your API key configuration.</p>
-                </div>
-            `;
-        };
-        document.head.appendChild(script);
-
-        // Set callback
-        window.initBusinessMap = () => {
-            this.createMap(mapElement, address);
-        };
-
-        // Fallback: show address if maps fail to load after timeout
-        setTimeout(() => {
-            if (!this.mapInstance) {
-                mapElement.innerHTML = `
-                    <div class="map-placeholder">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <p><strong>Location:</strong> ${address}</p>
-                        <p class="text-muted small">Map loading timeout. Address: ${address}</p>
-                    </div>
-                `;
-            }
-        }, 10000);
+        // Use simple iframe embed approach (simpler and avoids CSP issues)
+        this.createMap(mapElement, address);
     }
 
     createMap(mapElement, address) {
-        // Use geocoding to get coordinates
-        const geocoder = new google.maps.Geocoder();
+        // Use a simpler iframe embed approach (like local-business-info.html)
+        // This avoids CSP issues and is more reliable
+        const businessName = encodeURIComponent(this.businessData?.name || 'Business Location');
+        const encodedAddress = encodeURIComponent(address);
         
-        geocoder.geocode({ address: address }, (results, status) => {
-            if (status === 'OK' && results[0]) {
-                const location = results[0].geometry.location;
-                
-                const mapOptions = {
-                    zoom: 15,
-                    center: location,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP,
-                    styles: [
-                        {
-                            featureType: 'poi',
-                            elementType: 'labels',
-                            stylers: [{ visibility: 'off' }]
-                        }
-                    ]
-                };
-
-                this.mapInstance = new google.maps.Map(mapElement, mapOptions);
-
-                // Add marker
-                new google.maps.Marker({
-                    position: location,
-                    map: this.mapInstance,
-                    title: this.businessData?.name || 'Business Location'
-                });
-            } else {
-                // Fallback: show address text
-                mapElement.innerHTML = `<p class="text-muted">Map unavailable. Address: ${address}</p>`;
-            }
-        });
+        // Create Google Maps embed URL
+        const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${window.GOOGLE_MAPS_API_KEY}&q=${encodedAddress}`;
+        
+        // Use iframe embed instead of JavaScript API
+        mapElement.innerHTML = `
+            <iframe
+                width="100%"
+                height="100%"
+                style="border:0; min-height: 400px;"
+                loading="lazy"
+                allowfullscreen
+                referrerpolicy="no-referrer-when-downgrade"
+                src="${embedUrl}">
+            </iframe>
+        `;
+        
+        // Store reference for potential cleanup
+        this.mapInstance = mapElement.querySelector('iframe');
     }
 
     getCurrentBusinessId() {
