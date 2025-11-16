@@ -36,15 +36,25 @@ class WishlistManager {
     
     async checkAuthStatus() {
         try {
-            // Check for regular user auth service first
+            // Try business auth service first (for business pages)
+            if (window.businessAWSAuthService) {
+                try {
+                    const userInfo = await window.businessAWSAuthService.getUserInfo();
+                    if (userInfo.success && userInfo.user !== null) {
+                        this.authService = window.businessAWSAuthService;
+                        this.isLoggedIn = true;
+                        return;
+                    }
+                } catch (error) {
+                    // Business auth failed, try regular auth
+                }
+            }
+            
+            // Try regular user auth service
             if (window.awsAuthService) {
                 this.authService = window.awsAuthService;
             } else if (window.AWSAuthService) {
                 this.authService = new window.AWSAuthService();
-            }
-            // If no regular user service, check for business user service
-            else if (window.businessAWSAuthService) {
-                this.authService = window.businessAWSAuthService;
             }
             
             if (this.authService) {
@@ -84,6 +94,7 @@ class WishlistManager {
         // Listen for business user login/logout events (if they exist)
         // Business users might use the same events or different ones
         // We'll also check periodically to catch any auth changes
+        // Check more frequently to catch business user logins quickly
         
         setInterval(async () => {
             const wasLoggedIn = this.isLoggedIn;
@@ -101,7 +112,7 @@ class WishlistManager {
                 // Dispatch event for badge counter
                 document.dispatchEvent(new CustomEvent('wishlistUpdated'));
             }
-        }, 30000);
+        }, 5000); // Check every 5 seconds instead of 30 to catch business logins faster
     }
     
         async fetchSmartphonesData() {
