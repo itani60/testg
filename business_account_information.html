@@ -967,12 +967,6 @@
                             </div>
                         </div>
 
-                        <!-- Business Description -->
-                        <div class="mb-3">
-                            <label for="businessDescription" class="form-label">Business Description</label>
-                            <textarea class="form-control" id="businessDescription" rows="4" placeholder="Describe your business, products, and services"></textarea>
-                        </div>
-
                         <!-- Business Hours -->
                         <div class="mb-3">
                             <label for="businessHours" class="form-label">Business Hours</label>
@@ -1235,9 +1229,6 @@
                 if (document.getElementById('businessCategory')) {
                     document.getElementById('businessCategory').value = user.businessCategory || user.business_category || '';
                 }
-                if (document.getElementById('businessDescription')) {
-                    document.getElementById('businessDescription').value = user.businessDescription || user.business_description || '';
-                }
                 if (document.getElementById('businessHours')) {
                     document.getElementById('businessHours').value = user.businessHours || user.business_hours || '';
                 }
@@ -1354,7 +1345,6 @@
                         postalCode: postalCode,
                         businessNumber: document.getElementById('contactNumber').value.trim(),
                     businessCategory: document.getElementById('businessCategory').value,
-                        businessDescription: document.getElementById('businessDescription').value.trim(),
                         businessHours: document.getElementById('businessHours').value.trim(),
                     socialMedia: {
                             whatsapp: document.getElementById('whatsappLink').value.trim(),
