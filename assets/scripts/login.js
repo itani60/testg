@@ -133,6 +133,34 @@
           window.turnstileManager.reset('login-turnstile-container');
         }
         
+        // Handle suspended account
+        if(err && err.error === 'ACCOUNT_SUSPENDED') {
+          var suspensionMessage = err.message || 'Your account has been suspended.';
+          if(err.suspensionReason) {
+            suspensionMessage += ' Reason: ' + err.suspensionReason;
+          }
+          suspensionMessage += ' Please contact support at support@comparehubprices.site to appeal this decision.';
+          if(typeof showErrorToast === 'function') {
+            showErrorToast(suspensionMessage, 'Account Suspended');
+          } else {
+            alert(suspensionMessage);
+          }
+          if(btn){ btn.disabled = false; btn.classList.remove('loading'); }
+          return;
+        }
+        
+        // Handle deleted account
+        if(err && err.error === 'ACCOUNT_DELETED') {
+          var deletedMessage = err.message || 'This account has been deleted and is no longer accessible.';
+          if(typeof showErrorToast === 'function') {
+            showErrorToast(deletedMessage, 'Account Deleted');
+          } else {
+            alert(deletedMessage);
+          }
+          if(btn){ btn.disabled = false; btn.classList.remove('loading'); }
+          return;
+        }
+        
         // Show error message with toast notification
         var errorMessage = 'Login failed. ';
         if(err && err.message) {
@@ -516,6 +544,34 @@
         // Reset Turnstile widget on error (only if not in MFA step)
         if(!isMfaStep && window.turnstileManager) {
           window.turnstileManager.reset('business-login-turnstile-container');
+        }
+        
+        // Handle suspended account
+        if(err && err.error === 'ACCOUNT_SUSPENDED') {
+          var suspensionMessage = err.message || 'Your account has been suspended.';
+          if(err.suspensionReason) {
+            suspensionMessage += ' Reason: ' + err.suspensionReason;
+          }
+          suspensionMessage += ' Please contact support at support@comparehubprices.site to appeal this decision.';
+          if(typeof showErrorToast === 'function') {
+            showErrorToast(suspensionMessage, 'Account Suspended');
+          } else {
+            alert(suspensionMessage);
+          }
+          if(btn){ btn.disabled = false; btn.classList.remove('loading'); }
+          return;
+        }
+        
+        // Handle deleted account
+        if(err && err.error === 'ACCOUNT_DELETED') {
+          var deletedMessage = err.message || 'This account has been deleted and is no longer accessible.';
+          if(typeof showErrorToast === 'function') {
+            showErrorToast(deletedMessage, 'Account Deleted');
+          } else {
+            alert(deletedMessage);
+          }
+          if(btn){ btn.disabled = false; btn.classList.remove('loading'); }
+          return;
         }
         
         // Handle Turnstile requirement

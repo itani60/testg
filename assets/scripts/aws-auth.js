@@ -42,6 +42,23 @@
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data?.success) {
+        // Handle suspended account
+        if (data?.error === 'ACCOUNT_SUSPENDED') {
+          const error = new Error(data.message || 'Your account has been suspended.');
+          error.status = res.status;
+          error.error = 'ACCOUNT_SUSPENDED';
+          error.suspended = true;
+          error.suspensionReason = data.suspensionReason;
+          throw error;
+        }
+        // Handle deleted account
+        if (data?.error === 'ACCOUNT_DELETED') {
+          const error = new Error(data.message || 'This account has been deleted and is no longer accessible.');
+          error.status = res.status;
+          error.error = 'ACCOUNT_DELETED';
+          error.deleted = true;
+          throw error;
+        }
         const message = data?.message || `Login failed (HTTP ${res.status})`;
         throw new Error(message);
       }

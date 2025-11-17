@@ -68,6 +68,25 @@
       }
       
       if (!res.ok || !data?.success) {
+        // Handle suspended account
+        if (data?.error === 'ACCOUNT_SUSPENDED') {
+          const error = new Error(data.message || 'Your account has been suspended.');
+          error.status = res.status;
+          error.error = 'ACCOUNT_SUSPENDED';
+          error.suspended = true;
+          error.suspensionReason = data.suspensionReason;
+          error.requiresTurnstile = data?.requiresTurnstile || false;
+          throw error;
+        }
+        // Handle deleted account
+        if (data?.error === 'ACCOUNT_DELETED') {
+          const error = new Error(data.message || 'This account has been deleted and is no longer accessible.');
+          error.status = res.status;
+          error.error = 'ACCOUNT_DELETED';
+          error.deleted = true;
+          error.requiresTurnstile = data?.requiresTurnstile || false;
+          throw error;
+        }
         const message = data?.message || `Business login failed (HTTP ${res.status})`;
         const error = new Error(message);
         error.status = res.status;
