@@ -803,6 +803,15 @@
                     }
                     
                     await window.awsAuthService.login(email, password, turnstileToken);
+                    
+                    // Call getUserInfo to verify session (using regular auth service, not business)
+                    try {
+                        await window.awsAuthService.getUserInfo();
+                    } catch (getUserInfoErr) {
+                        // Silently ignore getUserInfo errors - session might not be ready yet
+                        console.warn('getUserInfo call after login failed (this is usually fine):', getUserInfoErr);
+                    }
+                    
                     showMessageV3('Login successful! Redirecting...', 'success');
                     
                     setTimeout(() => {
@@ -900,6 +909,7 @@
                     submitBtn.disabled = true;
                     submitBtn.classList.add('loading');
                     
+                    // Ensure we're using business auth service (not regular)
                     if (!window.businessAWSAuthService) {
                         throw new Error('Business authentication service not available');
                     }
@@ -927,9 +937,18 @@
                         
                         showMessageV3('Please enter your MFA code.', 'success');
                     } else {
+                        // Call getUserInfo to verify session (using business auth service, not regular)
+                        try {
+                            await window.businessAWSAuthService.getUserInfo();
+                        } catch (getUserInfoErr) {
+                            // Silently ignore getUserInfo errors - session might not be ready yet
+                            console.warn('getUserInfo call after business login failed (this is usually fine):', getUserInfoErr);
+                        }
+                        
                         showMessageV3('Login successful! Redirecting...', 'success');
                         setTimeout(() => {
-                            window.location.href = 'test.html';
+                            const returnTo = sessionStorage.getItem('chp_return_to');
+                            window.location.href = returnTo || 'test.html';
                         }, 1000);
                     }
                     
@@ -1134,9 +1153,19 @@
                             try {
                                 if (window.awsAuthService?.loginWithGoogleCredential) {
                                     await window.awsAuthService.loginWithGoogleCredential(response.credential);
+                                    
+                                    // Call getUserInfo to verify session (using regular auth service, not business)
+                                    try {
+                                        await window.awsAuthService.getUserInfo();
+                                    } catch (getUserInfoErr) {
+                                        // Silently ignore getUserInfo errors - session might not be ready yet
+                                        console.warn('getUserInfo call after Google login failed (this is usually fine):', getUserInfoErr);
+                                    }
+                                    
                                     showMessageV3('Login successful! Redirecting...', 'success');
                                     setTimeout(() => {
-                                        window.location.href = 'test.html';
+                                        const returnTo = sessionStorage.getItem('chp_return_to');
+                                        window.location.href = returnTo || 'test.html';
                                     }, 1000);
                                 }
                             } catch (err) {

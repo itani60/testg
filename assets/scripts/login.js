@@ -114,9 +114,27 @@
       
       try {
         if(btn){ btn.disabled = true; btn.classList.add('loading'); }
+        
+        // Ensure we're using regular auth service (not business)
         var svc = window.awsAuthService;
+        if(!svc) {
+          throw new Error('Regular authentication service not available. Please ensure aws-auth.js is loaded.');
+        }
+        
         await svc.login(emailEl.value.trim(), passEl.value, turnstileToken);
-        try { await svc.getUserInfo(); } catch(_) {}
+        
+        // Call getUserInfo to verify session (using regular auth service, not business)
+        try { 
+          await svc.getUserInfo(); 
+        } catch(getUserInfoErr) {
+          // Silently ignore getUserInfo errors - session might not be ready yet
+          // Only log if it's not a session error
+          if(getUserInfoErr && getUserInfoErr.message && 
+             !getUserInfoErr.message.includes('Session') && 
+             !getUserInfoErr.message.includes('Not authenticated')) {
+            console.warn('getUserInfo call after login failed:', getUserInfoErr);
+          }
+        }
         // Prefer redirecting back to the page user came from
         var returnTo = null;
         try { returnTo = sessionStorage.getItem('chp_return_to'); } catch(_) {}
@@ -372,6 +390,7 @@
       try {
         if(btn){ btn.disabled = true; btn.classList.add('loading'); }
         
+        // Ensure we're using business auth service (not regular)
         var svc = window.businessAWSAuthService;
         if(!svc) {
           throw new Error('Business authentication service not available. Please ensure aws-auth-business.js is loaded.');
@@ -789,7 +808,19 @@
       }
 
       await svc.loginWithGoogleCredential(response.credential);
-      try { await svc.getUserInfo(); } catch(_) {}
+      
+      // Call getUserInfo to verify session (using regular auth service, not business)
+      try { 
+        await svc.getUserInfo(); 
+      } catch(getUserInfoErr) {
+        // Silently ignore getUserInfo errors - session might not be ready yet
+        // Only log if it's not a session error
+        if(getUserInfoErr && getUserInfoErr.message && 
+           !getUserInfoErr.message.includes('Session') && 
+           !getUserInfoErr.message.includes('Not authenticated')) {
+          console.warn('getUserInfo call after Google login failed:', getUserInfoErr);
+        }
+      }
 
       if(window.google && window.google.accounts && window.google.accounts.id){
         try { google.accounts.id.disableAutoSelect(); } catch(_) {}
@@ -873,7 +904,20 @@
             return;
           }
           await svc.handleGoogleCallback(code, state);
-          try { await svc.getUserInfo(); } catch(_) {}
+          
+          // Call getUserInfo to verify session (using regular auth service, not business)
+          try { 
+            await svc.getUserInfo(); 
+          } catch(getUserInfoErr) {
+            // Silently ignore getUserInfo errors - session might not be ready yet
+            // Only log if it's not a session error
+            if(getUserInfoErr && getUserInfoErr.message && 
+               !getUserInfoErr.message.includes('Session') && 
+               !getUserInfoErr.message.includes('Not authenticated')) {
+              console.warn('getUserInfo call after Google callback failed:', getUserInfoErr);
+            }
+          }
+          
           var returnTo = null;
           try { returnTo = sessionStorage.getItem('chp_return_to'); } catch(_) {}
           if (returnTo) {
