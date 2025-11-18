@@ -771,13 +771,27 @@
                     return;
                 }
                 
+                // Check for Turnstile token - require it if widget is rendered
                 let turnstileToken = null;
-                try {
-                    if (window.turnstileManager && turnstileWidgetsV3.user) {
-                        turnstileToken = window.turnstileManager.getToken('turnstileUserV3');
+                const turnstileContainer = document.getElementById('turnstileUserV3');
+                const isTurnstileVisible = turnstileContainer && turnstileContainer.classList.contains('active');
+                
+                if (isTurnstileVisible) {
+                    try {
+                        if (window.turnstileManager) {
+                            turnstileToken = window.turnstileManager.getToken('turnstileUserV3');
+                            if (!turnstileToken) {
+                                showMessageV3('Please complete the security verification.', 'error');
+                                return;
+                            }
+                        } else {
+                            showMessageV3('Security verification is required. Please refresh the page.', 'error');
+                            return;
+                        }
+                    } catch (err) {
+                        showMessageV3('Security verification failed. Please try again.', 'error');
+                        return;
                     }
-                } catch (err) {
-                    console.warn('Could not get Turnstile token (non-blocking):', err);
                 }
                 
                 try {
@@ -859,13 +873,27 @@
                     return;
                 }
                 
+                // Check for Turnstile token - require it if widget is rendered
                 let turnstileToken = null;
-                try {
-                    if (window.turnstileManager && turnstileWidgetsV3.business) {
-                        turnstileToken = window.turnstileManager.getToken('turnstileBusinessV3');
+                const turnstileContainer = document.getElementById('turnstileBusinessV3');
+                const isTurnstileVisible = turnstileContainer && turnstileContainer.classList.contains('active');
+                
+                if (isTurnstileVisible) {
+                    try {
+                        if (window.turnstileManager) {
+                            turnstileToken = window.turnstileManager.getToken('turnstileBusinessV3');
+                            if (!turnstileToken) {
+                                showMessageV3('Please complete the security verification.', 'error');
+                                return;
+                            }
+                        } else {
+                            showMessageV3('Security verification is required. Please refresh the page.', 'error');
+                            return;
+                        }
+                    } catch (err) {
+                        showMessageV3('Security verification failed. Please try again.', 'error');
+                        return;
                     }
-                } catch (err) {
-                    console.warn('Could not get Turnstile token (non-blocking):', err);
                 }
                 
                 try {
