@@ -60,7 +60,8 @@
 
         script.onerror = (error) => {
           this.loadError = new Error('Unable to load Cloudflare Turnstile script. Please verify network connectivity.');
-          console.error(this.loadError, error);
+          // Silently fail - don't log errors to console
+          // console.error(this.loadError, error);
           this.rejectWaiters(this.loadError);
         };
 
@@ -157,8 +158,8 @@
       try {
         await this.loadScript();
       } catch (error) {
-        // Fail early so the caller can fallback to server validation errors
-        console.error('Turnstile did not initialise correctly:', error);
+        // Fail silently - allow login to proceed without Turnstile
+        // console.error('Turnstile did not initialise correctly:', error);
         throw error;
       }
 
@@ -217,7 +218,8 @@
           if (typeof config.errorCallback === 'function') {
             config.errorCallback(errorCode);
           } else {
-            console.error('Turnstile error:', errorCode);
+            // Silently handle Turnstile errors
+            // console.error('Turnstile error:', errorCode);
           }
         },
         'expired-callback': () => {
@@ -242,7 +244,8 @@
         this.widgets.set(containerId, widgetId);
         return widgetId;
       } catch (error) {
-        console.error('Failed to render Turnstile widget:', error);
+        // Silently fail - Turnstile is optional
+        // console.error('Failed to render Turnstile widget:', error);
         throw error;
       }
     }
@@ -309,12 +312,14 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       window.turnstileManager.loadScript().catch((error) => {
-        console.error('Failed to load Turnstile:', error);
+        // Silently fail - Turnstile is optional
+        // console.error('Failed to load Turnstile:', error);
       });
     });
   } else {
     window.turnstileManager.loadScript().catch((error) => {
-      console.error('Failed to load Turnstile:', error);
+      // Silently fail - Turnstile is optional
+      // console.error('Failed to load Turnstile:', error);
     });
   }
 })();
