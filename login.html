@@ -637,7 +637,6 @@
     <script src="assets/scripts/turnstile-manager.js"></script>
     <script src="assets/scripts/aws-auth.js"></script>
     <script src="assets/scripts/aws-auth-business.js"></script>
-    <script src="assets/scripts/login.js"></script>
     <script>
     (function() {
         'use strict';
@@ -700,7 +699,10 @@
         
         // Turnstile rendering
         async function renderTurnstileV3(type) {
-            if (!window.turnstileManager) return;
+            if (!window.turnstileManager) {
+                console.warn('Turnstile manager not available');
+                return;
+            }
             
             const containerId = type === 'user' ? 'turnstileUserV3' : 'turnstileBusinessV3';
             const container = document.getElementById(containerId);
@@ -720,15 +722,18 @@
                         turnstileWidgetsV3[type] = token;
                     },
                     errorCallback: (error) => {
-                        console.error('Turnstile error:', error);
+                        console.warn('Turnstile error:', error);
+                        turnstileWidgetsV3[type] = null;
                     },
                     expiredCallback: () => {
                         turnstileWidgetsV3[type] = null;
                     }
                 });
             } catch (error) {
-                console.error('Turnstile render error:', error);
+                // Non-blocking: allow login to proceed without Turnstile
+                console.warn('Turnstile render error (non-blocking):', error.message);
                 container.classList.remove('active');
+                // Don't throw - allow login to work without Turnstile
             }
         }
         
@@ -764,8 +769,12 @@
                 }
                 
                 let turnstileToken = null;
-                if (window.turnstileManager && turnstileWidgetsV3.user) {
-                    turnstileToken = window.turnstileManager.getToken('turnstileUserV3');
+                try {
+                    if (window.turnstileManager && turnstileWidgetsV3.user) {
+                        turnstileToken = window.turnstileManager.getToken('turnstileUserV3');
+                    }
+                } catch (err) {
+                    console.warn('Could not get Turnstile token (non-blocking):', err);
                 }
                 
                 try {
@@ -785,9 +794,13 @@
                     }, 1000);
                     
                 } catch (err) {
-                    if (window.turnstileManager) {
-                        window.turnstileManager.reset('turnstileUserV3');
-                        turnstileWidgetsV3.user = null;
+                    try {
+                        if (window.turnstileManager) {
+                            window.turnstileManager.reset('turnstileUserV3');
+                            turnstileWidgetsV3.user = null;
+                        }
+                    } catch (resetErr) {
+                        // Ignore reset errors
                     }
                     
                     let errorMsg = 'Login failed. ';
@@ -844,8 +857,12 @@
                 }
                 
                 let turnstileToken = null;
-                if (window.turnstileManager && turnstileWidgetsV3.business) {
-                    turnstileToken = window.turnstileManager.getToken('turnstileBusinessV3');
+                try {
+                    if (window.turnstileManager && turnstileWidgetsV3.business) {
+                        turnstileToken = window.turnstileManager.getToken('turnstileBusinessV3');
+                    }
+                } catch (err) {
+                    console.warn('Could not get Turnstile token (non-blocking):', err);
                 }
                 
                 try {
@@ -886,9 +903,13 @@
                     }
                     
                 } catch (err) {
-                    if (window.turnstileManager) {
-                        window.turnstileManager.reset('turnstileBusinessV3');
-                        turnstileWidgetsV3.business = null;
+                    try {
+                        if (window.turnstileManager) {
+                            window.turnstileManager.reset('turnstileBusinessV3');
+                            turnstileWidgetsV3.business = null;
+                        }
+                    } catch (resetErr) {
+                        // Ignore reset errors
                     }
                     
                     showMessageV3('Login failed: ' + (err.message || 'Please check your credentials.'), 'error');
