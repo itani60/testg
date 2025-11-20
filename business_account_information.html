@@ -1304,21 +1304,31 @@
                 
                 const user = info.user;
                 
+                // Debug: Log user data to see what we're getting
+                console.log('User data from getUserInfo:', user);
+                console.log('Business Owners:', user.businessOwners);
+                
                 // Populate form fields with current user data
                 if (document.getElementById('businessName')) {
                     document.getElementById('businessName').value = user.businessName || user.business_name || user.name || '';
                 }
                 
+                // Get primary owner name from user object
+                const givenName = user.givenName || user.given_name || '';
+                const familyName = user.familyName || user.family_name || '';
+                
                 // Populate primary owner (read-only)
                 if (document.getElementById('primaryOwnerFirstName')) {
-                    document.getElementById('primaryOwnerFirstName').value = givenName || '';
+                    document.getElementById('primaryOwnerFirstName').value = givenName;
                 }
                 if (document.getElementById('primaryOwnerLastName')) {
-                    document.getElementById('primaryOwnerLastName').value = familyName || '';
+                    document.getElementById('primaryOwnerLastName').value = familyName;
                 }
                 
                 // Populate additional business owners
                 const businessOwners = user.businessOwners || [];
+                console.log('Business Owners Array:', businessOwners);
+                console.log('Business Owners Length:', businessOwners.length);
                 const optionalOwner1Card = document.getElementById('optionalOwner1Card');
                 const optionalOwner2Card = document.getElementById('optionalOwner2Card');
                 const removeOptionalOwner1Btn = document.getElementById('removeOptionalOwner1Btn');
