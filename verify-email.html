@@ -458,33 +458,103 @@
             var codeEl = document.getElementById('veCode');
             var msg = document.getElementById('veMsg');
     
-            function verify() {
-                var code = codeEl.value;
-                if (!code) {
+            async function verify() {
+                var code = codeEl.value.trim();
+                if (!code || code.length !== 6) {
                     msg.textContent = 'Please enter a 6-digit code.';
+                    msg.style.color = 'red';
                     msg.style.display = 'block';
                     return;
                 }
-                // Simulate verification process
+                
+                if (!email) {
+                    msg.textContent = 'Email not found. Please register again.';
+                    msg.style.color = 'red';
+                    msg.style.display = 'block';
+                    return;
+                }
+                
                 msg.textContent = 'Verifying...';
+                msg.style.color = '';
                 msg.style.display = 'block';
-                setTimeout(function() {
+                verifyBtn.disabled = true;
+                
+                try {
+                    const result = await window.awsAuthService.verifyEmail(email, code);
                     msg.textContent = 'Verification successful! Redirecting...';
                     msg.style.color = 'green';
+                    msg.style.display = 'block';
+                    
                     setTimeout(function() {
-                        window.location.href = 'login.html'; // Redirect to login page
+                        window.location.href = 'login.html';
                     }, 2000);
-                }, 1000);
+                } catch (error) {
+                    console.error('Verify error:', error);
+                    msg.textContent = error.message || 'Verification failed. Please check your code and try again.';
+                    msg.style.color = 'red';
+                    msg.style.display = 'block';
+                    verifyBtn.disabled = false;
+                }
             }
     
-            function resend() {
+            async function resend() {
+                if (!email) {
+                    msg.textContent = 'Email not found. Please register again.';
+                    msg.style.color = 'red';
+                    msg.style.display = 'block';
+                    return;
+                }
+                
                 msg.textContent = 'Resending...';
                 msg.style.display = 'block';
-                setTimeout(function() {
-                    msg.textContent = 'Code resent. Please check your email.';
-                    msg.style.color = 'blue';
+                msg.style.color = '';
+                resendBtn.disabled = true;
+                
+                try {
+                    const result = await window.awsAuthService.resendVerification(email);
+                    msg.textContent = result.message || 'Code resent. Please check your email.';
+                    msg.style.color = 'green';
                     msg.style.display = 'block';
-                }, 1000);
+                    
+                    if (result.retryAfter) {
+                        let countdown = Math.ceil(result.retryAfter);
+                        const countdownInterval = setInterval(() => {
+                            countdown--;
+                            if (countdown > 0) {
+                                msg.textContent = `Please wait ${countdown} seconds before requesting another code.`;
+                            } else {
+                                clearInterval(countdownInterval);
+                                resendBtn.disabled = false;
+                                msg.style.display = 'none';
+                            }
+                        }, 1000);
+                    } else {
+                        setTimeout(() => {
+                            resendBtn.disabled = false;
+                        }, 60000);
+                    }
+                } catch (error) {
+                    console.error('Resend error:', error);
+                    msg.textContent = error.message || 'Failed to resend code. Please try again.';
+                    msg.style.color = 'red';
+                    msg.style.display = 'block';
+                    
+                    if (error.retryAfter) {
+                        let countdown = Math.ceil(error.retryAfter);
+                        msg.textContent += ` Please wait ${countdown} seconds.`;
+                        const countdownInterval = setInterval(() => {
+                            countdown--;
+                            if (countdown > 0) {
+                                msg.textContent = error.message + ` Please wait ${countdown} seconds.`;
+                            } else {
+                                clearInterval(countdownInterval);
+                                resendBtn.disabled = false;
+                            }
+                        }, 1000);
+                    } else {
+                        resendBtn.disabled = false;
+                    }
+                }
             }
     
             verifyBtn && verifyBtn.addEventListener('click', function(e){ e.preventDefault(); verify(); });
