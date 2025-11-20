@@ -11,7 +11,6 @@
   const USER_INFO_URL = `${BASE_URL}/business/business/user-info`;
   const FORGOT_PASSWORD_URL = `${BASE_URL}/business/business/forgot-password`;
   const RESET_PASSWORD_URL = `${BASE_URL}/business/business/reset-password`;
-  const RESEND_OTP_FORGOT_PASSWORD_URL = `${BASE_URL}/business/business/resend-otp-forgot-password`;
   const UPDATE_BUSINESS_INFO_URL = `${BASE_URL}/business/business/update-business-info`;
   const UPDATE_BUSINESS_PASSWORD_URL = `${BASE_URL}/business/business/update-business-password`;
   const RESEND_PASSWORD_UPDATE_OTP_URL = `${BASE_URL}/business/business/resend-password-update-otp`;
@@ -202,15 +201,18 @@
     }
 
     async resendForgotPasswordOTP(email) {
-      const res = await fetch(RESEND_OTP_FORGOT_PASSWORD_URL, {
+      const res = await fetch(FORGOT_PASSWORD_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, resend: true })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || data?.success === false) {
-        const message = data?.message || `Resend forgot password OTP failed (HTTP ${res.status})`;
-        throw new Error(message);
+        const error = new Error(data?.message || `Resend forgot password OTP failed (HTTP ${res.status})`);
+        if (data?.retryAfter) {
+          error.retryAfter = data.retryAfter;
+        }
+        throw error;
       }
       return (data && typeof data === 'object') ? data : { success: true };
     }

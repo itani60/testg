@@ -456,3 +456,116 @@ function setLoadingState(button, isLoading) {
         if (text) text.style.display = 'inline';
     }
 }
+
+/**
+ * Resend forgot password OTP code
+ */
+async function resendForgotCode() {
+    const resendBtn = document.getElementById('resendOtpBtn');
+    const resendTimer = document.getElementById('resendTimer');
+    const timerCount = document.getElementById('timerCount');
+    
+    // Get email from URL params or stored value
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailValue = urlParams.get('email') || window.resetPasswordEmail || '';
+    
+    if (!emailValue) {
+        showErrorToast('Email address is required. Please use the forgot password link from your email.');
+        return;
+    }
+    
+    if (resendBtn) {
+        resendBtn.disabled = true;
+    }
+    
+    try {
+        if (!window.awsAuthBusinessService) {
+            throw new Error('Business auth service not available');
+        }
+        
+        const result = await window.awsAuthBusinessService.resendForgotPasswordOTP(emailValue.trim());
+        
+        if (result.success) {
+            showSuccessToast(result.message || 'Verification code resent to ' + emailValue);
+            
+            // Handle rate limiting countdown
+            if (result.retryAfter) {
+                let countdown = Math.ceil(result.retryAfter);
+                if (resendTimer && timerCount) {
+                    resendTimer.style.display = 'inline-block';
+                    timerCount.textContent = countdown;
+                    
+                    const countdownInterval = setInterval(() => {
+                        countdown--;
+                        if (countdown > 0) {
+                            timerCount.textContent = countdown;
+                        } else {
+                            clearInterval(countdownInterval);
+                            resendTimer.style.display = 'none';
+                            if (resendBtn) {
+                                resendBtn.disabled = false;
+                            }
+                        }
+                    }, 1000);
+                }
+            } else {
+                // Default 60 second cooldown
+                let countdown = 60;
+                if (resendTimer && timerCount) {
+                    resendTimer.style.display = 'inline-block';
+                    timerCount.textContent = countdown;
+                    
+                    const countdownInterval = setInterval(() => {
+                        countdown--;
+                        if (countdown > 0) {
+                            timerCount.textContent = countdown;
+                        } else {
+                            clearInterval(countdownInterval);
+                            resendTimer.style.display = 'none';
+                            if (resendBtn) {
+                                resendBtn.disabled = false;
+                            }
+                        }
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                        if (resendBtn) {
+                            resendBtn.disabled = false;
+                        }
+                    }, 3000);
+                }
+            }
+        }
+    } catch (err) {
+        console.error('Resend forgot password OTP error:', err);
+        showErrorToast(err.message || 'Failed to resend verification code. Please try again.');
+        
+        // Handle rate limiting error
+        if (err.retryAfter) {
+            let countdown = Math.ceil(err.retryAfter);
+            if (resendTimer && timerCount) {
+                resendTimer.style.display = 'inline-block';
+                timerCount.textContent = countdown;
+                
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    if (countdown > 0) {
+                        timerCount.textContent = countdown;
+                    } else {
+                        clearInterval(countdownInterval);
+                        resendTimer.style.display = 'none';
+                        if (resendBtn) {
+                            resendBtn.disabled = false;
+                        }
+                    }
+                }, 1000);
+            }
+        } else {
+            setTimeout(() => {
+                if (resendBtn) {
+                    resendBtn.disabled = false;
+                }
+            }, 3000);
+        }
+    }
+}
