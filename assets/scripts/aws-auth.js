@@ -11,7 +11,6 @@
   const RESEND_DELETE_OTP_URL = 'https://acc.comparehubprices.site/acc/auth/delete-resend-otp';
   const FORGOT_PASSWORD_URL = 'https://acc.comparehubprices.site/acc/auth/forgot-password';
   const RESET_PASSWORD_URL = 'https://acc.comparehubprices.site/acc/auth/reset-password';
-  const RESEND_FORGOT_CODE_URL = 'https://acc.comparehubprices.site/acc/auth/resend-forgot-code';
   const REGISTER_URL = 'https://acc.comparehubprices.site/acc/auth/register';
   const VERIFY_EMAIL_URL = 'https://acc.comparehubprices.site/acc/auth/verify-email';
   const LOGOUT_URL = 'https://acc.comparehubprices.site/acc/auth/logout';
@@ -183,15 +182,19 @@
     }
 
     async resendForgotCode(email) {
-      const res = await fetch(RESEND_FORGOT_CODE_URL, {
+      const res = await fetch(FORGOT_PASSWORD_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, resend: true })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || data?.success === false) {
         const message = data?.message || `Resend code failed (HTTP ${res.status})`;
-        throw new Error(message);
+        const error = new Error(message);
+        if (data?.retryAfter) {
+          error.retryAfter = data.retryAfter;
+        }
+        throw error;
       }
       return (data && typeof data === 'object') ? data : { success: true };
     }
