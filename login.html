@@ -1051,7 +1051,7 @@
                             const modalInstance = bootstrap.Modal.getInstance(modalEl);
                             if (modalInstance) modalInstance.hide();
                         }
-                        window.location.href = 'reset-passwword.html?email=' + encodeURIComponent(email);
+                        window.location.href = 'regular_reset_password.html?email=' + encodeURIComponent(email);
                     } catch (err) {
                         const message = err && err.message ? err.message : 'Failed to send verification code. Please try again.';
                         if (feedbackEl) {
@@ -1090,7 +1090,7 @@
                             feedbackEl.classList.add('d-none');
                         }
                         
-                        const result = await (window.businessAuthService && window.businessAuthService.forgotPassword(email));
+                        const result = await (window.businessAWSAuthService && window.businessAWSAuthService.forgotPassword(email));
                         
                         if (result && result.googleAccount) {
                             const message = result.message || 'This email is linked to Google Sign-In. Please use the "Sign in with Google" button.';
@@ -1108,7 +1108,7 @@
                             const modalInstance = bootstrap.Modal.getInstance(modalEl);
                             if (modalInstance) modalInstance.hide();
                         }
-                        window.location.href = 'reset-password-business.html?email=' + encodeURIComponent(email);
+                        window.location.href = 'business_reset_password.html?email=' + encodeURIComponent(email);
                     } catch (err) {
                         const message = err && err.message ? err.message : 'Failed to send verification code. Please try again.';
                         if (feedbackEl) {
