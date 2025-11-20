@@ -13,7 +13,6 @@
   const RESET_PASSWORD_URL = `${BASE_URL}/business/business/reset-password`;
   const UPDATE_BUSINESS_INFO_URL = `${BASE_URL}/business/business/update-business-info`;
   const UPDATE_BUSINESS_PASSWORD_URL = `${BASE_URL}/business/business/update-business-password`;
-  const RESEND_PASSWORD_UPDATE_OTP_URL = `${BASE_URL}/business/business/resend-password-update-otp`;
   const MANAGE_SERVICES_URL = `${BASE_URL}/business/business/manage-services`;
   const GET_SERVICES_URL = `${BASE_URL}/business/business/get-services`;
   const GET_PUBLIC_BUSINESS_URL = `${BASE_URL}/business/business/public`;
@@ -450,11 +449,11 @@
     }
 
     async resendPasswordUpdateOTP() {
-      const res = await fetch(RESEND_PASSWORD_UPDATE_OTP_URL, {
+      const res = await fetch(UPDATE_BUSINESS_PASSWORD_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({}),
+        body: JSON.stringify({ resend: true }),
       });
       const data = await res.json().catch(() => ({}));
 
@@ -463,6 +462,9 @@
         const error = new Error(message);
         error.status = res.status;
         error.response = data;
+        if (data.retryAfter) {
+          error.retryAfter = data.retryAfter;
+        }
         throw error;
       }
 
