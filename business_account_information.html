@@ -706,15 +706,29 @@
                         </button>
                     </div>
                     <div class="notifications-list">
-                        <!-- Business Owner -->
+                        <!-- Primary Business Owner -->
                         <div class="notification-item">
                             <div class="notification-icon">
                                 <i class="fas fa-user"></i>
                             </div>
                             <div class="notification-content">
-                                <h4>Business Owner</h4>
-                                <p id="businessOwnerDisplay">-</p>
-                                <span class="notification-time">Owner Name</span>
+                                <h4>Primary Business Owner</h4>
+                                <p id="primaryOwnerDisplay">-</p>
+                                <span class="notification-time">Account Holder (Read-only)</span>
+                            </div>
+                        </div>
+
+                        <!-- Additional Business Owners -->
+                        <div class="notification-item" id="additionalOwnersItem" style="display: none;">
+                            <div class="notification-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>Additional Business Owners</h4>
+                                <div id="additionalOwnersDisplay">
+                                    <p>-</p>
+                                </div>
+                                <span class="notification-time">Optional owners and stakeholders</span>
                             </div>
                         </div>
 
@@ -974,6 +988,81 @@
                             <small class="form-text text-muted">Example: Mon-Fri: 9AM-6PM, Sat: 9AM-1PM, Sun: Closed</small>
                         </div>
 
+                        <!-- Primary Business Owner (Read-only) -->
+                        <div class="mb-3">
+                            <label class="form-label">Primary Business Owner</label>
+                            <small class="form-text text-muted d-block mb-2">The account holder (cannot be changed)</small>
+                            <div class="card bg-light">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <label for="primaryOwnerFirstName" class="form-label small">First Name</label>
+                                            <input type="text" class="form-control form-control-sm" id="primaryOwnerFirstName" readonly disabled>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label for="primaryOwnerLastName" class="form-label small">Last Name</label>
+                                            <input type="text" class="form-control form-control-sm" id="primaryOwnerLastName" readonly disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Business Owners Section -->
+                        <div class="mb-3">
+                            <label class="form-label">Additional Business Owners <span class="text-muted small">(Optional)</span></label>
+                            <small class="form-text text-muted d-block mb-2">Add up to 2 additional business owners or stakeholders</small>
+                            
+                            <!-- Optional Owner 1 -->
+                            <div class="card mb-2" id="optionalOwner1Card">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">Additional Owner 1</h6>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOptionalOwner(1)" id="removeOptionalOwner1Btn" style="display: none;">
+                                            <i class="fas fa-times"></i> Remove
+                                        </button>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <label for="optionalOwner1FirstName" class="form-label small">First Name</label>
+                                            <input type="text" class="form-control form-control-sm" id="optionalOwner1FirstName" placeholder="First name">
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label for="optionalOwner1LastName" class="form-label small">Last Name</label>
+                                            <input type="text" class="form-control form-control-sm" id="optionalOwner1LastName" placeholder="Last name">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Optional Owner 2 -->
+                            <div class="card mb-2" id="optionalOwner2Card" style="display: none;">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">Additional Owner 2</h6>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOptionalOwner(2)" id="removeOptionalOwner2Btn">
+                                            <i class="fas fa-times"></i> Remove
+                                        </button>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <label for="optionalOwner2FirstName" class="form-label small">First Name</label>
+                                            <input type="text" class="form-control form-control-sm" id="optionalOwner2FirstName" placeholder="First name">
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label for="optionalOwner2LastName" class="form-label small">Last Name</label>
+                                            <input type="text" class="form-control form-control-sm" id="optionalOwner2LastName" placeholder="Last name">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Add Owner Button -->
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="addOptionalOwnerBtn" onclick="addOptionalOwnerSlot()">
+                                <i class="fas fa-plus"></i> Add Another Owner
+                            </button>
+                        </div>
+
                         <!-- Business Logo -->
                         <div class="mb-3">
                             <label for="businessLogo" class="form-label">Business Logo</label>
@@ -1065,10 +1154,35 @@
                 const user = info.user;
                 
                 // Display business information
-                // Business Owner Name
+                // Primary Business Owner (from account - read-only)
                 const givenName = user.givenName || user.given_name || '';
                 const familyName = user.familyName || user.family_name || '';
-                const businessOwner = (givenName && familyName) ? `${givenName} ${familyName}` : (givenName || familyName || user.fullName || user.name || '-');
+                const primaryOwner = (givenName && familyName) ? `${givenName} ${familyName}` : (givenName || familyName || user.fullName || user.name || '-');
+                
+                // Additional Business Owners (optional)
+                const businessOwners = user.businessOwners || [];
+                
+                // Display primary owner
+                const primaryOwnerEl = document.getElementById('primaryOwnerDisplay');
+                if (primaryOwnerEl) {
+                    primaryOwnerEl.textContent = primaryOwner;
+                }
+                
+                // Display additional owners
+                const additionalOwnersItem = document.getElementById('additionalOwnersItem');
+                const additionalOwnersDisplay = document.getElementById('additionalOwnersDisplay');
+                if (businessOwners.length > 0 && additionalOwnersItem && additionalOwnersDisplay) {
+                    additionalOwnersItem.style.display = 'block';
+                    const ownersList = businessOwners.map((owner, index) => {
+                        const ownerName = owner.firstName && owner.lastName 
+                            ? `${owner.firstName} ${owner.lastName}` 
+                            : owner.name || `Owner ${index + 1}`;
+                        return `<div class="mb-1"><strong>Owner ${index + 1}:</strong> ${ownerName}</div>`;
+                    }).join('');
+                    additionalOwnersDisplay.innerHTML = ownersList;
+                } else if (additionalOwnersItem) {
+                    additionalOwnersItem.style.display = 'none';
+                }
                 
                 const businessName = user.businessName || user.business_name || user.name || '-';
                 const businessAddress = user.businessAddress || user.business_address || user.address || '-';
@@ -1080,7 +1194,6 @@
                 const memberSince = user.memberSince || user.createdAt || user.created_at || '-';
                 
                 // Update display elements
-                const businessOwnerEl = document.getElementById('businessOwnerDisplay');
                 const businessNameEl = document.getElementById('businessNameDisplay');
                 const businessAddressEl = document.getElementById('businessAddressDisplay');
                 const businessNumberEl = document.getElementById('businessNumberDisplay');
@@ -1090,7 +1203,6 @@
                 const businessVerificationEl = document.getElementById('businessVerificationDisplay');
                 const memberSinceEl = document.getElementById('memberSinceDisplay');
                 
-                if (businessOwnerEl) businessOwnerEl.textContent = businessOwner;
                 if (businessNameEl) businessNameEl.textContent = businessName;
                 if (businessAddressEl) businessAddressEl.textContent = businessAddress;
                 if (businessNumberEl) businessNumberEl.textContent = businessNumber;
@@ -1195,6 +1307,48 @@
                 // Populate form fields with current user data
                 if (document.getElementById('businessName')) {
                     document.getElementById('businessName').value = user.businessName || user.business_name || user.name || '';
+                }
+                
+                // Populate primary owner (read-only)
+                if (document.getElementById('primaryOwnerFirstName')) {
+                    document.getElementById('primaryOwnerFirstName').value = givenName || '';
+                }
+                if (document.getElementById('primaryOwnerLastName')) {
+                    document.getElementById('primaryOwnerLastName').value = familyName || '';
+                }
+                
+                // Populate additional business owners
+                const businessOwners = user.businessOwners || [];
+                if (businessOwners.length > 0) {
+                    // Show and populate optional owner 1
+                    const optionalOwner1Card = document.getElementById('optionalOwner1Card');
+                    const removeOptionalOwner1Btn = document.getElementById('removeOptionalOwner1Btn');
+                    if (optionalOwner1Card && businessOwners[0]) {
+                        optionalOwner1Card.style.display = 'block';
+                        if (removeOptionalOwner1Btn) removeOptionalOwner1Btn.style.display = 'block';
+                        if (document.getElementById('optionalOwner1FirstName')) {
+                            document.getElementById('optionalOwner1FirstName').value = businessOwners[0].firstName || '';
+                        }
+                        if (document.getElementById('optionalOwner1LastName')) {
+                            document.getElementById('optionalOwner1LastName').value = businessOwners[0].lastName || '';
+                        }
+                    }
+                    
+                    // Show and populate optional owner 2 if exists
+                    if (businessOwners.length > 1) {
+                        const optionalOwner2Card = document.getElementById('optionalOwner2Card');
+                        const addOptionalOwnerBtn = document.getElementById('addOptionalOwnerBtn');
+                        if (optionalOwner2Card && businessOwners[1]) {
+                            optionalOwner2Card.style.display = 'block';
+                            if (addOptionalOwnerBtn) addOptionalOwnerBtn.style.display = 'none';
+                            if (document.getElementById('optionalOwner2FirstName')) {
+                                document.getElementById('optionalOwner2FirstName').value = businessOwners[1].firstName || '';
+                            }
+                            if (document.getElementById('optionalOwner2LastName')) {
+                                document.getElementById('optionalOwner2LastName').value = businessOwners[1].lastName || '';
+                            }
+                        }
+                    }
                 }
                 
                 // Populate address fields - try to parse existing address or use individual fields
@@ -1335,6 +1489,26 @@
                 if (postalCode) addressParts.push(postalCode);
                 const fullAddress = addressParts.join(', ');
                 
+                // Collect additional business owners data (NOT primary owner)
+                const businessOwners = [];
+                const optionalOwner1FirstName = document.getElementById('optionalOwner1FirstName')?.value.trim();
+                const optionalOwner1LastName = document.getElementById('optionalOwner1LastName')?.value.trim();
+                if (optionalOwner1FirstName || optionalOwner1LastName) {
+                    businessOwners.push({
+                        firstName: optionalOwner1FirstName || '',
+                        lastName: optionalOwner1LastName || ''
+                    });
+                }
+                
+                const optionalOwner2FirstName = document.getElementById('optionalOwner2FirstName')?.value.trim();
+                const optionalOwner2LastName = document.getElementById('optionalOwner2LastName')?.value.trim();
+                if (optionalOwner2FirstName || optionalOwner2LastName) {
+                    businessOwners.push({
+                        firstName: optionalOwner2FirstName || '',
+                        lastName: optionalOwner2LastName || ''
+                    });
+                }
+                
                 const businessData = {
                         businessName: document.getElementById('businessName').value.trim(),
                         businessAddress: fullAddress,
@@ -1346,6 +1520,7 @@
                         businessNumber: document.getElementById('contactNumber').value.trim(),
                     businessCategory: document.getElementById('businessCategory').value,
                         businessHours: document.getElementById('businessHours').value.trim(),
+                        businessOwners: businessOwners, // Only additional owners, not primary
                     socialMedia: {
                             whatsapp: document.getElementById('whatsappLink').value.trim(),
                             facebook: document.getElementById('facebookLink').value.trim(),
@@ -1405,6 +1580,40 @@
                 form?.reportValidity();
             }
         });
+        
+        // Additional Business Owners Management Functions
+        function addOptionalOwnerSlot() {
+            const optionalOwner2Card = document.getElementById('optionalOwner2Card');
+            const addOptionalOwnerBtn = document.getElementById('addOptionalOwnerBtn');
+            
+            if (optionalOwner2Card && addOptionalOwnerBtn) {
+                optionalOwner2Card.style.display = 'block';
+                addOptionalOwnerBtn.style.display = 'none';
+            }
+        }
+        
+        function removeOptionalOwner(ownerNumber) {
+            if (ownerNumber === 1) {
+                const optionalOwner1Card = document.getElementById('optionalOwner1Card');
+                const optionalOwner1FirstName = document.getElementById('optionalOwner1FirstName');
+                const optionalOwner1LastName = document.getElementById('optionalOwner1LastName');
+                const removeOptionalOwner1Btn = document.getElementById('removeOptionalOwner1Btn');
+                
+                if (optionalOwner1FirstName) optionalOwner1FirstName.value = '';
+                if (optionalOwner1LastName) optionalOwner1LastName.value = '';
+                if (removeOptionalOwner1Btn) removeOptionalOwner1Btn.style.display = 'none';
+            } else if (ownerNumber === 2) {
+                const optionalOwner2Card = document.getElementById('optionalOwner2Card');
+                const optionalOwner2FirstName = document.getElementById('optionalOwner2FirstName');
+                const optionalOwner2LastName = document.getElementById('optionalOwner2LastName');
+                const addOptionalOwnerBtn = document.getElementById('addOptionalOwnerBtn');
+                
+                if (optionalOwner2Card) optionalOwner2Card.style.display = 'none';
+                if (optionalOwner2FirstName) optionalOwner2FirstName.value = '';
+                if (optionalOwner2LastName) optionalOwner2LastName.value = '';
+                if (addOptionalOwnerBtn) addOptionalOwnerBtn.style.display = 'block';
+            }
+        }
     </script>
 
     <!-- Toast Container for Notifications -->
