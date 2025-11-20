@@ -1192,8 +1192,8 @@
                     <form id="deleteAccountOTPForm" autocomplete="off">
                         <div class="mb-3">
                             <label for="deleteAccountOTP" class="form-label">Verification Code</label>
-                            <input type="text" class="form-control text-center" id="deleteAccountOTP" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" autocomplete="off" required style="font-size: 1.5rem; letter-spacing: 0.5rem;">
-                            <small class="form-text text-muted">Enter the 6-digit code sent to your email</small>
+                            <input type="text" class="form-control text-center" id="deleteAccountOTP" placeholder="" maxlength="6" pattern="[0-9]{6}" autocomplete="off" required style="font-size: 1.5rem; letter-spacing: 0.5rem;">
+                            <small class="form-text text-muted">Enter the code sent to your email</small>
                         </div>
                         <div id="deleteAccountOTPError" class="alert alert-danger" style="display: none;" role="alert"></div>
                         <div class="text-center mt-3">
@@ -1208,7 +1208,6 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-danger" id="confirmDeleteAccountBtn" onclick="confirmDeleteAccount()">
-                        <i class="fas fa-trash-alt me-2"></i>
                         Delete Account
                     </button>
                 </div>
