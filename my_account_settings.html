@@ -1408,12 +1408,66 @@
                 return;
             }
 
-            try {
-                await window.awsAuthService.resendPasswordOTP(passwordChangeData.userEmail);
-                showSuccessToast('Verification code resent to ' + passwordChangeData.userEmail + '. Please check your inbox.');
-            } catch (error) {
-                console.error('Error resending password OTP:', error);
-                showErrorToast('Failed to resend verification code: ' + (error.message || 'Unknown error'));
+            const resendBtn = document.getElementById('resendPasswordOTPBtn');
+            if (resendBtn) {
+                const originalText = resendBtn.innerHTML;
+                resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resending...';
+                resendBtn.disabled = true;
+                
+                try {
+                    const result = await window.awsAuthService.resendPasswordOTP();
+                    
+                    showSuccessToast('Verification code resent to ' + passwordChangeData.userEmail + '. Please check your inbox.');
+                    
+                    // Handle rate limiting if present
+                    if (result.retryAfter) {
+                        let countdown = result.retryAfter;
+                        const countdownInterval = setInterval(() => {
+                            if (countdown > 0) {
+                                resendBtn.innerHTML = `<i class="fas fa-clock"></i> Wait ${countdown}s`;
+                                countdown--;
+                            } else {
+                                clearInterval(countdownInterval);
+                                resendBtn.innerHTML = originalText;
+                                resendBtn.disabled = false;
+                            }
+                        }, 1000);
+                    } else {
+                        resendBtn.innerHTML = originalText;
+                        resendBtn.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('Error resending password OTP:', error);
+                    
+                    // Handle rate limiting errors
+                    if (error.retryAfter) {
+                        let countdown = error.retryAfter;
+                        const countdownInterval = setInterval(() => {
+                            if (countdown > 0) {
+                                resendBtn.innerHTML = `<i class="fas fa-clock"></i> Wait ${countdown}s`;
+                                countdown--;
+                            } else {
+                                clearInterval(countdownInterval);
+                                resendBtn.innerHTML = originalText;
+                                resendBtn.disabled = false;
+                            }
+                        }, 1000);
+                        showErrorToast(error.message || 'Failed to resend verification code. Please wait before trying again.');
+                    } else {
+                        showErrorToast('Failed to resend verification code: ' + (error.message || 'Unknown error'));
+                        resendBtn.innerHTML = originalText;
+                        resendBtn.disabled = false;
+                    }
+                }
+            } else {
+                // Fallback if button not found
+                try {
+                    await window.awsAuthService.resendPasswordOTP();
+                    showSuccessToast('Verification code resent to ' + passwordChangeData.userEmail + '. Please check your inbox.');
+                } catch (error) {
+                    console.error('Error resending password OTP:', error);
+                    showErrorToast('Failed to resend verification code: ' + (error.message || 'Unknown error'));
+                }
             }
         }
         

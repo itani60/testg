@@ -6,7 +6,6 @@
   const USER_INFO_URL = 'https://acc.comparehubprices.site/acc/auth/get-user-info';
   const UPDATE_USER_URL = 'https://acc.comparehubprices.site/acc/auth/update-user-info';
   const UPDATE_PASSWORD_URL = 'https://acc.comparehubprices.site/acc/auth/update-password';
-  const RESEND_UPDATE_PASS_OTP_URL = 'https://acc.comparehubprices.site/acc/auth/resend-update-pass-otp';
   const DELETE_ACCOUNT_URL = 'https://acc.comparehubprices.site/acc/auth/delete-account';
   const RESEND_DELETE_OTP_URL = 'https://acc.comparehubprices.site/acc/auth/delete-resend-otp';
   const FORGOT_PASSWORD_URL = 'https://acc.comparehubprices.site/acc/auth/forgot-password';
@@ -329,18 +328,26 @@
     }
 
     async resendPasswordOTP(email) {
-      const res = await fetch(RESEND_UPDATE_PASS_OTP_URL, {
+      const res = await fetch(UPDATE_PASSWORD_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ 
+          action: 'request_password_change',
+          resend: true
+        })
       });
       
       const data = await res.json().catch(() => ({}));
       
       if (!res.ok || data?.success === false) {
         const message = data?.message || data?.error || `Resend OTP failed (HTTP ${res.status})`;
-        throw new Error(message);
+        const error = new Error(message);
+        // Include retryAfter for rate limiting
+        if (data?.retryAfter) {
+          error.retryAfter = data.retryAfter;
+        }
+        throw error;
       }
       
       return data;
