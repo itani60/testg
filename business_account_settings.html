@@ -2651,7 +2651,7 @@
                 }
 
                 // Resend OTP
-                await window.businessAWSAuthService.deleteAccount('resend_otp', {});
+                await window.businessAWSAuthService.resendDeleteAccountOTP();
 
                 // Show success message
                 errorDiv.className = 'alert alert-success';
@@ -2670,17 +2670,20 @@
                 console.error('Error resending delete account OTP:', error);
                 let errorMessage = 'Failed to resend verification code.';
                 
+                // Handle rate limiting - check for retryAfter in error object or response
+                const retryAfter = error.retryAfter || error.response?.retryAfter;
+                const rateLimitError = error.response?.error || error.response?.reason;
+                
                 if (error.response) {
                     errorMessage = error.response.message || errorMessage;
-                    
-                    // Handle rate limit errors
-                    if (error.response.error === 'COOLDOWN' || error.response.error === 'HOURLY_LIMIT' || error.response.error === 'DAILY_LIMIT') {
-                        const retryAfter = error.response.retryAfter || 60;
-                        deleteAccountResendCountdown = retryAfter;
-                        startDeleteAccountResendTimer();
-                    }
                 } else if (error.message) {
                     errorMessage = error.message;
+                }
+                
+                if (retryAfter && (rateLimitError === 'COOLDOWN' || rateLimitError === 'HOURLY_LIMIT' || rateLimitError === 'DAILY_LIMIT' || rateLimitError === 'RESEND_COOLDOWN' || rateLimitError === 'RESEND_HOURLY_LIMIT' || rateLimitError === 'RESEND_DAILY_LIMIT')) {
+                    // Use retryAfter from error, or fallback to 60 seconds
+                    deleteAccountResendCountdown = Math.ceil(retryAfter);
+                    startDeleteAccountResendTimer();
                 }
 
                 errorDiv.className = 'alert alert-danger';
@@ -2688,7 +2691,7 @@
                 errorDiv.style.display = 'block';
 
                 // Re-enable button if not rate limited
-                if (!error.response || (error.response.error !== 'COOLDOWN' && error.response.error !== 'HOURLY_LIMIT' && error.response.error !== 'DAILY_LIMIT')) {
+                if (!retryAfter || !(rateLimitError === 'COOLDOWN' || rateLimitError === 'HOURLY_LIMIT' || rateLimitError === 'DAILY_LIMIT' || rateLimitError === 'RESEND_COOLDOWN' || rateLimitError === 'RESEND_HOURLY_LIMIT' || rateLimitError === 'RESEND_DAILY_LIMIT')) {
                     resendBtn.innerHTML = originalText;
                     resendBtn.disabled = false;
                 }

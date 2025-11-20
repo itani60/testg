@@ -601,6 +601,32 @@
       return responseData;
     }
 
+    async resendDeleteAccountOTP() {
+      const res = await fetch(DELETE_ACCOUNT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          action: 'request_delete',
+          resend: true 
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || data?.success === false) {
+        const message = data?.message || `Resend delete account OTP failed (HTTP ${res.status})`;
+        const error = new Error(message);
+        error.status = res.status;
+        error.response = data;
+        if (data.retryAfter) {
+          error.retryAfter = data.retryAfter;
+        }
+        throw error;
+      }
+
+      return data;
+    }
+
     async logout() {
       // HttpOnly cookie is automatically sent by browser
       try {
