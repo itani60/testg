@@ -1243,16 +1243,75 @@
                 return;
             }
             
-            try {
-                await window.awsAuthService.updateUserInfo({
-                    action: 'request_email_change',
-                    newEmail: newEmail
-                });
+            const resendBtn = document.querySelector('button[onclick="resendEmailOTP()"]');
+            if (resendBtn) {
+                const originalText = resendBtn.innerHTML;
+                resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resending...';
+                resendBtn.disabled = true;
                 
-                showSuccessToast('Verification code resent to ' + newEmail + '. Please check your inbox.');
-            } catch (error) {
-                console.error('Error resending email OTP:', error);
-                showErrorToast('Failed to resend verification code: ' + (error.message || 'Unknown error'));
+                try {
+                    const result = await window.awsAuthService.updateUserInfo({
+                        action: 'request_email_change',
+                        newEmail: newEmail,
+                        resend: true
+                    });
+                    
+                    showSuccessToast('Verification code resent to ' + newEmail + '. Please check your inbox.');
+                    
+                    // Handle rate limiting if present
+                    if (result.retryAfter) {
+                        let countdown = result.retryAfter;
+                        const countdownInterval = setInterval(() => {
+                            if (countdown > 0) {
+                                resendBtn.innerHTML = `<i class="fas fa-clock"></i> Wait ${countdown}s`;
+                                countdown--;
+                            } else {
+                                clearInterval(countdownInterval);
+                                resendBtn.innerHTML = originalText;
+                                resendBtn.disabled = false;
+                            }
+                        }, 1000);
+                    } else {
+                        resendBtn.innerHTML = originalText;
+                        resendBtn.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('Error resending email OTP:', error);
+                    
+                    // Handle rate limiting errors
+                    if (error.retryAfter) {
+                        let countdown = error.retryAfter;
+                        const countdownInterval = setInterval(() => {
+                            if (countdown > 0) {
+                                resendBtn.innerHTML = `<i class="fas fa-clock"></i> Wait ${countdown}s`;
+                                countdown--;
+                            } else {
+                                clearInterval(countdownInterval);
+                                resendBtn.innerHTML = originalText;
+                                resendBtn.disabled = false;
+                            }
+                        }, 1000);
+                        showErrorToast(error.message || 'Failed to resend verification code. Please wait before trying again.');
+                    } else {
+                        showErrorToast('Failed to resend verification code: ' + (error.message || 'Unknown error'));
+                        resendBtn.innerHTML = originalText;
+                        resendBtn.disabled = false;
+                    }
+                }
+            } else {
+                // Fallback if button not found
+                try {
+                    await window.awsAuthService.updateUserInfo({
+                        action: 'request_email_change',
+                        newEmail: newEmail,
+                        resend: true
+                    });
+                    
+                    showSuccessToast('Verification code resent to ' + newEmail + '. Please check your inbox.');
+                } catch (error) {
+                    console.error('Error resending email OTP:', error);
+                    showErrorToast('Failed to resend verification code: ' + (error.message || 'Unknown error'));
+                }
             }
         }
 

@@ -298,7 +298,12 @@
       
       if (!res.ok || data?.success === false) {
         const message = data?.message || data?.error || `Update user info failed (HTTP ${res.status})`;
-        throw new Error(message);
+        const error = new Error(message);
+        // Include retryAfter for rate limiting (e.g., email change resend)
+        if (data?.retryAfter) {
+          error.retryAfter = data.retryAfter;
+        }
+        throw error;
       }
       
       if (data.user) this._profile = data.user;
