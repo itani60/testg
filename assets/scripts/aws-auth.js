@@ -14,7 +14,6 @@
   const RESEND_FORGOT_CODE_URL = 'https://acc.comparehubprices.site/acc/auth/resend-forgot-code';
   const REGISTER_URL = 'https://acc.comparehubprices.site/acc/auth/register';
   const VERIFY_EMAIL_URL = 'https://acc.comparehubprices.site/acc/auth/verify-email';
-  const RESEND_VERIFICATION_URL = 'https://acc.comparehubprices.site/acc/auth/resend-verification';
   const LOGOUT_URL = 'https://acc.comparehubprices.site/acc/auth/logout';
   const GOOGLE_INIT_URL = 'https://acc.comparehubprices.site/acc/auth/google';
   const GOOGLE_CALLBACK_URL = 'https://acc.comparehubprices.site/acc/auth/google/callback';
@@ -260,15 +259,19 @@
     }
 
     async resendVerification(email) {
-      const res = await fetch(RESEND_VERIFICATION_URL, {
+      const res = await fetch(REGISTER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, resend: true })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || data?.success === false) {
         const message = data?.message || `Resend verification failed (HTTP ${res.status})`;
-        throw new Error(message);
+        const error = new Error(message);
+        if (data?.retryAfter) {
+          error.retryAfter = data.retryAfter;
+        }
+        throw error;
       }
       return data;
     }
