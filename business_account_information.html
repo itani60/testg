@@ -1319,12 +1319,20 @@
                 
                 // Populate additional business owners
                 const businessOwners = user.businessOwners || [];
+                const optionalOwner1Card = document.getElementById('optionalOwner1Card');
+                const optionalOwner2Card = document.getElementById('optionalOwner2Card');
+                const removeOptionalOwner1Btn = document.getElementById('removeOptionalOwner1Btn');
+                const removeOptionalOwner2Btn = document.getElementById('removeOptionalOwner2Btn');
+                const addOptionalOwnerBtn = document.getElementById('addOptionalOwnerBtn');
+                
+                // Always ensure Owner 1 card is visible (it's visible by default)
+                if (optionalOwner1Card) {
+                    optionalOwner1Card.style.display = 'block';
+                }
+                
                 if (businessOwners.length > 0) {
-                    // Show and populate optional owner 1
-                    const optionalOwner1Card = document.getElementById('optionalOwner1Card');
-                    const removeOptionalOwner1Btn = document.getElementById('removeOptionalOwner1Btn');
-                    if (optionalOwner1Card && businessOwners[0]) {
-                        optionalOwner1Card.style.display = 'block';
+                    // Populate Owner 1 if data exists
+                    if (businessOwners[0]) {
                         if (removeOptionalOwner1Btn) removeOptionalOwner1Btn.style.display = 'block';
                         if (document.getElementById('optionalOwner1FirstName')) {
                             document.getElementById('optionalOwner1FirstName').value = businessOwners[0].firstName || '';
@@ -1334,20 +1342,45 @@
                         }
                     }
                     
-                    // Show and populate optional owner 2 if exists
-                    if (businessOwners.length > 1) {
-                        const optionalOwner2Card = document.getElementById('optionalOwner2Card');
-                        const addOptionalOwnerBtn = document.getElementById('addOptionalOwnerBtn');
-                        if (optionalOwner2Card && businessOwners[1]) {
-                            optionalOwner2Card.style.display = 'block';
-                            if (addOptionalOwnerBtn) addOptionalOwnerBtn.style.display = 'none';
-                            if (document.getElementById('optionalOwner2FirstName')) {
-                                document.getElementById('optionalOwner2FirstName').value = businessOwners[1].firstName || '';
-                            }
-                            if (document.getElementById('optionalOwner2LastName')) {
-                                document.getElementById('optionalOwner2LastName').value = businessOwners[1].lastName || '';
-                            }
+                    // Show and populate Owner 2 if exists
+                    if (businessOwners.length > 1 && businessOwners[1]) {
+                        if (optionalOwner2Card) optionalOwner2Card.style.display = 'block';
+                        if (addOptionalOwnerBtn) addOptionalOwnerBtn.style.display = 'none';
+                        if (document.getElementById('optionalOwner2FirstName')) {
+                            document.getElementById('optionalOwner2FirstName').value = businessOwners[1].firstName || '';
                         }
+                        if (document.getElementById('optionalOwner2LastName')) {
+                            document.getElementById('optionalOwner2LastName').value = businessOwners[1].lastName || '';
+                        }
+                    } else {
+                        // Hide Owner 2 if not present
+                        if (optionalOwner2Card) optionalOwner2Card.style.display = 'none';
+                        if (addOptionalOwnerBtn) addOptionalOwnerBtn.style.display = 'block';
+                        // Clear Owner 2 fields
+                        if (document.getElementById('optionalOwner2FirstName')) {
+                            document.getElementById('optionalOwner2FirstName').value = '';
+                        }
+                        if (document.getElementById('optionalOwner2LastName')) {
+                            document.getElementById('optionalOwner2LastName').value = '';
+                        }
+                    }
+                } else {
+                    // No existing owners - clear all fields and hide remove buttons
+                    if (removeOptionalOwner1Btn) removeOptionalOwner1Btn.style.display = 'none';
+                    if (optionalOwner2Card) optionalOwner2Card.style.display = 'none';
+                    if (addOptionalOwnerBtn) addOptionalOwnerBtn.style.display = 'block';
+                    // Clear all owner fields
+                    if (document.getElementById('optionalOwner1FirstName')) {
+                        document.getElementById('optionalOwner1FirstName').value = '';
+                    }
+                    if (document.getElementById('optionalOwner1LastName')) {
+                        document.getElementById('optionalOwner1LastName').value = '';
+                    }
+                    if (document.getElementById('optionalOwner2FirstName')) {
+                        document.getElementById('optionalOwner2FirstName').value = '';
+                    }
+                    if (document.getElementById('optionalOwner2LastName')) {
+                        document.getElementById('optionalOwner2LastName').value = '';
                     }
                 }
                 
@@ -1490,24 +1523,30 @@
                 const fullAddress = addressParts.join(', ');
                 
                 // Collect additional business owners data (NOT primary owner)
+                // Always send businessOwners array, even if empty, to ensure database is updated
                 const businessOwners = [];
-                const optionalOwner1FirstName = document.getElementById('optionalOwner1FirstName')?.value.trim();
-                const optionalOwner1LastName = document.getElementById('optionalOwner1LastName')?.value.trim();
+                const optionalOwner1FirstName = document.getElementById('optionalOwner1FirstName')?.value.trim() || '';
+                const optionalOwner1LastName = document.getElementById('optionalOwner1LastName')?.value.trim() || '';
+                const optionalOwner2FirstName = document.getElementById('optionalOwner2FirstName')?.value.trim() || '';
+                const optionalOwner2LastName = document.getElementById('optionalOwner2LastName')?.value.trim() || '';
+                
+                // Only add owner if at least one field has a value
                 if (optionalOwner1FirstName || optionalOwner1LastName) {
                     businessOwners.push({
-                        firstName: optionalOwner1FirstName || '',
-                        lastName: optionalOwner1LastName || ''
+                        firstName: optionalOwner1FirstName,
+                        lastName: optionalOwner1LastName
                     });
                 }
                 
-                const optionalOwner2FirstName = document.getElementById('optionalOwner2FirstName')?.value.trim();
-                const optionalOwner2LastName = document.getElementById('optionalOwner2LastName')?.value.trim();
+                // Only add second owner if at least one field has a value
                 if (optionalOwner2FirstName || optionalOwner2LastName) {
                     businessOwners.push({
-                        firstName: optionalOwner2FirstName || '',
-                        lastName: optionalOwner2LastName || ''
+                        firstName: optionalOwner2FirstName,
+                        lastName: optionalOwner2LastName
                     });
                 }
+                
+                // Always include businessOwners in the data (even if empty array) to ensure it's saved/updated
                 
                 const businessData = {
                         businessName: document.getElementById('businessName').value.trim(),
@@ -1594,7 +1633,6 @@
         
         function removeOptionalOwner(ownerNumber) {
             if (ownerNumber === 1) {
-                const optionalOwner1Card = document.getElementById('optionalOwner1Card');
                 const optionalOwner1FirstName = document.getElementById('optionalOwner1FirstName');
                 const optionalOwner1LastName = document.getElementById('optionalOwner1LastName');
                 const removeOptionalOwner1Btn = document.getElementById('removeOptionalOwner1Btn');
@@ -1613,6 +1651,29 @@
                 if (optionalOwner2LastName) optionalOwner2LastName.value = '';
                 if (addOptionalOwnerBtn) addOptionalOwnerBtn.style.display = 'block';
             }
+        }
+        
+        // Reset modal form when it's hidden
+        const updateBusinessInfoModal = document.getElementById('updateBusinessInfoModal');
+        if (updateBusinessInfoModal) {
+            updateBusinessInfoModal.addEventListener('hidden.bs.modal', function () {
+                // Reset owner fields when modal is closed
+                const optionalOwner1FirstName = document.getElementById('optionalOwner1FirstName');
+                const optionalOwner1LastName = document.getElementById('optionalOwner1LastName');
+                const optionalOwner2FirstName = document.getElementById('optionalOwner2FirstName');
+                const optionalOwner2LastName = document.getElementById('optionalOwner2LastName');
+                const optionalOwner2Card = document.getElementById('optionalOwner2Card');
+                const addOptionalOwnerBtn = document.getElementById('addOptionalOwnerBtn');
+                const removeOptionalOwner1Btn = document.getElementById('removeOptionalOwner1Btn');
+                
+                if (optionalOwner1FirstName) optionalOwner1FirstName.value = '';
+                if (optionalOwner1LastName) optionalOwner1LastName.value = '';
+                if (optionalOwner2FirstName) optionalOwner2FirstName.value = '';
+                if (optionalOwner2LastName) optionalOwner2LastName.value = '';
+                if (optionalOwner2Card) optionalOwner2Card.style.display = 'none';
+                if (addOptionalOwnerBtn) addOptionalOwnerBtn.style.display = 'block';
+                if (removeOptionalOwner1Btn) removeOptionalOwner1Btn.style.display = 'none';
+            });
         }
     </script>
 
