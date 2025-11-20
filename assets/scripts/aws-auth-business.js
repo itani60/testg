@@ -7,7 +7,6 @@
   const LOGIN_URL = `${BASE_URL}/business/business/login`;
   const REGISTER_URL = `${BASE_URL}/business/business/register`;
   const VERIFY_EMAIL_URL = `${BASE_URL}/business/business/verify-email`;
-  const RESEND_VERIFICATION_URL = `${BASE_URL}/business/business/resend-otp-verification`;
   const GET_SESSION_URL = `${BASE_URL}/business/business/session`;
   const USER_INFO_URL = `${BASE_URL}/business/business/user-info`;
   const FORGOT_PASSWORD_URL = `${BASE_URL}/business/business/forgot-password`;
@@ -285,10 +284,10 @@
 
     async resendVerification(email) {
       try {
-        const res = await fetch(RESEND_VERIFICATION_URL, {
+        const res = await fetch(REGISTER_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
+          body: JSON.stringify({ email, resend: true })
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok || data?.success === false) {
@@ -296,6 +295,10 @@
           const error = new Error(message);
           error.status = res.status;
           error.response = data;
+          // Include retryAfter for rate limiting
+          if (data?.retryAfter) {
+            error.retryAfter = data.retryAfter;
+          }
           // Don't expose URL in error - just throw with user-friendly message
           throw error;
         }
