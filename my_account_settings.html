@@ -1713,8 +1713,8 @@
                     throw new Error('Authentication service not available. Please refresh the page.');
                 }
 
-                // Resend OTP
-                await window.awsAuthService.deleteAccount('resend_otp', {});
+                // Resend OTP using the dedicated method (backend uses session email)
+                const result = await window.awsAuthService.resendDeleteOTP();
 
                 // Show success message
                 if (errorDiv) {
@@ -1730,22 +1730,24 @@
                     }
                 }, 3000);
 
-                // Start timer again
-                startDeleteAccountResendTimer();
+                // Handle rate limiting if present
+                if (result.retryAfter) {
+                    deleteAccountResendCountdown = result.retryAfter;
+                    startDeleteAccountResendTimer();
+                } else {
+                    // Start timer again
+                    startDeleteAccountResendTimer();
+                }
 
             } catch (error) {
                 console.error('Error resending delete account OTP:', error);
                 let errorMessage = 'Failed to resend verification code.';
                 
-                if (error.response) {
-                    errorMessage = error.response.message || errorMessage;
-                    
-                    // Handle rate limit errors
-                    if (error.response.error === 'COOLDOWN' || error.response.error === 'HOURLY_LIMIT' || error.response.error === 'DAILY_LIMIT') {
-                        const retryAfter = error.response.retryAfter || 60;
-                        deleteAccountResendCountdown = retryAfter;
-                        startDeleteAccountResendTimer();
-                    }
+                // Handle rate limit errors
+                if (error.retryAfter) {
+                    deleteAccountResendCountdown = error.retryAfter;
+                    startDeleteAccountResendTimer();
+                    errorMessage = error.message || 'Please wait before requesting another code.';
                 } else if (error.message) {
                     errorMessage = error.message;
                 }
@@ -1757,7 +1759,7 @@
                 }
 
                 // Re-enable button if not rate limited
-                if (!error.response || (error.response.error !== 'COOLDOWN' && error.response.error !== 'HOURLY_LIMIT' && error.response.error !== 'DAILY_LIMIT')) {
+                if (!error.retryAfter) {
                     resendBtn.innerHTML = originalText;
                     resendBtn.disabled = false;
                 }

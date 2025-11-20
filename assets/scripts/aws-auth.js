@@ -7,7 +7,6 @@
   const UPDATE_USER_URL = 'https://acc.comparehubprices.site/acc/auth/update-user-info';
   const UPDATE_PASSWORD_URL = 'https://acc.comparehubprices.site/acc/auth/update-password';
   const DELETE_ACCOUNT_URL = 'https://acc.comparehubprices.site/acc/auth/delete-account';
-  const RESEND_DELETE_OTP_URL = 'https://acc.comparehubprices.site/acc/auth/delete-resend-otp';
   const FORGOT_PASSWORD_URL = 'https://acc.comparehubprices.site/acc/auth/forgot-password';
   const RESET_PASSWORD_URL = 'https://acc.comparehubprices.site/acc/auth/reset-password';
   const REGISTER_URL = 'https://acc.comparehubprices.site/acc/auth/register';
@@ -371,19 +370,27 @@
       return data;
     }
 
-    async resendDeleteOTP(email) {
-      const res = await fetch(RESEND_DELETE_OTP_URL, {
+    async resendDeleteOTP() {
+      const res = await fetch(DELETE_ACCOUNT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ 
+          action: 'request_delete',
+          resend: true
+        })
       });
       
       const data = await res.json().catch(() => ({}));
       
       if (!res.ok || data?.success === false) {
         const message = data?.message || data?.error || `Resend delete OTP failed (HTTP ${res.status})`;
-        throw new Error(message);
+        const error = new Error(message);
+        // Include retryAfter for rate limiting
+        if (data?.retryAfter) {
+          error.retryAfter = data.retryAfter;
+        }
+        throw error;
       }
       
       return data;
