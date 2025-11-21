@@ -335,7 +335,7 @@
       return { success: true, user: data.user };
     }
 
-    async manageServices(businessDescription, services, updatedServiceGalleries = null, deletedImages = null) {
+    async manageServices(businessDescription, services, updatedServiceGalleries = null, deletedImages = null, submitForApproval = false) {
       const requestBody = {
         businessDescription: businessDescription,
         services: services
@@ -349,6 +349,11 @@
       // If deletedImages is provided, include it
       if (deletedImages !== null && Array.isArray(deletedImages)) {
         requestBody.deletedImages = deletedImages;
+      }
+      
+      // If submitForApproval is true, include it to create a post for admin approval
+      if (submitForApproval === true) {
+        requestBody.submitForApproval = true;
       }
       
       const res = await fetch(MANAGE_SERVICES_URL, {

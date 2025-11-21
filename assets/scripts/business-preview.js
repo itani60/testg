@@ -592,11 +592,13 @@ class BusinessPreviewManager {
                 const existingServiceGalleries = this.businessData?.serviceGalleries || {};
                 
                 // Update with new description and existing galleries (to indicate it's an update)
+                // Pass submitForApproval=true to create a post for admin approval
                 await window.businessAWSAuthService.manageServices(
                     updatedData.businessDescription,
                     [], // Empty services array since we're just updating description
                     existingServiceGalleries, // Pass existing galleries to indicate update
-                    [] // No images to delete
+                    [], // No images to delete
+                    true // submitForApproval - create post for admin approval
                 );
             }
 
@@ -617,8 +619,12 @@ class BusinessPreviewManager {
                 }
             }
 
-            // Show success message
-            alert('Business posted successfully! Your business is now live on the marketplace.');
+            // Show success message using toast
+            if (typeof showSuccessToast === 'function') {
+                showSuccessToast('Business submitted for approval! Your post is pending admin review (2-24 hour wait period). You will be notified once it\'s approved.', 'Post Submitted');
+            } else {
+                alert('Business submitted for approval! Your post is pending admin review (2-24 hour wait period). You will be notified once it\'s approved.');
+            }
             
             // Reload data
             await this.init();
@@ -628,7 +634,14 @@ class BusinessPreviewManager {
             postBtn.innerHTML = originalText;
         } catch (error) {
             console.error('Error posting business:', error);
-            alert(`Error posting business: ${error.message || 'Please try again.'}`);
+            
+            // Show error message using toast
+            const errorMessage = error.message || error.response?.message || 'Please try again.';
+            if (typeof showErrorToast === 'function') {
+                showErrorToast(`Error posting business: ${errorMessage}`, 'Post Failed');
+            } else {
+                alert(`Error posting business: ${errorMessage}`);
+            }
             
             const postBtn = document.getElementById('postBtn');
             postBtn.disabled = false;
