@@ -7,8 +7,14 @@ const BASE_URL = 'https://acc.comparehubprices.site';
 const MANAGE_PRODUCTS_URL = `${BASE_URL}/business/business/manage-products`;
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    loadProductCount();
+document.addEventListener('DOMContentLoaded', async () => {
+    // Check authentication first before loading data
+    try {
+        await loadProductCount();
+    } catch (error) {
+        // Silently handle auth errors - user might not be logged in yet
+        console.log('Product count not loaded (auth check):', error.message);
+    }
     
     // Check if modal should be opened
     if (sessionStorage.getItem('openUploadModal') === 'true') {
@@ -339,17 +345,30 @@ async function loadProductCount() {
             credentials: 'include'
         });
         
+        // Handle 401 (not authenticated) gracefully - user might not be logged in
+        if (response.status === 401) {
+            countElement.textContent = '0 product(s)';
+            return;
+        }
+        
         const data = await response.json();
         
         if (response.ok && data.success) {
-            const count = data.count || 0;
+            const count = data.count || (data.products ? data.products.length : 0);
             countElement.textContent = `${count} product(s)`;
         } else {
-            countElement.textContent = 'Error loading count';
+            // Only show error for non-auth errors
+            if (data.error !== 'NO_SESSION' && data.error !== 'INVALID_SESSION' && data.error !== 'SESSION_EXPIRED') {
+                countElement.textContent = 'Error loading count';
+            } else {
+                countElement.textContent = '0 product(s)';
+            }
         }
     } catch (error) {
-        console.error('Error loading product count:', error);
-        countElement.textContent = 'Error loading count';
+        // Silently handle network errors - don't spam console
+        if (countElement) {
+            countElement.textContent = '0 product(s)';
+        }
     }
 }
 
