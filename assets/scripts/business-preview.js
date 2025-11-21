@@ -585,21 +585,21 @@ class BusinessPreviewManager {
             postBtn.disabled = true;
             postBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
 
-            // Save services (which includes businessDescription)
+            // Submit business post for admin approval
             if (window.businessAWSAuthService) {
-                // Get existing serviceGalleries from businessData to pass as updatedServiceGalleries
-                // This tells the Lambda it's an update request, so it won't require new services
+                // First, save any description changes to preview
                 const existingServiceGalleries = this.businessData?.serviceGalleries || {};
+                if (updatedData.businessDescription) {
+                    await window.businessAWSAuthService.manageServices(
+                        updatedData.businessDescription,
+                        [], // Empty services array since we're just updating description
+                        existingServiceGalleries, // Pass existing galleries to indicate update
+                        [] // No images to delete
+                    );
+                }
                 
-                // Update with new description and existing galleries (to indicate it's an update)
-                // Pass submitForApproval=true to create a post for admin approval
-                await window.businessAWSAuthService.manageServices(
-                    updatedData.businessDescription,
-                    [], // Empty services array since we're just updating description
-                    existingServiceGalleries, // Pass existing galleries to indicate update
-                    [], // No images to delete
-                    true // submitForApproval - create post for admin approval
-                );
+                // Then submit the post for admin approval
+                await window.businessAWSAuthService.submitBusinessPost();
             }
 
             // Update business info (for hours and status to make it live)

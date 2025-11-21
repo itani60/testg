@@ -15,6 +15,7 @@
   const UPDATE_BUSINESS_PASSWORD_URL = `${BASE_URL}/business/business/update-business-password`;
   const MANAGE_SERVICES_URL = `${BASE_URL}/business/business/manage-services`;
   const GET_SERVICES_URL = `${BASE_URL}/business/business/get-services`;
+  const SUBMIT_BUSINESS_POST_URL = `${BASE_URL}/business/business/submit-business-post`;
   const GET_PUBLIC_BUSINESS_URL = `${BASE_URL}/business/business/public`;
   const MFA_REMOVE_URL = `${BASE_URL}/business/business/mfa/remove`;
   const MFA_SET_PRIMARY_URL = `${BASE_URL}/business/business/mfa/set-primary`;
@@ -335,7 +336,7 @@
       return { success: true, user: data.user };
     }
 
-    async manageServices(businessDescription, services, updatedServiceGalleries = null, deletedImages = null, submitForApproval = false) {
+    async manageServices(businessDescription, services, updatedServiceGalleries = null, deletedImages = null) {
       const requestBody = {
         businessDescription: businessDescription,
         services: services
@@ -349,11 +350,6 @@
       // If deletedImages is provided, include it
       if (deletedImages !== null && Array.isArray(deletedImages)) {
         requestBody.deletedImages = deletedImages;
-      }
-      
-      // If submitForApproval is true, include it to create a post for admin approval
-      if (submitForApproval === true) {
-        requestBody.submitForApproval = true;
       }
       
       const res = await fetch(MANAGE_SERVICES_URL, {
@@ -376,8 +372,32 @@
         success: true,
         servicesAdded: data.servicesAdded || 0,
         serviceGalleries: data.serviceGalleries || {},
-        localHubInfo: data.localHubInfo || null,
-        message: data.message
+        localHubInfo: data.localHubInfo || null
+      };
+    }
+
+    async submitBusinessPost() {
+      const res = await fetch(SUBMIT_BUSINESS_POST_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+      
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || data?.success === false) {
+        const message = data?.message || `Submit post failed (HTTP ${res.status})`;
+        const error = new Error(message);
+        error.status = res.status;
+        error.response = data;
+        throw error;
+      }
+
+      return {
+        success: true,
+        postId: data.postId || null,
+        message: data.message || 'Post submitted successfully',
+        status: data.status || 'pending'
       };
     }
 

@@ -1868,9 +1868,16 @@
                 const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadProductModal'));
                 uploadModal.hide();
 
-                showSuccessToast(`Successfully added ${data.servicesAdded || products.length} service(s)!`);
+                showSuccessToast(`Successfully added ${data.servicesAdded || products.length} service(s)! Redirecting to preview...`);
                 
-                // Reset form but preserve business description and our services
+                // Redirect to business catalogue preview page after a short delay
+                setTimeout(() => {
+                    window.location.href = 'business_catalogue.html';
+                }, 1500);
+                
+                return; // Exit early since we're redirecting
+                
+                // Reset form but preserve business description and our services (not reached due to redirect)
                 const businessDescriptionValue = document.getElementById('businessDescription')?.value || '';
                 const ourServicesValue = document.getElementById('ourServices')?.value || '';
                 document.getElementById('uploadProductForm').reset();
