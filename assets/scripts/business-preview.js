@@ -595,21 +595,38 @@ class BusinessPreviewManager {
             // First, save any description changes using manage-products Lambda
             if (updatedData.businessDescription && this.businessData) {
                 try {
-                    // Get existing products to preserve them
-                    const existingProducts = [];
-                    if (this.businessData.serviceGalleries) {
-                        Object.keys(this.businessData.serviceGalleries).forEach(serviceName => {
-                            const images = this.businessData.serviceGalleries[serviceName];
-                            if (Array.isArray(images) && images.length > 0) {
-                                existingProducts.push({
-                                    name: serviceName,
-                                    description: '',
-                                    images: images
-                                });
-                            }
+                    // Fetch existing products from API to ensure correct structure
+                    let existingProducts = [];
+                    try {
+                        const productsResponse = await fetch(MANAGE_PRODUCTS_URL, {
+                            method: 'GET',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include'
                         });
+                        if (productsResponse.ok) {
+                            const productsData = await productsResponse.json();
+                            if (productsData.success && Array.isArray(productsData.products)) {
+                                existingProducts = productsData.products;
+                            }
+                        }
+                    } catch (fetchError) {
+                        console.warn('Could not fetch existing products, using serviceGalleries:', fetchError);
+                        // Fallback to serviceGalleries if API fetch fails
+                        if (this.businessData.serviceGalleries) {
+                            Object.keys(this.businessData.serviceGalleries).forEach(serviceName => {
+                                const images = this.businessData.serviceGalleries[serviceName];
+                                if (Array.isArray(images) && images.length > 0) {
+                                    existingProducts.push({
+                                        name: serviceName,
+                                        description: '',
+                                        images: images
+                                    });
+                                }
+                            });
+                        }
                     }
                     
+                    // Update description while preserving existing products
                     await fetch(MANAGE_PRODUCTS_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -617,16 +634,17 @@ class BusinessPreviewManager {
                         body: JSON.stringify({
                             businessDescription: updatedData.businessDescription,
                             ourServices: this.businessData.ourServices || '',
-                            products: existingProducts // Preserve existing products
+                            products: existingProducts // Preserve existing products (no new images to upload)
                         })
                     });
                 } catch (error) {
                     console.warn('Could not update business description:', error);
-                    // Continue even if update fails
+                    // Continue even if update fails - submit for approval anyway
                 }
             }
 
             // Submit business post for admin approval using new Lambda
+            console.log('Submitting business for approval...');
             const response = await fetch(SUBMIT_APPROVAL_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -634,12 +652,15 @@ class BusinessPreviewManager {
                 body: JSON.stringify({}) // Empty body - Lambda gets data from local-hub-info table
             });
             
+            console.log('Submit response status:', response.status);
+            
             // Handle 401 gracefully
             if (response.status === 401) {
                 throw new Error('Your session has expired. Please log in again.');
             }
 
             const data = await response.json();
+            console.log('Submit response data:', data);
 
             if (!response.ok || !data.success) {
                 // Handle specific error cases
@@ -656,10 +677,11 @@ class BusinessPreviewManager {
             }
 
             // Show success message using toast
+            const successMessage = data.message || 'Business submitted for approval! Your post is pending admin review. Approval typically takes 2-24 hours, but may be faster if everything looks good.';
             if (typeof showSuccessToast === 'function') {
-                showSuccessToast(data.message || 'Business submitted for approval! Your post is pending admin review (2-24 hour wait period). You will be notified once it\'s approved.', 'Post Submitted');
+                showSuccessToast(successMessage, 'Post Submitted');
             } else {
-                alert(data.message || 'Business submitted for approval! Your post is pending admin review (2-24 hour wait period). You will be notified once it\'s approved.');
+                alert(successMessage);
             }
             
             // Reload data
