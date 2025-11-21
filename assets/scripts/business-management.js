@@ -9,12 +9,49 @@ const MANAGE_PRODUCTS_URL = `${BASE_URL}/business/business/manage-products`;
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
     // Check authentication first before loading data
-    try {
-        await loadProductCount();
-    } catch (error) {
-        // Silently handle auth errors - user might not be logged in yet
-        console.log('Product count not loaded (auth check):', error.message);
-    }
+    // Wait a bit for auth service to initialize
+    setTimeout(async () => {
+        try {
+            // Check if auth service is available and user is logged in
+            if (window.businessAWSAuthService) {
+                const authCheck = await window.businessAWSAuthService.getUserInfo();
+                if (authCheck.success) {
+                    // User is authenticated, load product count
+                    await loadProductCount();
+                } else {
+                    // User not authenticated, set default count (no API call = no 401 error)
+                    const countElement = document.getElementById('productCount');
+                    if (countElement) {
+                        countElement.textContent = '0 product(s)';
+                    }
+                }
+            } else {
+                // Auth service not available yet, wait a bit more
+                setTimeout(async () => {
+                    if (window.businessAWSAuthService) {
+                        const authCheck = await window.businessAWSAuthService.getUserInfo();
+                        if (authCheck.success) {
+                            await loadProductCount();
+                        } else {
+                            const countElement = document.getElementById('productCount');
+                            if (countElement) {
+                                countElement.textContent = '0 product(s)';
+                            }
+                        }
+                    } else {
+                        // Still not available, try loading anyway (will show 401 but that's ok)
+                        await loadProductCount();
+                    }
+                }, 500);
+            }
+        } catch (error) {
+            // Silently handle errors - user might not be logged in
+            const countElement = document.getElementById('productCount');
+            if (countElement) {
+                countElement.textContent = '0 product(s)';
+            }
+        }
+    }, 300);
     
     // Check if modal should be opened
     if (sessionStorage.getItem('openUploadModal') === 'true') {
@@ -348,6 +385,7 @@ async function loadProductCount() {
         // Handle 401 (not authenticated) gracefully - user might not be logged in
         if (response.status === 401) {
             countElement.textContent = '0 product(s)';
+            // Don't log 401 errors - they're expected when user isn't logged in
             return;
         }
         
