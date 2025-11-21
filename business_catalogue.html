@@ -232,6 +232,45 @@
                 right: 10px !important;
             }
         }
+
+        /* Edit Modal Styles */
+        .existing-images-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .existing-image-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .existing-image-item img {
+            border: 2px solid #dee2e6;
+        }
+
+        .edit-product-item {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            transition: box-shadow 0.2s;
+        }
+
+        .edit-product-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .image-preview-container-edit {
+            text-align: center;
+        }
+
+        .image-preview-edit {
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+        }
     </style>
     
     
@@ -814,6 +853,61 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-danger" id="confirmDeleteImageBtn" onclick="confirmDeleteImage()">Delete Image</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comprehensive Edit Business Modal -->
+    <div class="modal fade" id="editBusinessModal" tabindex="-1" aria-labelledby="editBusinessModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editBusinessModalLabel">
+                        <i class="fas fa-edit"></i> Edit Business Information
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editBusinessForm">
+                        <!-- About This Business Section -->
+                        <div class="mb-4 p-3 border rounded bg-light">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-info-circle"></i> About This Business
+                            </h6>
+                            <div class="mb-3">
+                                <label class="form-label">Business Description *</label>
+                                <textarea class="form-control" id="editBusinessDescription" rows="4" required placeholder="Tell customers about your business, what makes you unique, your experience, and what you offer..."></textarea>
+                                <div class="form-text">This description will appear on your business profile page.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Our Services</label>
+                                <textarea class="form-control" id="editOurServices" rows="5" placeholder="List the services you offer (one per line):&#10;&#10;Example:&#10;• Custom Birthday Cards&#10;• Personalized Photo Frames&#10;• Wedding Invitations&#10;• Corporate Branding"></textarea>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle"></i> List your services here (one per line). You can use bullet points (•) or dashes (-). This will be displayed on your business profile.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="mb-0">Services & Products</h6>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addProductToEditModal()">
+                                <i class="fas fa-plus"></i> Add Product/Service
+                            </button>
+                        </div>
+                        
+                        <div id="editProductsContainer">
+                            <!-- Products will be dynamically added here -->
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="saveBusinessChangesBtn" onclick="saveBusinessChanges()">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
                 </div>
             </div>
         </div>

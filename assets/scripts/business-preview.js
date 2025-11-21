@@ -511,37 +511,256 @@ class BusinessPreviewManager {
     }
 
     toggleEditMode() {
-        this.editMode = !this.editMode;
-        
-        // Show/hide section action buttons
-        const sectionActions = document.querySelectorAll('.section-actions');
-        sectionActions.forEach(actions => {
-            actions.style.display = this.editMode ? 'flex' : 'none';
-        });
+        // Open comprehensive edit modal instead of inline editing
+        this.openEditModal();
+    }
 
-        // Update edit mode button
-        const editModeBtn = document.getElementById('editModeBtn');
-        if (editModeBtn) {
-            if (this.editMode) {
-                editModeBtn.innerHTML = 'Cancel';
-                editModeBtn.classList.remove('btn-secondary');
-                editModeBtn.classList.add('btn-danger');
-                // Save original data
-                this.originalData = JSON.parse(JSON.stringify(this.businessData));
+    async openEditModal() {
+        try {
+            // Fetch current data to populate the modal
+            const BASE_URL = 'https://acc.comparehubprices.site';
+            const MANAGE_PRODUCTS_URL = `${BASE_URL}/business/business/manage-products`;
+            
+            const response = await fetch(MANAGE_PRODUCTS_URL, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load business data');
+            }
+
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.message || 'Failed to load business data');
+            }
+
+            // Populate modal with current data
+            document.getElementById('editBusinessDescription').value = data.businessDescription || '';
+            document.getElementById('editOurServices').value = data.ourServices || '';
+            
+            // Clear existing products in modal
+            const productsContainer = document.getElementById('editProductsContainer');
+            productsContainer.innerHTML = '';
+            
+            // Add existing products to modal
+            if (data.products && Array.isArray(data.products)) {
+                data.products.forEach((product, index) => {
+                    this.addProductToEditModal(product, index + 1);
+                });
+            }
+            
+            // If no products, add one empty product
+            if (!data.products || data.products.length === 0) {
+                this.addProductToEditModal(null, 1);
+            }
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('editBusinessModal'));
+            modal.show();
+            
+        } catch (error) {
+            console.error('Error opening edit modal:', error);
+            if (typeof showErrorToast === 'function') {
+                showErrorToast('Failed to load business data: ' + error.message, 'Error');
             } else {
-                editModeBtn.innerHTML = 'Edit';
-                editModeBtn.classList.remove('btn-danger');
-                editModeBtn.classList.add('btn-secondary');
-                // Restore original data
-                if (this.originalData) {
-                    this.businessData = JSON.parse(JSON.stringify(this.originalData));
-                    this.renderPreview();
-                }
+                alert('Failed to load business data: ' + error.message);
             }
         }
+    }
+
+    addProductToEditModal(product = null, productNumber = null) {
+        const container = document.getElementById('editProductsContainer');
+        if (!container) return;
         
-        // Re-render gallery to show/hide delete buttons
-        this.renderServicesGallery();
+        // If productNumber is null, calculate it
+        if (productNumber === null) {
+            const existingProducts = container.querySelectorAll('.edit-product-item');
+            productNumber = existingProducts.length + 1;
+        }
+        
+        // Determine if this is an existing product or new
+        const isExisting = product !== null;
+        const productName = product?.name || '';
+        const productDescription = product?.description || '';
+        const productImages = Array.isArray(product?.images) ? product.images : [];
+        
+        // Create product HTML
+        const productHtml = `
+            <div class="edit-product-item mb-4 p-3 border rounded" data-product-index="${productNumber}">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-primary mb-0">
+                        ${isExisting ? `<i class="fas fa-box"></i> ` : ''}Product/Service ${productNumber}
+                    </h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProductFromEditModal(this)">
+                        <i class="fas fa-times"></i> Remove
+                    </button>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Product/Service Name *</label>
+                        <input type="text" class="form-control edit-product-name" value="${this.escapeHtml(productName)}" required placeholder="e.g., Custom Birthday Cards">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Description *</label>
+                    <textarea class="form-control edit-product-description" rows="2" required placeholder="Describe what this service includes...">${this.escapeHtml(productDescription)}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Gallery Images * (Up to 6 images)</label>
+                    <div id="existingImages_${productNumber}" class="mb-3">
+                        ${this.renderExistingImages(productImages, productNumber)}
+                    </div>
+                    <div class="row" id="newImages_${productNumber}">
+                        ${this.renderNewImageInputs(productNumber, productImages.length)}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', productHtml);
+        
+        // Setup image preview handlers for new inputs
+        this.setupImagePreviewsForEditModal(productNumber);
+    }
+
+    renderExistingImages(images, productNumber) {
+        if (!images || images.length === 0) {
+            return '<p class="text-muted small">No existing images. Add new images below.</p>';
+        }
+        
+        let html = '<div class="existing-images-grid mb-3"><p class="small fw-bold mb-2">Existing Images:</p>';
+        
+        images.forEach((img, index) => {
+            const imgUrl = typeof img === 'string' ? img : (img.image || img.url || '');
+            const imgPrice = typeof img === 'object' && img.price !== undefined ? img.price : '';
+            
+            if (imgUrl) {
+                html += `
+                    <div class="existing-image-item mb-2 p-2 border rounded d-flex align-items-center" data-image-url="${this.escapeHtml(imgUrl)}">
+                        <img src="${this.escapeHtml(imgUrl)}" alt="Product image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; margin-right: 10px;">
+                        <div class="flex-grow-1">
+                            <div class="small">
+                                <strong>Price:</strong> 
+                                <input type="number" class="form-control form-control-sm d-inline-block" style="width: 100px;" 
+                                       value="${imgPrice}" step="0.01" min="0" 
+                                       onchange="updateImagePrice('${this.escapeHtml(imgUrl)}', this.value)">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="removeExistingImage('${this.escapeHtml(imgUrl)}', ${productNumber})">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                `;
+            }
+        });
+        
+        html += '</div>';
+        return html;
+    }
+
+    renderNewImageInputs(productNumber, existingImageCount) {
+        let html = '';
+        const slotsToShow = Math.max(2, 6 - existingImageCount); // Show at least 2 slots, up to 6 total
+        
+        for (let i = 1; i <= slotsToShow; i++) {
+            html += `
+                <div class="col-md-6 mb-2">
+                    <div class="image-upload-container">
+                        <input type="file" class="form-control edit-product-image-${productNumber}-${i}" accept="image/*">
+                        <div class="form-text small">Image ${i} (JPG, PNG, GIF - Max 5MB)</div>
+                        <input type="number" class="form-control mt-2 edit-product-price-${productNumber}-${i}" placeholder="Price (optional)" step="0.01" min="0">
+                        <div class="image-preview-container-edit" style="display: none; margin-top: 10px;">
+                            <img class="image-preview-edit" style="max-width: 100%; max-height: 150px; border-radius: 4px;">
+                            <button type="button" class="btn btn-sm btn-danger mt-2 remove-image-preview-btn" onclick="removeImagePreview(this)">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        return html;
+    }
+
+    setupImagePreviewsForEditModal(productNumber) {
+        // Setup preview for all image inputs for this product
+        for (let i = 1; i <= 6; i++) {
+            const input = document.querySelector(`.edit-product-image-${productNumber}-${i}`);
+            if (input) {
+                input.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Validate file size
+                        if (file.size > 5 * 1024 * 1024) {
+                            alert('Image size exceeds 5MB limit. Please choose a smaller image.');
+                            e.target.value = '';
+                            return;
+                        }
+                        
+                        // Validate file type
+                        if (!file.type.startsWith('image/')) {
+                            alert('Please select a valid image file.');
+                            e.target.value = '';
+                            return;
+                        }
+                        
+                        // Show preview
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const container = input.closest('.image-upload-container');
+                            let previewContainer = container.querySelector('.image-preview-container-edit');
+                            if (!previewContainer) {
+                                previewContainer = document.createElement('div');
+                                previewContainer.className = 'image-preview-container-edit';
+                                previewContainer.style.cssText = 'display: block; margin-top: 10px;';
+                                container.appendChild(previewContainer);
+                            }
+                            
+                            const img = previewContainer.querySelector('.image-preview-edit') || document.createElement('img');
+                            img.className = 'image-preview-edit';
+                            img.style.cssText = 'max-width: 100%; max-height: 150px; border-radius: 4px; margin-bottom: 10px;';
+                            img.src = e.target.result;
+                            
+                            if (!previewContainer.querySelector('.image-preview-edit')) {
+                                previewContainer.insertBefore(img, previewContainer.firstChild);
+                            } else {
+                                previewContainer.querySelector('.image-preview-edit').src = e.target.result;
+                            }
+                            
+                            // Add remove button if not exists
+                            if (!previewContainer.querySelector('.remove-image-preview-btn')) {
+                                const removeBtn = document.createElement('button');
+                                removeBtn.type = 'button';
+                                removeBtn.className = 'btn btn-sm btn-danger remove-image-preview-btn';
+                                removeBtn.textContent = 'Remove';
+                                removeBtn.onclick = () => {
+                                    input.value = '';
+                                    previewContainer.style.display = 'none';
+                                };
+                                previewContainer.appendChild(removeBtn);
+                            }
+                            
+                            previewContainer.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        }
+    }
+
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     editSection(sectionName) {
@@ -859,6 +1078,291 @@ function confirmDeleteImage() {
     } else if (testPreviewManager) {
         testPreviewManager.confirmDeleteImage();
     }
+}
+
+// Global functions for edit modal
+function addProductToEditModal() {
+    if (previewManager) {
+        previewManager.addProductToEditModal();
+    }
+}
+
+function removeProductFromEditModal(button) {
+    const productItem = button.closest('.edit-product-item');
+    if (productItem) {
+        const container = document.getElementById('editProductsContainer');
+        const allProducts = container.querySelectorAll('.edit-product-item');
+        
+        if (allProducts.length <= 1) {
+            if (typeof showWarningToast === 'function') {
+                showWarningToast('You must have at least one product/service', 'Warning');
+            } else {
+                alert('You must have at least one product/service');
+            }
+            return;
+        }
+        
+        productItem.remove();
+        
+        // Renumber remaining products
+        const remaining = container.querySelectorAll('.edit-product-item');
+        remaining.forEach((item, index) => {
+            const title = item.querySelector('h6');
+            if (title) {
+                title.innerHTML = `<i class="fas fa-box"></i> Product/Service ${index + 1}`;
+            }
+            item.setAttribute('data-product-index', index + 1);
+        });
+    }
+}
+
+function removeExistingImage(imageUrl, productNumber) {
+    if (!confirm('Are you sure you want to remove this image? This action cannot be undone.')) {
+        return;
+    }
+    
+    // Remove the image element
+    const imageItem = document.querySelector(`[data-image-url="${imageUrl.replace(/"/g, '&quot;')}"]`);
+    if (imageItem) {
+        imageItem.remove();
+    }
+    
+    // Store removed image URL for deletion
+    if (!window.removedImages) {
+        window.removedImages = [];
+    }
+    window.removedImages.push(imageUrl);
+}
+
+function updateImagePrice(imageUrl, newPrice) {
+    // Store price update for this image
+    if (!window.imagePriceUpdates) {
+        window.imagePriceUpdates = {};
+    }
+    window.imagePriceUpdates[imageUrl] = parseFloat(newPrice) || 0;
+}
+
+function removeImagePreview(button) {
+    const container = button.closest('.image-upload-container');
+    const input = container.querySelector('input[type="file"]');
+    const previewContainer = container.querySelector('.image-preview-container-edit');
+    
+    if (input) input.value = '';
+    if (previewContainer) previewContainer.style.display = 'none';
+}
+
+async function saveBusinessChanges() {
+    if (!previewManager) {
+        console.error('Preview manager not initialized');
+        return;
+    }
+    
+    try {
+        const form = document.getElementById('editBusinessForm');
+        if (!form || !form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        
+        // Get business description and services
+        const businessDescription = document.getElementById('editBusinessDescription').value.trim();
+        const ourServices = document.getElementById('editOurServices').value.trim();
+        
+        if (!businessDescription) {
+            alert('Business description is required');
+            return;
+        }
+        
+        // Collect products from modal
+        const products = [];
+        const productItems = document.querySelectorAll('.edit-product-item');
+        
+        for (const productItem of productItems) {
+            const productName = productItem.querySelector('.edit-product-name')?.value?.trim();
+            const productDescription = productItem.querySelector('.edit-product-description')?.value?.trim();
+            
+            if (!productName) continue; // Skip products without names
+            
+            const product = {
+                name: productName,
+                description: productDescription || ''
+            };
+            
+            // Collect existing images (that weren't removed) with their updated prices
+            const existingImageItems = productItem.querySelectorAll('.existing-image-item');
+            const existingImages = [];
+            existingImageItems.forEach(item => {
+                const imgUrl = item.getAttribute('data-image-url');
+                if (imgUrl && !(window.removedImages || []).includes(imgUrl)) {
+                    const priceInput = item.querySelector('input[type="number"]');
+                    const price = priceInput ? (parseFloat(priceInput.value) || 0) : null;
+                    const imageObj = {
+                        image: imgUrl
+                    };
+                    if (price && price > 0) {
+                        imageObj.price = price;
+                    }
+                    existingImages.push(imageObj);
+                }
+            });
+            
+            // Process new images (up to 6 total)
+            const productNumber = productItem.getAttribute('data-product-index');
+            let newImageCount = 0;
+            const maxNewImages = 6 - existingImages.length;
+            
+            for (let i = 1; i <= 6 && newImageCount < maxNewImages; i++) {
+                const imageInput = productItem.querySelector(`.edit-product-image-${productNumber}-${i}`);
+                const priceInput = productItem.querySelector(`.edit-product-price-${productNumber}-${i}`);
+                
+                if (imageInput && imageInput.files && imageInput.files[0]) {
+                    const file = imageInput.files[0];
+                    
+                    // Validate file size
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert(`Image ${i} for "${productName}" exceeds 5MB limit. Please choose a smaller image.`);
+                        return;
+                    }
+                    
+                    // Convert to base64
+                    try {
+                        const base64 = await fileToBase64(file);
+                        product[`image${newImageCount + 1}Base64`] = base64;
+                        product[`image${newImageCount + 1}ContentType`] = file.type;
+                        
+                        if (priceInput && priceInput.value) {
+                            product[`image${newImageCount + 1}Price`] = priceInput.value;
+                        }
+                        newImageCount++;
+                    } catch (error) {
+                        console.error(`Error processing image ${i}:`, error);
+                        alert(`Error processing image ${i} for "${productName}"`);
+                        return;
+                    }
+                }
+            }
+            
+            // Store existing images in product for Lambda to merge
+            // The Lambda will merge new images with existing ones from the database
+            // We include existing images here so the Lambda knows to preserve them
+            if (existingImages.length > 0) {
+                // Store as a flag that this product has existing images to preserve
+                product.hasExistingImages = true;
+                product.existingImagesCount = existingImages.length;
+            }
+            
+            // Only add product if it has at least one image (existing or new)
+            if (newImageCount > 0 || existingImages.length > 0) {
+                products.push(product);
+            }
+        }
+        
+        if (products.length === 0) {
+            alert('Please add at least one product with at least one image');
+            return;
+        }
+        
+        // Show loading state
+        const saveBtn = document.getElementById('saveBusinessChangesBtn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        
+        const BASE_URL = 'https://acc.comparehubprices.site';
+        const MANAGE_PRODUCTS_URL = `${BASE_URL}/business/business/manage-products`;
+        
+        // Collect deleted images
+        const deletedImages = window.removedImages || [];
+        
+        // Prepare request body
+        const requestBody = {
+            businessDescription: businessDescription,
+            ourServices: ourServices,
+            products: products
+        };
+        
+        if (deletedImages.length > 0) {
+            requestBody.deletedImages = deletedImages;
+        }
+        
+        // Save changes
+        const response = await fetch(MANAGE_PRODUCTS_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(requestBody)
+        });
+        
+        // Handle 401 gracefully
+        if (response.status === 401) {
+            throw new Error('Your session has expired. Please log in again.');
+        }
+        
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+            // Handle auth-related errors
+            if (data.error === 'NO_SESSION' || data.error === 'INVALID_SESSION' || data.error === 'SESSION_EXPIRED') {
+                throw new Error('Your session has expired. Please log in again.');
+            }
+            throw new Error(data.message || 'Failed to save changes');
+        }
+        
+        // Show success message
+        if (typeof showSuccessToast === 'function') {
+            showSuccessToast('Business information updated successfully!', 'Success');
+        } else {
+            alert('Business information updated successfully!');
+        }
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editBusinessModal'));
+        if (modal) {
+            modal.hide();
+        }
+        
+        // Clear removed images tracking
+        window.removedImages = [];
+        window.imagePriceUpdates = {};
+        
+        // Reload preview
+        await previewManager.init();
+        
+    } catch (error) {
+        console.error('Error saving business changes:', error);
+        
+        // Handle session expiration
+        if (error.message && error.message.includes('session')) {
+            alert('Your session has expired. Please log in again.');
+            window.location.href = 'business-login.html';
+            return;
+        }
+        
+        if (typeof showErrorToast === 'function') {
+            showErrorToast(error.message || 'Failed to save changes', 'Error');
+        } else {
+            alert('Error: ' + (error.message || 'Failed to save changes'));
+        }
+    } finally {
+        const saveBtn = document.getElementById('saveBusinessChangesBtn');
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+        }
+    }
+}
+
+// Helper function to convert file to base64
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const base64 = reader.result;
+            resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 // Initialize when DOM is ready
