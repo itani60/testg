@@ -30,10 +30,7 @@ class BusinessPreviewManager {
                 return;
             }
 
-            // Load business data
-            await this.loadBusinessData(businessId);
-            
-            // Load services data
+            // Load business data (includes services/products)
             await this.loadServicesData();
             
             // Render preview
@@ -41,35 +38,6 @@ class BusinessPreviewManager {
         } catch (error) {
             console.error('Error initializing business preview:', error);
             this.showError('Failed to load business preview. Please try again.');
-        }
-    }
-
-    async loadBusinessData(businessId) {
-        try {
-            if (!window.businessAWSAuthService) {
-                throw new Error('Business auth service not available');
-            }
-
-            const response = await window.businessAWSAuthService.getPublicBusiness(businessId);
-            
-            if (!response.success || !response.business) {
-                throw new Error('Business not found');
-            }
-            
-            this.businessData = response.business;
-            
-            // Normalize serviceGalleries structure if it exists
-            if (this.businessData.serviceGalleries && typeof this.businessData.serviceGalleries === 'object') {
-                const normalized = {};
-                Object.keys(this.businessData.serviceGalleries).forEach(serviceName => {
-                    const images = this.businessData.serviceGalleries[serviceName];
-                    normalized[serviceName] = this.normalizeImagesArray(images);
-                });
-                this.businessData.serviceGalleries = normalized;
-            }
-        } catch (error) {
-            console.error('Error loading business data:', error);
-            throw error;
         }
     }
 
@@ -85,39 +53,66 @@ class BusinessPreviewManager {
                 credentials: 'include'
             });
             
+            if (!response.ok) {
+                // Handle 401 gracefully
+                if (response.status === 401) {
+                    throw new Error('Please log in to view your business preview');
+                }
+                throw new Error('Failed to load business data');
+            }
+            
             const data = await response.json();
             
-            if (response.ok && data.success) {
-                // Merge services data with business data
-                if (!this.businessData) {
-                    this.businessData = {};
-                }
-                
-                // Convert products array to serviceGalleries object format
-                // data.products is an array: [{ name, images, description }, ...]
-                // serviceGalleries should be an object: { "Service Name": [{ image, title }, ...] }
-                if (Array.isArray(data.products)) {
-                    const serviceGalleries = {};
-                    data.products.forEach(product => {
-                        if (product.name && Array.isArray(product.images)) {
-                            serviceGalleries[product.name] = product.images;
+            if (!data.success) {
+                throw new Error(data.message || 'Failed to load business data');
+            }
+            
+            // Initialize business data
+            if (!this.businessData) {
+                this.businessData = {};
+            }
+            
+            // Set business description and services
+            this.businessData.businessDescription = data.businessDescription || '';
+            this.businessData.ourServices = data.ourServices || '';
+            this.businessData.serviceGalleries = {};
+            
+            // Convert products array to serviceGalleries object format
+            // data.products is an array: [{ name, images, description }, ...]
+            // serviceGalleries should be an object: { "Service Name": [{ image, title }, ...] }
+            if (Array.isArray(data.products)) {
+                data.products.forEach(product => {
+                    if (product.name) {
+                        // Normalize images array - handle both array and string cases
+                        let images = [];
+                        if (Array.isArray(product.images)) {
+                            images = product.images.map(img => {
+                                if (typeof img === 'string') {
+                                    return { image: img, title: product.name };
+                                }
+                                return {
+                                    image: img.image || img.url || '',
+                                    title: img.title || product.name,
+                                    price: img.price
+                                };
+                            }).filter(img => img.image); // Filter out empty images
                         }
-                    });
-                    // Merge with existing serviceGalleries from public API if any
-                    if (this.businessData.serviceGalleries) {
-                        Object.assign(this.businessData.serviceGalleries, serviceGalleries);
-                    } else {
-                        this.businessData.serviceGalleries = serviceGalleries;
+                        
+                        if (images.length > 0) {
+                            this.businessData.serviceGalleries[product.name] = images;
+                        }
                     }
-                } else if (data.serviceGalleries && typeof data.serviceGalleries === 'object') {
-                    // If it's already an object, use it directly
-                    this.businessData.serviceGalleries = data.serviceGalleries;
-                }
-                
-                // Update business description from API response
-                if (data.businessDescription) {
-                    this.businessData.businessDescription = data.businessDescription;
-                }
+                });
+            }
+            
+            // Normalize serviceGalleries structure
+            if (this.businessData.serviceGalleries && typeof this.businessData.serviceGalleries === 'object') {
+                const normalized = {};
+                Object.keys(this.businessData.serviceGalleries).forEach(serviceName => {
+                    const images = this.businessData.serviceGalleries[serviceName];
+                    normalized[serviceName] = this.normalizeImagesArray(images);
+                });
+                this.businessData.serviceGalleries = normalized;
             }
         } catch (error) {
             console.error('Error loading services data:', error);
@@ -594,20 +589,35 @@ class BusinessPreviewManager {
             postBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
 
             const BASE_URL = 'https://acc.comparehubprices.site';
-            const SUBMIT_APPROVAL_URL = `${BASE_URL}/business/submit-for-approval`;
-            const MANAGE_PRODUCTS_URL = `${BASE_URL}/business/manage-products`;
+            const SUBMIT_APPROVAL_URL = `${BASE_URL}/business/business/submit-for-approval`;
+            const MANAGE_PRODUCTS_URL = `${BASE_URL}/business/business/manage-products`;
 
             // First, save any description changes using manage-products Lambda
-            if (updatedData.businessDescription) {
+            if (updatedData.businessDescription && this.businessData) {
                 try {
-                    const existingServiceGalleries = this.businessData?.serviceGalleries || {};
+                    // Get existing products to preserve them
+                    const existingProducts = [];
+                    if (this.businessData.serviceGalleries) {
+                        Object.keys(this.businessData.serviceGalleries).forEach(serviceName => {
+                            const images = this.businessData.serviceGalleries[serviceName];
+                            if (Array.isArray(images) && images.length > 0) {
+                                existingProducts.push({
+                                    name: serviceName,
+                                    description: '',
+                                    images: images
+                                });
+                            }
+                        });
+                    }
+                    
                     await fetch(MANAGE_PRODUCTS_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',
                         body: JSON.stringify({
                             businessDescription: updatedData.businessDescription,
-                            products: [] // Empty products array - just updating description
+                            ourServices: this.businessData.ourServices || '',
+                            products: existingProducts // Preserve existing products
                         })
                     });
                 } catch (error) {
@@ -620,12 +630,28 @@ class BusinessPreviewManager {
             const response = await fetch(SUBMIT_APPROVAL_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include'
+                credentials: 'include',
+                body: JSON.stringify({}) // Empty body - Lambda gets data from local-hub-info table
             });
+            
+            // Handle 401 gracefully
+            if (response.status === 401) {
+                throw new Error('Your session has expired. Please log in again.');
+            }
 
             const data = await response.json();
 
             if (!response.ok || !data.success) {
+                // Handle specific error cases
+                if (data.error === 'NO_SESSION' || data.error === 'INVALID_SESSION' || data.error === 'SESSION_EXPIRED') {
+                    throw new Error('Your session has expired. Please log in again.');
+                }
+                if (data.error === 'USER_INACTIVE') {
+                    throw new Error('Your business account is not active. Please contact support.');
+                }
+                if (data.error === 'NO_PRODUCTS') {
+                    throw new Error('Please add at least one product with images before posting.');
+                }
                 throw new Error(data.message || 'Failed to submit business for approval');
             }
 
