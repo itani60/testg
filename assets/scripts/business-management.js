@@ -4,7 +4,7 @@
  */
 
 const BASE_URL = 'https://acc.comparehubprices.site';
-const MANAGE_PRODUCTS_URL = `${BASE_URL}/business/manage-products`;
+const MANAGE_PRODUCTS_URL = `${BASE_URL}/business/business/manage-products`;
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
