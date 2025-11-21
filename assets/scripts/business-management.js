@@ -227,11 +227,20 @@ function renderProducts(products) {
     if (!productsList) return;
     
     productsList.innerHTML = products.map((product, index) => {
-        const images = product.images || [];
+        // Handle images - could be array, string, or missing
+        let images = [];
+        if (Array.isArray(product.images)) {
+            images = product.images;
+        } else if (product.images && typeof product.images === 'string') {
+            // If images is a string, it's likely a data issue - skip it
+            images = [];
+        }
+        
         const imageHtml = images.slice(0, 3).map(img => {
-            const imgUrl = typeof img === 'string' ? img : (img.image || img.url);
-            return `<img src="${imgUrl}" alt="${product.name}" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover; margin: 5px;">`;
-        }).join('');
+            const imgUrl = typeof img === 'string' ? img : (img.image || img.url || '');
+            if (!imgUrl) return '';
+            return `<img src="${imgUrl}" alt="${product.name || 'Product'}" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover; margin: 5px;">`;
+        }).filter(html => html !== '').join('');
         
         return `
             <div class="col-md-6 mb-4">
@@ -240,7 +249,7 @@ function renderProducts(products) {
                         <h5 class="card-title">${product.name || 'Unnamed Product'}</h5>
                         <p class="card-text">${product.description || 'No description'}</p>
                         <div class="mb-2">
-                            ${imageHtml}
+                            ${imageHtml || '<p class="text-muted small">No images</p>'}
                             ${images.length > 3 ? `<span class="text-muted">+${images.length - 3} more</span>` : ''}
                         </div>
                         <p class="text-muted small">${images.length} image(s)</p>
