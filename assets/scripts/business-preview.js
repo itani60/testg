@@ -585,45 +585,47 @@ class BusinessPreviewManager {
             postBtn.disabled = true;
             postBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
 
-            // Submit business post for admin approval
-            if (window.businessAWSAuthService) {
-                // First, save any description changes to preview
-                const existingServiceGalleries = this.businessData?.serviceGalleries || {};
-                if (updatedData.businessDescription) {
-                    await window.businessAWSAuthService.manageServices(
-                        updatedData.businessDescription,
-                        [], // Empty services array since we're just updating description
-                        existingServiceGalleries, // Pass existing galleries to indicate update
-                        [] // No images to delete
-                    );
-                }
-                
-                // Then submit the post for admin approval
-                await window.businessAWSAuthService.submitBusinessPost();
-            }
+            const BASE_URL = 'https://acc.comparehubprices.site';
+            const SUBMIT_APPROVAL_URL = `${BASE_URL}/business/submit-for-approval`;
+            const MANAGE_PRODUCTS_URL = `${BASE_URL}/business/manage-products`;
 
-            // Update business info (for hours and status to make it live)
-            if (window.businessAWSAuthService) {
+            // First, save any description changes using manage-products Lambda
+            if (updatedData.businessDescription) {
                 try {
-                    const updateData = {};
-                    if (updatedData.businessHours) {
-                        updateData.businessHours = updatedData.businessHours;
-                    }
-                    // Set status to BUSINESS_ACTIVE to make business visible on marketplace
-                    updateData.status = 'BUSINESS_ACTIVE';
-                    
-                    await window.businessAWSAuthService.updateBusinessInfo(updateData);
+                    const existingServiceGalleries = this.businessData?.serviceGalleries || {};
+                    await fetch(MANAGE_PRODUCTS_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            businessDescription: updatedData.businessDescription,
+                            products: [] // Empty products array - just updating description
+                        })
+                    });
                 } catch (error) {
-                    console.warn('Could not update business info:', error);
+                    console.warn('Could not update business description:', error);
                     // Continue even if update fails
                 }
             }
 
+            // Submit business post for admin approval using new Lambda
+            const response = await fetch(SUBMIT_APPROVAL_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Failed to submit business for approval');
+            }
+
             // Show success message using toast
             if (typeof showSuccessToast === 'function') {
-                showSuccessToast('Business submitted for approval! Your post is pending admin review (2-24 hour wait period). You will be notified once it\'s approved.', 'Post Submitted');
+                showSuccessToast(data.message || 'Business submitted for approval! Your post is pending admin review (2-24 hour wait period). You will be notified once it\'s approved.', 'Post Submitted');
             } else {
-                alert('Business submitted for approval! Your post is pending admin review (2-24 hour wait period). You will be notified once it\'s approved.');
+                alert(data.message || 'Business submitted for approval! Your post is pending admin review (2-24 hour wait period). You will be notified once it\'s approved.');
             }
             
             // Reload data

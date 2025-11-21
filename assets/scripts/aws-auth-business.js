@@ -13,10 +13,6 @@
   const RESET_PASSWORD_URL = `${BASE_URL}/business/business/reset-password`;
   const UPDATE_BUSINESS_INFO_URL = `${BASE_URL}/business/business/update-business-info`;
   const UPDATE_BUSINESS_PASSWORD_URL = `${BASE_URL}/business/business/update-business-password`;
-  const MANAGE_SERVICES_URL = `${BASE_URL}/business/business/manage-services`;
-  const GET_SERVICES_URL = `${BASE_URL}/business/business/get-services`;
-  const SUBMIT_BUSINESS_POST_URL = `${BASE_URL}/business/business/submit-business-post`;
-  const GET_PUBLIC_BUSINESS_URL = `${BASE_URL}/business/business/public`;
   const MFA_REMOVE_URL = `${BASE_URL}/business/business/mfa/remove`;
   const MFA_SET_PRIMARY_URL = `${BASE_URL}/business/business/mfa/set-primary`;
   const EMAIL_MFA_LOGIN_SEND_URL = `${BASE_URL}/business/business/email-mfa/login-send`;
@@ -336,118 +332,6 @@
       return { success: true, user: data.user };
     }
 
-    async manageServices(businessDescription, services, updatedServiceGalleries = null, deletedImages = null) {
-      const requestBody = {
-        businessDescription: businessDescription,
-        services: services
-      };
-      
-      // If updatedServiceGalleries is provided, include it to indicate this is an update request
-      if (updatedServiceGalleries !== null) {
-        requestBody.updatedServiceGalleries = updatedServiceGalleries;
-      }
-      
-      // If deletedImages is provided, include it
-      if (deletedImages !== null && Array.isArray(deletedImages)) {
-        requestBody.deletedImages = deletedImages;
-      }
-      
-      const res = await fetch(MANAGE_SERVICES_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(requestBody),
-      });
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok || data?.success === false) {
-        const message = data?.message || `Manage services failed (HTTP ${res.status})`;
-        const error = new Error(message);
-        error.status = res.status;
-        error.response = data;
-        throw error;
-      }
-
-      return {
-        success: true,
-        servicesAdded: data.servicesAdded || 0,
-        serviceGalleries: data.serviceGalleries || {},
-        localHubInfo: data.localHubInfo || null
-      };
-    }
-
-    async submitBusinessPost() {
-      const res = await fetch(SUBMIT_BUSINESS_POST_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-      
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok || data?.success === false) {
-        const message = data?.message || `Submit post failed (HTTP ${res.status})`;
-        const error = new Error(message);
-        error.status = res.status;
-        error.response = data;
-        throw error;
-      }
-
-      return {
-        success: true,
-        postId: data.postId || null,
-        message: data.message || 'Post submitted successfully',
-        status: data.status || 'pending'
-      };
-    }
-
-    async getServices() {
-      const res = await fetch(GET_SERVICES_URL, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok || data?.success === false) {
-        const message = data?.message || `Get services failed (HTTP ${res.status})`;
-        const error = new Error(message);
-        error.status = res.status;
-        error.response = data;
-        throw error;
-      }
-
-      return {
-        success: true,
-        services: data.services || [],
-        businessDescription: data.businessDescription || null,
-        fullContent: data.fullContent || null,
-        totalServices: data.totalServices || 0,
-        totalImages: data.totalImages || 0
-      };
-    }
-
-    async getPublicBusiness(businessId) {
-      const res = await fetch(`${GET_PUBLIC_BUSINESS_URL}/${businessId}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok || data?.success === false) {
-        const message = data?.message || `Get public business failed (HTTP ${res.status})`;
-        const error = new Error(message);
-        error.status = res.status;
-        error.response = data;
-        throw error;
-      }
-
-      return {
-        success: true,
-        business: data.business || null
-      };
-    }
 
     async updatePassword(action, payload) {
       const body = {
