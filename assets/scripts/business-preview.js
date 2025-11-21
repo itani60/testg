@@ -545,9 +545,13 @@ class BusinessPreviewManager {
             const productsContainer = document.getElementById('editProductsContainer');
             productsContainer.innerHTML = '';
             
-            // Add existing products to modal
+            // Store original product names to track deletions
+            window.originalProductNames = [];
             if (data.products && Array.isArray(data.products)) {
                 data.products.forEach((product, index) => {
+                    if (product.name) {
+                        window.originalProductNames.push(product.name.trim());
+                    }
                     this.addProductToEditModal(product, index + 1);
                 });
             }
@@ -555,6 +559,7 @@ class BusinessPreviewManager {
             // If no products, add one empty product
             if (!data.products || data.products.length === 0) {
                 this.addProductToEditModal(null, 1);
+                window.originalProductNames = [];
             }
             
             // Show modal
@@ -607,8 +612,8 @@ class BusinessPreviewManager {
                 </div>
                 
                 <div class="mb-3">
-                    <label class="form-label">Description *</label>
-                    <textarea class="form-control edit-product-description" rows="2" required placeholder="Describe what this service includes...">${this.escapeHtml(productDescription)}</textarea>
+                    <label class="form-label">Description <span class="text-muted">(optional)</span></label>
+                    <textarea class="form-control edit-product-description" rows="2" placeholder="Describe what this service includes...">${this.escapeHtml(productDescription)}</textarea>
                 </div>
                 
                 <div class="mb-3">
@@ -1274,6 +1279,17 @@ async function saveBusinessChanges() {
         // Collect deleted images
         const deletedImages = window.removedImages || [];
         
+        // Track deleted products (products that existed before but are not in the current save)
+        const deletedProducts = [];
+        const currentProductNames = products.map(p => p.name.trim());
+        const originalProductNames = window.originalProductNames || [];
+        
+        originalProductNames.forEach(originalName => {
+            if (!currentProductNames.includes(originalName)) {
+                deletedProducts.push(originalName);
+            }
+        });
+        
         // Prepare request body
         const requestBody = {
             businessDescription: businessDescription,
@@ -1283,6 +1299,10 @@ async function saveBusinessChanges() {
         
         if (deletedImages.length > 0) {
             requestBody.deletedImages = deletedImages;
+        }
+        
+        if (deletedProducts.length > 0) {
+            requestBody.deletedProducts = deletedProducts;
         }
         
         // Save changes
@@ -1321,9 +1341,10 @@ async function saveBusinessChanges() {
             modal.hide();
         }
         
-        // Clear removed images tracking
+        // Clear removed images and products tracking
         window.removedImages = [];
         window.imagePriceUpdates = {};
+        window.originalProductNames = [];
         
         // Reload preview
         await previewManager.init();
