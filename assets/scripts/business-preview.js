@@ -75,26 +75,32 @@ class BusinessPreviewManager {
 
     async loadServicesData() {
         try {
-            if (!window.businessAWSAuthService) {
-                return;
-            }
-
-            const servicesData = await window.businessAWSAuthService.getServices();
+            const BASE_URL = 'https://acc.comparehubprices.site';
+            const MANAGE_PRODUCTS_URL = `${BASE_URL}/business/business/manage-products`;
             
-            if (servicesData.success) {
+            // Fetch products using new manage-products Lambda
+            const response = await fetch(MANAGE_PRODUCTS_URL, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
                 // Merge services data with business data
                 if (!this.businessData) {
                     this.businessData = {};
                 }
                 
-                // Convert services array to serviceGalleries object format
-                // servicesData.services is an array: [{ name, images, ... }, ...]
+                // Convert products array to serviceGalleries object format
+                // data.products is an array: [{ name, images, description }, ...]
                 // serviceGalleries should be an object: { "Service Name": [{ image, title }, ...] }
-                if (Array.isArray(servicesData.services)) {
+                if (Array.isArray(data.products)) {
                     const serviceGalleries = {};
-                    servicesData.services.forEach(service => {
-                        if (service.name && Array.isArray(service.images)) {
-                            serviceGalleries[service.name] = service.images;
+                    data.products.forEach(product => {
+                        if (product.name && Array.isArray(product.images)) {
+                            serviceGalleries[product.name] = product.images;
                         }
                     });
                     // Merge with existing serviceGalleries from public API if any
@@ -103,17 +109,19 @@ class BusinessPreviewManager {
                     } else {
                         this.businessData.serviceGalleries = serviceGalleries;
                     }
-                } else if (servicesData.services && typeof servicesData.services === 'object') {
+                } else if (data.serviceGalleries && typeof data.serviceGalleries === 'object') {
                     // If it's already an object, use it directly
-                    this.businessData.serviceGalleries = servicesData.services;
+                    this.businessData.serviceGalleries = data.serviceGalleries;
                 }
                 
-                this.businessData.businessDescription = servicesData.businessDescription || this.businessData.businessDescription || '';
-                this.businessData.fullContent = servicesData.fullContent || this.businessData.fullContent || '';
+                // Update business description from API response
+                if (data.businessDescription) {
+                    this.businessData.businessDescription = data.businessDescription;
+                }
             }
         } catch (error) {
             console.error('Error loading services data:', error);
-            // Continue without services data
+            // Continue without services data - preview will still work with existing data
         }
     }
 
