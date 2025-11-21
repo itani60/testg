@@ -151,15 +151,45 @@ async function viewProducts() {
     document.getElementById('productsEmpty').style.display = 'none';
     
     try {
+        // Check authentication first
+        if (window.businessAWSAuthService) {
+            const authCheck = await window.businessAWSAuthService.getUserInfo();
+            if (!authCheck.success) {
+                // User not authenticated
+                document.getElementById('productsLoading').style.display = 'none';
+                document.getElementById('productsError').style.display = 'block';
+                document.getElementById('productsError').innerHTML = 
+                    '<div class="alert alert-warning">Please log in to view your products. <a href="business-login.html">Click here to login</a></div>';
+                return;
+            }
+        }
+        
         const response = await fetch(MANAGE_PRODUCTS_URL, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
         });
         
+        // Handle 401 gracefully
+        if (response.status === 401) {
+            document.getElementById('productsLoading').style.display = 'none';
+            document.getElementById('productsError').style.display = 'block';
+            document.getElementById('productsError').innerHTML = 
+                '<div class="alert alert-warning">Your session has expired. Please <a href="business-login.html">log in again</a>.</div>';
+            return;
+        }
+        
         const data = await response.json();
         
         if (!response.ok || !data.success) {
+            // Handle auth-related errors gracefully
+            if (data.error === 'NO_SESSION' || data.error === 'INVALID_SESSION' || data.error === 'SESSION_EXPIRED') {
+                document.getElementById('productsLoading').style.display = 'none';
+                document.getElementById('productsError').style.display = 'block';
+                document.getElementById('productsError').innerHTML = 
+                    '<div class="alert alert-warning">Your session has expired. Please <a href="business-login.html">log in again</a>.</div>';
+                return;
+            }
             throw new Error(data.message || 'Failed to load products');
         }
         
@@ -178,7 +208,14 @@ async function viewProducts() {
         console.error('Error loading products:', error);
         document.getElementById('productsLoading').style.display = 'none';
         document.getElementById('productsError').style.display = 'block';
-        document.getElementById('productsError').textContent = error.message || 'Failed to load products';
+        
+        // Show user-friendly error message
+        if (error.message && error.message.includes('session')) {
+            document.getElementById('productsError').innerHTML = 
+                '<div class="alert alert-warning">Your session has expired. Please <a href="business-login.html">log in again</a>.</div>';
+        } else {
+            document.getElementById('productsError').textContent = error.message || 'Failed to load products. Please try again.';
+        }
     }
 }
 
@@ -294,6 +331,16 @@ async function saveService() {
         return;
     }
     
+    // Check authentication first
+    if (window.businessAWSAuthService) {
+        const authCheck = await window.businessAWSAuthService.getUserInfo();
+        if (!authCheck.success) {
+            alert('Please log in to save products. Redirecting to login page...');
+            window.location.href = 'business-login.html';
+            return;
+        }
+    }
+    
     // Show loading state
     const saveBtn = document.querySelector('#uploadProductModal .btn-success');
     const originalText = saveBtn.textContent;
@@ -312,9 +359,18 @@ async function saveService() {
             })
         });
         
+        // Handle 401 gracefully
+        if (response.status === 401) {
+            throw new Error('Your session has expired. Please log in again.');
+        }
+        
         const data = await response.json();
         
         if (!response.ok || !data.success) {
+            // Handle auth-related errors
+            if (data.error === 'NO_SESSION' || data.error === 'INVALID_SESSION' || data.error === 'SESSION_EXPIRED') {
+                throw new Error('Your session has expired. Please log in again.');
+            }
             throw new Error(data.message || 'Failed to save products');
         }
         
@@ -342,14 +398,24 @@ async function saveService() {
         
     } catch (error) {
         console.error('Error saving products:', error);
+        
+        // Handle session expiration
+        if (error.message && error.message.includes('session')) {
+            alert('Your session has expired. Please log in again.');
+            window.location.href = 'business-login.html';
+            return;
+        }
+        
         if (typeof showErrorToast === 'function') {
             showErrorToast(error.message || 'Failed to save products', 'Error');
         } else {
             alert('Error: ' + (error.message || 'Failed to save products'));
         }
     } finally {
-        saveBtn.disabled = false;
-        saveBtn.textContent = originalText;
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = originalText;
+        }
     }
 }
 
