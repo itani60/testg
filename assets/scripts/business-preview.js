@@ -75,7 +75,21 @@ class BusinessPreviewManager {
             // Set business description and services
             this.businessData.businessDescription = data.businessDescription || '';
             this.businessData.ourServices = data.ourServices || '';
+            this.businessData.moreInformation = data.moreInformation || '';
             this.businessData.serviceGalleries = {};
+            
+            // Store contact information, business hours, logo, and social media
+            this.businessData.contactInfo = data.contactInfo || {};
+            this.businessData.businessHours = data.businessHours || '';
+            this.businessData.logo = data.logo || '';
+            this.businessData.socialMedia = data.socialMedia || {};
+            
+            // Map contactInfo to businessData for backward compatibility
+            this.businessData.businessName = this.businessData.contactInfo.businessName || '';
+            this.businessData.businessAddress = this.businessData.contactInfo.address || '';
+            this.businessData.businessNumber = this.businessData.contactInfo.phone || '';
+            this.businessData.businessEmail = this.businessData.contactInfo.email || '';
+            this.businessData.email = this.businessData.contactInfo.email || '';
             
             // Convert products array to serviceGalleries object format
             // data.products is an array: [{ name, images, description }, ...]
@@ -132,6 +146,12 @@ class BusinessPreviewManager {
         // Render business description
         this.renderBusinessDescription();
         
+        // Render our services
+        this.renderOurServices();
+        
+        // Render more information
+        this.renderMoreInformation();
+        
         // Render services gallery
         this.renderServicesGallery();
         
@@ -148,11 +168,11 @@ class BusinessPreviewManager {
     renderHero() {
         const business = this.businessData;
         
-        // Hero Image
+        // Hero Image / Logo
         const heroImage = document.getElementById('businessHeroImage');
         if (heroImage) {
-            heroImage.src = business.businessLogoUrl || 'https://via.placeholder.com/300x200?text=Business+Logo';
-            heroImage.alt = business.businessName || 'Business Logo';
+            heroImage.src = business.logo || business.businessLogoUrl || 'https://via.placeholder.com/300x200?text=Business+Logo';
+            heroImage.alt = business.businessName || business.contactInfo?.businessName || 'Business Logo';
         }
         
         // Category Badge
@@ -203,6 +223,48 @@ class BusinessPreviewManager {
                           'No description available. Click Edit to add a description.';
         
         descriptionEl.innerHTML = description || 'No description available. Click Edit to add a description.';
+    }
+
+    renderOurServices() {
+        const section = document.getElementById('ourServicesSection');
+        const content = document.getElementById('ourServicesContent');
+        if (!section || !content) return;
+
+        const ourServices = this.businessData.ourServices || '';
+        
+        if (ourServices && ourServices.trim()) {
+            // Convert newlines to HTML line breaks and preserve bullet points
+            const formattedServices = this.escapeHtml(ourServices)
+                .replace(/\n/g, '<br>')
+                .replace(/•/g, '•')
+                .replace(/-/g, '-');
+            
+            content.innerHTML = `<div class="services-text">${formattedServices}</div>`;
+            section.style.display = 'block';
+        } else {
+            section.style.display = 'none';
+        }
+    }
+
+    renderMoreInformation() {
+        const section = document.getElementById('moreInformationSection');
+        const content = document.getElementById('moreInformationContent');
+        if (!section || !content) return;
+
+        const moreInformation = this.businessData.moreInformation || '';
+        
+        if (moreInformation && moreInformation.trim()) {
+            // Convert newlines to HTML line breaks and preserve bullet points
+            const formattedInfo = this.escapeHtml(moreInformation)
+                .replace(/\n/g, '<br>')
+                .replace(/•/g, '•')
+                .replace(/-/g, '-');
+            
+            content.innerHTML = `<div class="more-info-text">${formattedInfo}</div>`;
+            section.style.display = 'block';
+        } else {
+            section.style.display = 'none';
+        }
     }
 
     normalizeImagesArray(images) {
@@ -458,8 +520,19 @@ class BusinessPreviewManager {
         socialLinks.forEach(social => {
             const url = socialMedia[social.key];
             if (url && url.trim()) {
+                // Ensure URL has protocol
+                let finalUrl = url.trim();
+                if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+                    if (social.key === 'whatsapp') {
+                        // WhatsApp links should be in format: https://wa.me/1234567890
+                        const phoneNumber = finalUrl.replace(/[^0-9]/g, '');
+                        finalUrl = `https://wa.me/${phoneNumber}`;
+                    } else {
+                        finalUrl = `https://${finalUrl}`;
+                    }
+                }
                 html += `
-                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="social-btn ${social.key}">
+                    <a href="${finalUrl}" target="_blank" rel="noopener noreferrer" class="social-btn ${social.key}">
                         <i class="${social.icon}"></i>
                         <span>${social.label}</span>
                     </a>
@@ -478,21 +551,28 @@ class BusinessPreviewManager {
         const contactDetails = document.getElementById('contactDetails');
         if (!contactDetails) return;
 
+        // Use contactInfo from API response, fallback to businessData fields for backward compatibility
+        const contactInfo = this.businessData.contactInfo || {};
         const business = this.businessData;
+        
+        const businessName = contactInfo.businessName || business.businessName || '';
+        const address = contactInfo.address || business.businessAddress || '';
+        const phone = contactInfo.phone || business.businessNumber || '';
+        const email = contactInfo.email || business.businessEmail || business.email || '';
+        
         let html = '';
 
-        if (business.businessName) {
-            html += `<p><strong>Business Name:</strong> ${business.businessName}</p>`;
+        if (businessName) {
+            html += `<p><strong>Business Name:</strong> ${this.escapeHtml(businessName)}</p>`;
         }
-        if (business.businessAddress) {
-            html += `<p><strong>Address:</strong> ${business.businessAddress}</p>`;
+        if (address) {
+            html += `<p><strong>Address:</strong> ${this.escapeHtml(address)}</p>`;
         }
-        if (business.businessNumber) {
-            html += `<p><strong>Phone:</strong> <a href="tel:${business.businessNumber}">${business.businessNumber}</a></p>`;
+        if (phone) {
+            html += `<p><strong>Phone:</strong> <a href="tel:${phone}">${this.escapeHtml(phone)}</a></p>`;
         }
-        if (business.businessEmail || business.email) {
-            const email = business.businessEmail || business.email;
-            html += `<p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>`;
+        if (email) {
+            html += `<p><strong>Email:</strong> <a href="mailto:${email}">${this.escapeHtml(email)}</a></p>`;
         }
 
         if (html === '') {
@@ -506,8 +586,14 @@ class BusinessPreviewManager {
         const businessHours = document.getElementById('businessHours');
         if (!businessHours) return;
 
-        const hours = this.businessData.businessHours || 'No business hours set. Update your business hours in Business Account Settings.';
-        businessHours.textContent = hours;
+        // Use businessHours from API response
+        const hours = this.businessData.businessHours || '';
+
+        if (hours && hours.trim()) {
+            businessHours.innerHTML = `<pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">${this.escapeHtml(hours)}</pre>`;
+        } else {
+            businessHours.innerHTML = '<p class="text-muted">Business hours not specified. Update your business hours in Business Account Settings.</p>';
+        }
     }
 
     toggleEditMode() {
