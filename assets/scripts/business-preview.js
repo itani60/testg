@@ -1031,7 +1031,8 @@ class BusinessPreviewManager {
             const statusBadge = document.getElementById('statusBadge');
             const statusText = document.getElementById('statusText');
             if (statusBadge) {
-                statusBadge.style.display = 'inline-block';
+                statusBadge.style.display = 'inline-flex';
+                statusBadge.className = 'badge bg-warning text-dark';
             }
             if (statusText) {
                 statusText.textContent = 'Pending';
@@ -1117,8 +1118,8 @@ class BusinessPreviewManager {
                 editBtn.style.display = 'none';
             }
             if (statusBadge && statusText) {
-                statusBadge.style.display = 'inline-block';
-                statusBadge.className = 'badge bg-warning text-dark ms-2';
+                statusBadge.style.display = 'inline-flex';
+                statusBadge.className = 'badge bg-warning text-dark';
                 statusText.textContent = 'Pending';
             }
         } else if (status === 'PUBLISHED' || status === 'approved') {
@@ -1132,8 +1133,8 @@ class BusinessPreviewManager {
             }
             // Show Approved badge
             if (statusBadge && statusText) {
-                statusBadge.style.display = 'inline-block';
-                statusBadge.className = 'badge bg-success text-white ms-2';
+                statusBadge.style.display = 'inline-flex';
+                statusBadge.className = 'badge bg-success text-white';
                 statusText.innerHTML = '<i class="fas fa-check-circle"></i> Approved';
             }
             // Track if user has edited after approval
@@ -1144,7 +1145,8 @@ class BusinessPreviewManager {
                     postBtn.disabled = false;
                 }
                 if (statusBadge && statusText) {
-                    statusBadge.className = 'badge bg-info text-white ms-2';
+                    statusBadge.style.display = 'inline-flex';
+                    statusBadge.className = 'badge bg-info text-white';
                     statusText.innerHTML = '<i class="fas fa-edit"></i> Edited - Resubmit';
                 }
             }
