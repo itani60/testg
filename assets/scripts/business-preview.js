@@ -5,6 +5,7 @@ class BusinessPreviewManager {
         this.businessData = null;
         this.editMode = false;
         this.originalData = null;
+        this.hasEditedAfterApproval = false;
     }
 
     async init() {
@@ -32,6 +33,9 @@ class BusinessPreviewManager {
 
             // Load business data (includes services/products)
             await this.loadServicesData();
+            
+            // Check approval status and update button states
+            await this.checkApprovalStatus();
             
             // Render preview
             this.renderPreview();
@@ -1014,12 +1018,27 @@ class BusinessPreviewManager {
                 alert(successMessage);
             }
             
+            // Disable both Post and Edit buttons after toast appears
+            const editBtn = document.getElementById('editModeBtn');
+            postBtn.disabled = true;
+            postBtn.style.display = 'none';
+            if (editBtn) {
+                editBtn.disabled = true;
+                editBtn.style.display = 'none';
+            }
+            
+            // Show pending status badge
+            const statusBadge = document.getElementById('statusBadge');
+            const statusText = document.getElementById('statusText');
+            if (statusBadge) {
+                statusBadge.style.display = 'inline-block';
+            }
+            if (statusText) {
+                statusText.textContent = 'Pending';
+            }
+            
             // Reload data
             await this.init();
-            
-            // Reset button
-            postBtn.disabled = false;
-            postBtn.innerHTML = originalText;
         } catch (error) {
             console.error('Error posting business:', error);
             
@@ -1034,6 +1053,182 @@ class BusinessPreviewManager {
             const postBtn = document.getElementById('postBtn');
             postBtn.disabled = false;
             postBtn.innerHTML = 'Post';
+        }
+    }
+
+    async checkApprovalStatus() {
+        try {
+            const BASE_URL = 'https://acc.comparehubprices.site';
+            const MANAGE_PRODUCTS_URL = `${BASE_URL}/business/business/manage-products`;
+            
+            const response = await fetch(MANAGE_PRODUCTS_URL, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                // Status is in local-hub-info table: DRAFT, SUBMITTED, PUBLISHED
+                const status = data.status || 'DRAFT';
+                this.updateButtonStates(status);
+            }
+        } catch (error) {
+            console.error('Error checking approval status:', error);
+            // Default to DRAFT if check fails
+            this.updateButtonStates('DRAFT');
+        }
+    }
+
+    updateButtonStates(status) {
+        const postBtn = document.getElementById('postBtn');
+        const editBtn = document.getElementById('editModeBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const statusBadge = document.getElementById('statusBadge');
+        const statusText = document.getElementById('statusText');
+        
+        // Hide status badge by default
+        if (statusBadge) {
+            statusBadge.style.display = 'none';
+        }
+        
+        // Reset all buttons
+        if (postBtn) {
+            postBtn.disabled = false;
+            postBtn.style.display = 'inline-block';
+        }
+        if (editBtn) {
+            editBtn.disabled = false;
+            editBtn.style.display = 'inline-block';
+        }
+        if (deleteBtn) {
+            deleteBtn.style.display = 'inline-block';
+        }
+        
+        // Update based on status
+        if (status === 'SUBMITTED' || status === 'pending') {
+            // Pending approval - disable both buttons, show pending status
+            if (postBtn) {
+                postBtn.disabled = true;
+                postBtn.style.display = 'none';
+            }
+            if (editBtn) {
+                editBtn.disabled = true;
+                editBtn.style.display = 'none';
+            }
+            if (statusBadge && statusText) {
+                statusBadge.style.display = 'inline-block';
+                statusText.textContent = 'Pending';
+            }
+        } else if (status === 'PUBLISHED' || status === 'approved') {
+            // Approved - show Edit button, hide Post button
+            if (postBtn) {
+                postBtn.style.display = 'none';
+            }
+            if (editBtn) {
+                editBtn.style.display = 'inline-block';
+                editBtn.disabled = false;
+            }
+            // Track if user has edited after approval
+            if (this.hasEditedAfterApproval) {
+                // After editing, show Post button
+                if (postBtn) {
+                    postBtn.style.display = 'inline-block';
+                    postBtn.disabled = false;
+                }
+            }
+        } else {
+            // DRAFT - show both buttons
+            if (postBtn) {
+                postBtn.style.display = 'inline-block';
+                postBtn.disabled = false;
+            }
+            if (editBtn) {
+                editBtn.style.display = 'inline-block';
+                editBtn.disabled = false;
+            }
+        }
+    }
+
+    async deleteCatalogue() {
+        if (!confirm('Are you sure you want to delete all catalogue data? This will permanently delete all products, services, descriptions, and images. This action cannot be undone.')) {
+            return;
+        }
+        
+        if (!confirm('This will delete ALL your catalogue data including images. Are you absolutely sure?')) {
+            return;
+        }
+        
+        try {
+            const deleteBtn = document.getElementById('deleteBtn');
+            if (deleteBtn) {
+                deleteBtn.disabled = true;
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            }
+            
+            const BASE_URL = 'https://acc.comparehubprices.site';
+            const MANAGE_PRODUCTS_URL = `${BASE_URL}/business/business/manage-products`;
+            
+            // Get current products to delete them all
+            const getResponse = await fetch(MANAGE_PRODUCTS_URL, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+            
+            let productsToDelete = [];
+            if (getResponse.ok) {
+                const data = await getResponse.json();
+                if (data.success && Array.isArray(data.products)) {
+                    productsToDelete = data.products.map(p => p.name);
+                }
+            }
+            
+            // Delete all catalogue data
+            const response = await fetch(MANAGE_PRODUCTS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    businessDescription: '',
+                    ourServices: '',
+                    moreInformation: '',
+                    products: [],
+                    deletedProducts: productsToDelete
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to delete catalogue');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                if (typeof showSuccessToast === 'function') {
+                    showSuccessToast('All catalogue data has been deleted successfully.', 'Deleted');
+                } else {
+                    alert('All catalogue data has been deleted successfully.');
+                }
+                
+                // Reload data
+                await this.init();
+            } else {
+                throw new Error(result.message || 'Failed to delete catalogue');
+            }
+        } catch (error) {
+            console.error('Error deleting catalogue:', error);
+            if (typeof showErrorToast === 'function') {
+                showErrorToast(`Error deleting catalogue: ${error.message}`, 'Delete Failed');
+            } else {
+                alert(`Error deleting catalogue: ${error.message}`);
+            }
+        } finally {
+            const deleteBtn = document.getElementById('deleteBtn');
+            if (deleteBtn) {
+                deleteBtn.disabled = false;
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete';
+            }
         }
     }
 
@@ -1085,6 +1280,12 @@ function editSection(section) {
 async function postBusiness() {
     if (previewManager) {
         await previewManager.postBusiness();
+    }
+}
+
+async function deleteCatalogue() {
+    if (previewManager) {
+        await previewManager.deleteCatalogue();
     }
 }
 
@@ -1441,6 +1642,13 @@ async function saveBusinessChanges() {
             showSuccessToast('Business information updated successfully!', 'Success');
         } else {
             alert('Business information updated successfully!');
+        }
+        
+        // Mark that user has edited after approval
+        if (previewManager) {
+            previewManager.hasEditedAfterApproval = true;
+            // Update button states to show Post button
+            previewManager.updateButtonStates('PUBLISHED');
         }
         
         // Close modal

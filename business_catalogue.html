@@ -735,12 +735,18 @@
                         <p class="preview-subtitle">Preview how your business will appear to customers</p>
                     </div>
                     <div class="preview-actions">
+                        <button class="btn btn-danger" id="deleteBtn" onclick="deleteCatalogue()" style="display: none;">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
                         <button class="btn btn-secondary" id="editModeBtn" onclick="toggleEditMode()">
                             Edit
                         </button>
                         <button class="btn btn-primary" id="postBtn" onclick="postBusiness()">
                             Post
                         </button>
+                        <span class="badge bg-warning text-dark ms-2" id="statusBadge" style="display: none;">
+                            <i class="fas fa-clock"></i> <span id="statusText">Pending</span>
+                        </span>
                     </div>
                 </div>
 
