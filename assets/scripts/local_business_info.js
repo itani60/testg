@@ -167,22 +167,50 @@ class BusinessInfoManager {
 
         Object.keys(business.serviceGalleries).forEach(serviceName => {
             const images = business.serviceGalleries[serviceName];
-            if (images && images.length > 0) {
+            
+            // Ensure images is an array
+            let imageArray = [];
+            if (Array.isArray(images)) {
+                imageArray = images;
+            } else if (images && typeof images === 'object') {
+                // If it's an object, try to convert to array
+                if (images.images && Array.isArray(images.images)) {
+                    imageArray = images.images;
+                } else if (images.items && Array.isArray(images.items)) {
+                    imageArray = images.items;
+                } else {
+                    // Try to get values if it's an object with numeric keys
+                    imageArray = Object.values(images).filter(item => item !== null && item !== undefined);
+                }
+            } else if (typeof images === 'string') {
+                // Single image as string
+                imageArray = [images];
+            }
+            
+            if (imageArray.length > 0) {
                 // Store gallery data for modal
-                this.galleryData[serviceName] = images.map(img => {
-                    return typeof img === 'string' ? img : (img.image || img.url || '');
-                });
+                this.galleryData[serviceName] = imageArray.map(img => {
+                    if (typeof img === 'string') {
+                        return img;
+                    } else if (img && typeof img === 'object') {
+                        return img.image || img.url || img.src || '';
+                    }
+                    return '';
+                }).filter(url => url !== '');
+
+                if (this.galleryData[serviceName].length === 0) {
+                    return; // Skip if no valid images
+                }
 
                 // Show first 4 images, then "+X more" card
-                const visibleImages = images.slice(0, 4);
-                const remainingCount = images.length - 4;
+                const visibleImages = this.galleryData[serviceName].slice(0, 4);
+                const remainingCount = this.galleryData[serviceName].length - 4;
 
                 servicesHTML += `
                     <div class="service-card">
                         <h4>${this.escapeHtml(serviceName)}</h4>
                         <div class="service-gallery">
-                            ${visibleImages.map((img, index) => {
-                                const imageUrl = typeof img === 'string' ? img : (img.image || img.url || '');
+                            ${visibleImages.map((imageUrl, index) => {
                                 return `
                                     <div class="gallery-item" onclick="openGalleryModal('${this.escapeHtml(serviceName)}', ${index})">
                                         <div class="gallery-item-image-wrapper">
