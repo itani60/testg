@@ -81,7 +81,9 @@ class BusinessPreviewManager {
             // Store contact information, business hours, logo, and social media
             this.businessData.contactInfo = data.contactInfo || {};
             this.businessData.businessHours = data.businessHours || '';
-            this.businessData.logo = data.logo || '';
+            // Store logo - check businessLogoUrl first (actual field name in business-users table)
+            this.businessData.logo = data.logo || data.businessLogoUrl || '';
+            this.businessData.businessLogoUrl = data.logo || data.businessLogoUrl || '';
             this.businessData.socialMedia = data.socialMedia || {};
             
             // Map contactInfo to businessData for backward compatibility
@@ -559,7 +561,14 @@ class BusinessPreviewManager {
         const address = contactInfo.address || business.businessAddress || '';
         const phone = contactInfo.phone || business.businessNumber || '';
         const email = contactInfo.email || business.businessEmail || business.email || '';
-        const logo = business.logo || business.businessLogoUrl || '';
+        // Get logo from businessData - businessLogoUrl is the actual field name in business-users table
+        const logo = business.businessLogoUrl || 
+                     business.logo || 
+                     business.businessLogo || 
+                     business.logoUrl ||
+                     business.profileImage ||
+                     business.image ||
+                     '';
         
         let html = '';
 
