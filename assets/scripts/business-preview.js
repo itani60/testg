@@ -519,7 +519,7 @@ class BusinessPreviewManager {
         const socialLinks = [
             { key: 'facebook', icon: 'fab fa-facebook', label: 'Facebook', color: '#1877f2' },
             { key: 'instagram', icon: 'fab fa-instagram', label: 'Instagram', color: '#e4405f' },
-            { key: 'twitter', icon: 'fab fa-twitter', label: 'Twitter', color: '#1da1f2' },
+            { key: 'twitter', icon: 'fab fa-x-twitter', label: 'X (Twitter)', color: '#000000' },
             { key: 'linkedin', icon: 'fab fa-linkedin', label: 'LinkedIn', color: '#0077b5' },
             { key: 'tiktok', icon: 'fab fa-tiktok', label: 'TikTok', color: '#000000' },
             { key: 'whatsapp', icon: 'fab fa-whatsapp', label: 'WhatsApp', color: '#25d366' }
