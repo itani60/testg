@@ -69,64 +69,90 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Setup image preview handlers for file inputs
  */
 function setupImagePreviews() {
-    document.querySelectorAll('input[type="file"].product-image-1, input[type="file"].product-image-2, input[type="file"].product-image-3, input[type="file"].product-image-4, input[type="file"].product-image-5, input[type="file"].product-image-6').forEach(input => {
-        input.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // Validate file size (5MB max)
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('Image size exceeds 5MB limit. Please choose a smaller image.');
-                    e.target.value = '';
-                    return;
-                }
-                
-                // Validate file type
-                if (!file.type.startsWith('image/')) {
-                    alert('Please select a valid image file.');
-                    e.target.value = '';
-                    return;
-                }
-                
-                // Show preview
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const container = input.closest('.image-upload-container');
-                    if (container) {
-                        let previewContainer = container.querySelector('.image-preview-container');
-                        if (!previewContainer) {
-                            previewContainer = document.createElement('div');
-                            previewContainer.className = 'image-preview-container';
-                            previewContainer.style.display = 'block';
-                            container.appendChild(previewContainer);
-                        }
-                        
-                        const img = previewContainer.querySelector('.image-preview') || document.createElement('img');
-                        img.className = 'image-preview';
-                        img.style.cssText = 'max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 4px;';
-                        img.src = e.target.result;
-                        
-                        if (!previewContainer.querySelector('.image-preview')) {
-                            previewContainer.appendChild(img);
-                        }
-                        
-                        // Add remove button if not exists
-                        if (!previewContainer.querySelector('.remove-image-btn')) {
-                            const removeBtn = document.createElement('button');
-                            removeBtn.type = 'button';
-                            removeBtn.className = 'btn btn-sm btn-danger mt-2 remove-image-btn';
-                            removeBtn.textContent = 'Remove';
-                            removeBtn.onclick = () => {
-                                input.value = '';
-                                previewContainer.style.display = 'none';
-                            };
-                            previewContainer.appendChild(removeBtn);
-                        }
+    // Setup for all existing products
+    for (let productNum = 1; productNum <= 5; productNum++) {
+        setupImagePreviewsForProduct(productNum);
+    }
+}
+
+/**
+ * Setup image preview handlers for a specific product
+ */
+function setupImagePreviewsForProduct(productNumber) {
+    const productItem = document.querySelectorAll('.product-item')[productNumber - 1];
+    if (!productItem) return;
+    
+    for (let i = 1; i <= 6; i++) {
+        const input = productItem.querySelector(`.product-image-${i}`);
+        if (input) {
+            // Remove existing listeners by cloning
+            const newInput = input.cloneNode(true);
+            input.parentNode.replaceChild(newInput, input);
+            
+            newInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Validate file size (5MB max)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('Image size exceeds 5MB limit. Please choose a smaller image.');
+                        e.target.value = '';
+                        return;
                     }
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    });
+                    
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select a valid image file.');
+                        e.target.value = '';
+                        return;
+                    }
+                    
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const container = newInput.closest('.image-upload-container');
+                        if (container) {
+                            let previewContainer = container.querySelector('.image-preview-container');
+                            if (!previewContainer) {
+                                previewContainer = document.createElement('div');
+                                previewContainer.className = 'image-preview-container';
+                                previewContainer.style.cssText = 'display: block; margin-top: 10px;';
+                                container.appendChild(previewContainer);
+                            }
+                            
+                            // Remove existing preview image if any
+                            const existingImg = previewContainer.querySelector('.image-preview');
+                            if (existingImg) {
+                                existingImg.remove();
+                            }
+                            
+                            const img = document.createElement('img');
+                            img.className = 'image-preview';
+                            img.style.cssText = 'max-width: 100%; max-height: 150px; border-radius: 4px; margin-bottom: 10px; display: block;';
+                            img.src = e.target.result;
+                            previewContainer.insertBefore(img, previewContainer.firstChild);
+                            
+                            // Add or update remove button
+                            let removeBtn = previewContainer.querySelector('.remove-image-btn');
+                            if (!removeBtn) {
+                                removeBtn = document.createElement('button');
+                                removeBtn.type = 'button';
+                                removeBtn.className = 'btn btn-sm btn-danger remove-image-btn';
+                                removeBtn.textContent = 'Remove';
+                                removeBtn.onclick = () => {
+                                    newInput.value = '';
+                                    previewContainer.style.display = 'none';
+                                };
+                                previewContainer.appendChild(removeBtn);
+                            }
+                            
+                            previewContainer.style.display = 'block';
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    }
 }
 
 /**
@@ -283,9 +309,16 @@ async function saveService() {
     // Get our services
     const ourServices = document.getElementById('ourServices').value.trim();
     
-    // Collect products from all product items
+    // Get more information
+    const moreInformation = document.getElementById('moreInformation')?.value.trim() || '';
+    
+    // Collect products from all visible product items only
     const products = [];
-    const productItems = document.querySelectorAll('.product-item');
+    const allProductItems = document.querySelectorAll('.product-item');
+    const productItems = Array.from(allProductItems).filter(item => {
+        const style = window.getComputedStyle(item);
+        return style.display !== 'none';
+    });
     
     for (const productItem of productItems) {
         const productName = productItem.querySelector('.product-name')?.value?.trim();
@@ -364,6 +397,7 @@ async function saveService() {
             body: JSON.stringify({
                 businessDescription: businessDescription,
                 ourServices: ourServices,
+                moreInformation: moreInformation,
                 products: products
             })
         });
@@ -486,123 +520,68 @@ async function loadProductCount() {
 }
 
 /**
- * Add another product
+ * Add another product - shows the next hidden product
  */
 function addProduct() {
     const container = document.getElementById('productsContainer');
     if (!container) return;
     
-    const productItems = container.querySelectorAll('.product-item');
-    const nextNumber = productItems.length + 1;
+    const productItems = Array.from(container.querySelectorAll('.product-item'));
+    // Find the first hidden product
+    const hiddenProduct = productItems.find(item => item.style.display === 'none' || window.getComputedStyle(item).display === 'none');
     
-    const productHtml = `
-        <div class="product-item mb-4 p-3 border rounded">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="text-primary mb-0">
-                    Product/Service ${nextNumber}
-                </h6>
-                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProduct(${nextNumber})">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-12 mb-3">
-                    <label class="form-label">Product/Service Name *</label>
-                    <input type="text" class="form-control product-name" required placeholder="e.g., Custom Birthday Cards">
-                </div>
-            </div>
-            
-            <div class="mb-3">
-                <label class="form-label">Description *</label>
-                <textarea class="form-control product-description" rows="2" required placeholder="Describe what this service includes..."></textarea>
-            </div>
-            
-            <div class="mb-3">
-                <label class="form-label">Gallery Images * (Up to 6 images)</label>
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <div class="image-upload-container">
-                            <input type="file" class="form-control product-image-1" accept="image/*" required>
-                            <div class="form-text small">Image 1 (JPG, PNG, GIF - Max 5MB)</div>
-                            <input type="number" class="form-control mt-2 product-price-1" placeholder="Price (optional)" step="0.01" min="0">
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <div class="image-upload-container">
-                            <input type="file" class="form-control product-image-2" accept="image/*" required>
-                            <div class="form-text small">Image 2 (JPG, PNG, GIF - Max 5MB)</div>
-                            <input type="number" class="form-control mt-2 product-price-2" placeholder="Price (optional)" step="0.01" min="0">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <div class="image-upload-container">
-                            <input type="file" class="form-control product-image-3" accept="image/*" required>
-                            <div class="form-text small">Image 3 (JPG, PNG, GIF - Max 5MB)</div>
-                            <input type="number" class="form-control mt-2 product-price-3" placeholder="Price (optional)" step="0.01" min="0">
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <div class="image-upload-container">
-                            <input type="file" class="form-control product-image-4" accept="image/*" required>
-                            <div class="form-text small">Image 4 (JPG, PNG, GIF - Max 5MB)</div>
-                            <input type="number" class="form-control mt-2 product-price-4" placeholder="Price (optional)" step="0.01" min="0">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <div class="image-upload-container">
-                            <input type="file" class="form-control product-image-5" accept="image/*">
-                            <div class="form-text small">Image 5 (JPG, PNG, GIF - Max 5MB)</div>
-                            <input type="number" class="form-control mt-2 product-price-5" placeholder="Price (optional)" step="0.01" min="0">
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <div class="image-upload-container">
-                            <input type="file" class="form-control product-image-6" accept="image/*">
-                            <div class="form-text small">Image 6 (JPG, PNG, GIF - Max 5MB)</div>
-                            <input type="number" class="form-control mt-2 product-price-6" placeholder="Price (optional)" step="0.01" min="0">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    container.insertAdjacentHTML('beforeend', productHtml);
-    
-    // Setup image previews for new product
-    setupImagePreviews();
+    if (hiddenProduct) {
+        // Show the hidden product
+        hiddenProduct.style.display = 'block';
+        
+        // Setup image previews for this product
+        const productNumber = productItems.indexOf(hiddenProduct) + 1;
+        setupImagePreviewsForProduct(productNumber);
+        
+        // Scroll to the newly shown product
+        hiddenProduct.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+        // All products are visible, show a message
+        if (typeof showInfoToast === 'function') {
+            showInfoToast('Maximum of 5 products allowed', 'Info');
+        } else {
+            alert('Maximum of 5 products allowed');
+        }
+    }
 }
 
 /**
- * Remove product
+ * Remove product - hides it instead of removing
  */
 function removeProduct(productNumber) {
-    const productItems = document.querySelectorAll('.product-item');
-    if (productItems.length <= 1) {
+    const productItems = Array.from(document.querySelectorAll('.product-item'));
+    const visibleProducts = productItems.filter(item => {
+        const style = window.getComputedStyle(item);
+        return style.display !== 'none';
+    });
+    
+    if (visibleProducts.length <= 1) {
         alert('You must have at least one product');
         return;
     }
     
-    const productItem = Array.from(productItems).find(item => {
-        const title = item.querySelector('h6');
-        return title && title.textContent.includes(`Product/Service ${productNumber}`);
-    });
-    
+    const productItem = productItems[productNumber - 1];
     if (productItem) {
-        productItem.remove();
+        // Hide the product instead of removing it
+        productItem.style.display = 'none';
         
-        // Renumber remaining products
-        const remaining = document.querySelectorAll('.product-item');
-        remaining.forEach((item, index) => {
-            const title = item.querySelector('h6');
-            if (title) {
-                title.textContent = `Product/Service ${index + 1}`;
+        // Clear all inputs in this product
+        productItem.querySelectorAll('input, textarea').forEach(input => {
+            if (input.type === 'file') {
+                input.value = '';
+            } else {
+                input.value = '';
             }
+        });
+        
+        // Hide all image previews
+        productItem.querySelectorAll('.image-preview-container').forEach(container => {
+            container.style.display = 'none';
         });
     }
 }

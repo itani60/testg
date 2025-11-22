@@ -540,6 +540,7 @@ class BusinessPreviewManager {
             // Populate modal with current data
             document.getElementById('editBusinessDescription').value = data.businessDescription || '';
             document.getElementById('editOurServices').value = data.ourServices || '';
+            document.getElementById('editMoreInformation').value = data.moreInformation || '';
             
             // Clear existing products in modal
             const productsContainer = document.getElementById('editProductsContainer');
@@ -1172,6 +1173,7 @@ async function saveBusinessChanges() {
         // Get business description and services
         const businessDescription = document.getElementById('editBusinessDescription').value.trim();
         const ourServices = document.getElementById('editOurServices').value.trim();
+        const moreInformation = document.getElementById('editMoreInformation')?.value.trim() || '';
         
         if (!businessDescription) {
             alert('Business description is required');
@@ -1294,6 +1296,7 @@ async function saveBusinessChanges() {
         const requestBody = {
             businessDescription: businessDescription,
             ourServices: ourServices,
+            moreInformation: moreInformation,
             products: products
         };
         
