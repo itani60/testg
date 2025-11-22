@@ -1219,6 +1219,7 @@ class BusinessPreviewManager {
     }
 
     async confirmDeleteCatalogue() {
+        console.log('confirmDeleteCatalogue method called');
         const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteCatalogueModal'));
         if (deleteModal) {
             deleteModal.hide();
@@ -1387,10 +1388,21 @@ function deleteCatalogue() {
 window.deleteCatalogue = deleteCatalogue;
 
 async function confirmDeleteCatalogue() {
-    if (window.previewManager) {
-        await window.previewManager.confirmDeleteCatalogue();
+    console.log('confirmDeleteCatalogue function called');
+    try {
+        if (window.previewManager) {
+            await window.previewManager.confirmDeleteCatalogue();
+        } else {
+            console.error('previewManager not found');
+            alert('Preview manager not initialized. Please refresh the page.');
+        }
+    } catch (error) {
+        console.error('Error in confirmDeleteCatalogue:', error);
+        alert('Error deleting catalogue: ' + error.message);
     }
 }
+
+window.confirmDeleteCatalogue = confirmDeleteCatalogue;
 
 // Function to open image modal
 function openImageModal(imageUrl, imageAlt) {
