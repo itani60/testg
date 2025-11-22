@@ -559,8 +559,18 @@ class BusinessPreviewManager {
         const address = contactInfo.address || business.businessAddress || '';
         const phone = contactInfo.phone || business.businessNumber || '';
         const email = contactInfo.email || business.businessEmail || business.email || '';
+        const logo = business.logo || business.businessLogoUrl || '';
         
         let html = '';
+
+        // Display logo if available
+        if (logo) {
+            html += `<div class="mb-3 text-center">
+                <img src="${this.escapeHtml(logo)}" alt="${this.escapeHtml(businessName || 'Business Logo')}" 
+                     style="max-width: 120px; max-height: 120px; border-radius: 8px; border: 2px solid #dee2e6; object-fit: cover;" 
+                     onerror="this.style.display='none'">
+            </div>`;
+        }
 
         if (businessName) {
             html += `<p><strong>Business Name:</strong> ${this.escapeHtml(businessName)}</p>`;
@@ -575,7 +585,7 @@ class BusinessPreviewManager {
             html += `<p><strong>Email:</strong> <a href="mailto:${email}">${this.escapeHtml(email)}</a></p>`;
         }
 
-        if (html === '') {
+        if (html === '' && !logo) {
             html = '<p class="text-muted">No contact information available. Update your contact details in Business Account Settings.</p>';
         }
 
