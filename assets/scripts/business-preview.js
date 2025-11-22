@@ -1390,8 +1390,9 @@ window.deleteCatalogue = deleteCatalogue;
 async function confirmDeleteCatalogue() {
     console.log('confirmDeleteCatalogue function called');
     try {
-        if (window.previewManager) {
-            await window.previewManager.confirmDeleteCatalogue();
+        const manager = window.previewManager || previewManager;
+        if (manager) {
+            await manager.confirmDeleteCatalogue();
         } else {
             console.error('previewManager not found');
             alert('Preview manager not initialized. Please refresh the page.');
@@ -1820,6 +1821,7 @@ function fileToBase64(file) {
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     previewManager = new BusinessPreviewManager();
+    window.previewManager = previewManager;
     previewManager.init();
 });
 
