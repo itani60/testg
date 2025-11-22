@@ -941,6 +941,179 @@
     <script src="assets/scripts/business-detail.js"></script>
 
     <script>
+        // Rating Modal Functionality - Compatibility layer for local_business_info.html
+        let selectedRating = 0;
+
+        // Override openRatingModal to work without businessId parameter
+        function openRatingModal(businessId = null) {
+            // Get business ID from businessDetailManager if not provided
+            if (!businessId && window.businessDetailManager) {
+                businessId = window.businessDetailManager.getCurrentBusinessId();
+            }
+            
+            // If still no businessId, try to get from URL
+            if (!businessId) {
+                const urlParams = new URLSearchParams(window.location.search);
+                businessId = urlParams.get('id') || urlParams.get('businessId');
+            }
+            
+            // If we have a businessId and the function exists in local-business2.js, use it
+            if (businessId && typeof window.openRatingModalWithId === 'undefined') {
+                // Use the function from local-business2.js if available
+                if (typeof openRatingModal === 'function' && openRatingModal.length > 0) {
+                    openRatingModal(businessId);
+                    return;
+                }
+            }
+            
+            // Fallback: Use Bootstrap modal directly
+            selectedRating = 0;
+            const modal = document.getElementById('ratingModal');
+            if (modal) {
+                const bootstrapModal = new bootstrap.Modal(modal);
+                bootstrapModal.show();
+                resetStars();
+            }
+        }
+
+        function closeRatingModal() {
+            const modal = document.getElementById('ratingModal');
+            if (modal) {
+                const bootstrapModal = bootstrap.Modal.getInstance(modal);
+                if (bootstrapModal) {
+                    bootstrapModal.hide();
+                } else {
+                    // Fallback if Bootstrap modal instance doesn't exist
+                    modal.style.display = 'none';
+                }
+            }
+            document.body.style.overflow = 'auto';
+        }
+
+        function selectRating(rating) {
+            selectedRating = rating;
+            const stars = document.querySelectorAll('.interactive-star');
+            const labels = document.querySelectorAll('.rating-label');
+            
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.className = 'fas fa-star interactive-star';
+                } else {
+                    star.className = 'far fa-star interactive-star';
+                }
+            });
+            
+            labels.forEach(label => {
+                label.classList.remove('active');
+                if (parseInt(label.dataset.rating) === rating) {
+                    label.classList.add('active');
+                }
+            });
+        }
+
+        function resetStars() {
+            const stars = document.querySelectorAll('.interactive-star');
+            const labels = document.querySelectorAll('.rating-label');
+            
+            stars.forEach(star => {
+                star.className = 'far fa-star interactive-star';
+            });
+            
+            labels.forEach(label => {
+                label.classList.remove('active');
+            });
+        }
+
+        function submitRating() {
+            const reviewText = document.getElementById('ratingReview')?.value.trim() || '';
+            
+            if (selectedRating === 0) {
+                alert('Please select a rating before submitting.');
+                return;
+            }
+            
+            // Get business ID
+            let businessId = null;
+            if (window.businessDetailManager) {
+                businessId = window.businessDetailManager.getCurrentBusinessId();
+            }
+            
+            if (!businessId) {
+                const urlParams = new URLSearchParams(window.location.search);
+                businessId = urlParams.get('id') || urlParams.get('businessId');
+            }
+            
+            // Use submitRatingWithReview from local-business2.js if available
+            if (businessId && typeof submitRatingWithReview === 'function') {
+                window.selectedRating = selectedRating;
+                submitRatingWithReview(businessId);
+            } else {
+                // Fallback: Show success message
+                showRatingSuccess();
+                closeRatingModal();
+                document.getElementById('ratingReview').value = '';
+                selectedRating = 0;
+                resetStars();
+            }
+        }
+
+        function showRatingSuccess() {
+            const successMsg = document.createElement('div');
+            successMsg.className = 'rating-success-message show';
+            successMsg.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>Thank you! Your rating has been submitted.</span>
+            `;
+            document.body.appendChild(successMsg);
+            
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+                setTimeout(() => {
+                    if (document.body.contains(successMsg)) {
+                        document.body.removeChild(successMsg);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Add hover effects to rating labels
+        function addRatingLabelHoverEffects() {
+            const stars = document.querySelectorAll('.interactive-star');
+            const labels = document.querySelectorAll('.rating-label');
+            
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    labels.forEach((label, labelIndex) => {
+                        if (labelIndex <= index) {
+                            label.classList.add('hover');
+                        } else {
+                            label.classList.remove('hover');
+                        }
+                    });
+                });
+            });
+            
+            const interactiveRating = document.querySelector('.interactive-rating');
+            if (interactiveRating) {
+                interactiveRating.addEventListener('mouseleave', () => {
+                    labels.forEach(label => label.classList.remove('hover'));
+                });
+            }
+        }
+
+        // Make functions globally accessible
+        window.openRatingModal = openRatingModal;
+        window.closeRatingModal = closeRatingModal;
+        window.selectRating = selectRating;
+        window.submitRating = submitRating;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            addRatingLabelHoverEffects();
+        });
+    </script>
+
+    <script>
         // Function to show Toast notification
         function showToast(message, type = 'success', title = null) {
             const toastContainer = document.getElementById('toastContainer');
