@@ -750,6 +750,21 @@
                     </div>
                 </div>
 
+                <!-- Rejection Reason Alert -->
+                <div class="alert alert-danger alert-dismissible fade show" id="rejectionReasonAlert" style="display: none; margin-bottom: 2rem;">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-times-circle me-2 mt-1" style="font-size: 1.25rem;"></i>
+                        <div class="flex-grow-1">
+                            <h5 class="alert-heading mb-2">
+                                <i class="fas fa-ban"></i> Post Rejected
+                            </h5>
+                            <p class="mb-2"><strong>Reason for rejection:</strong></p>
+                            <p class="mb-0" id="rejectionReasonText"></p>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+
                 <!-- Business Information Grid -->
                 <div class="business-info-grid">
                     <!-- Main Content -->

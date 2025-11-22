@@ -89,6 +89,9 @@ class BusinessPreviewManager {
             this.businessData.logo = data.logo || data.businessLogoUrl || '';
             this.businessData.businessLogoUrl = data.logo || data.businessLogoUrl || '';
             this.businessData.socialMedia = data.socialMedia || {};
+            // Store status and rejection reason
+            this.businessData.status = data.status || 'DRAFT';
+            this.businessData.rejectionReason = data.rejectionReason || null;
             
             // Map contactInfo to businessData for backward compatibility
             this.businessData.businessName = this.businessData.contactInfo.businessName || '';
@@ -1070,8 +1073,14 @@ class BusinessPreviewManager {
             
             if (response.ok) {
                 const data = await response.json();
-                // Status is in local-hub-info table: DRAFT, SUBMITTED, PUBLISHED
+                // Status is in local-hub-info table: DRAFT, SUBMITTED, PUBLISHED, REJECTED
                 const status = data.status || 'DRAFT';
+                // Store status and rejection reason in businessData
+                if (!this.businessData) {
+                    this.businessData = {};
+                }
+                this.businessData.status = status;
+                this.businessData.rejectionReason = data.rejectionReason || null;
                 this.updateButtonStates(status);
             }
         } catch (error) {
@@ -1107,7 +1116,30 @@ class BusinessPreviewManager {
         }
         
         // Update based on status
-        if (status === 'SUBMITTED' || status === 'pending') {
+        if (status === 'REJECTED' || status === 'rejected') {
+            // Rejected - show Edit and Post buttons, show Rejected status, display rejection reason
+            if (postBtn) {
+                postBtn.style.display = 'inline-block';
+                postBtn.disabled = false;
+            }
+            if (editBtn) {
+                editBtn.style.display = 'inline-block';
+                editBtn.disabled = false;
+            }
+            if (statusBadge && statusText) {
+                statusBadge.style.display = 'inline-flex';
+                statusBadge.className = 'badge bg-danger text-white';
+                statusText.innerHTML = '<i class="fas fa-times-circle"></i> Rejected';
+            }
+            // Show rejection reason alert
+            const rejectionAlert = document.getElementById('rejectionReasonAlert');
+            const rejectionReasonText = document.getElementById('rejectionReasonText');
+            if (rejectionAlert && rejectionReasonText) {
+                const rejectionReason = this.businessData.rejectionReason || 'No reason provided.';
+                rejectionReasonText.textContent = rejectionReason;
+                rejectionAlert.style.display = 'block';
+            }
+        } else if (status === 'SUBMITTED' || status === 'pending') {
             // Pending approval - disable both buttons, show pending status
             if (postBtn) {
                 postBtn.disabled = true;
@@ -1121,6 +1153,11 @@ class BusinessPreviewManager {
                 statusBadge.style.display = 'inline-flex';
                 statusBadge.className = 'badge bg-warning text-dark';
                 statusText.textContent = 'Pending';
+            }
+            // Hide rejection reason alert
+            const rejectionAlert = document.getElementById('rejectionReasonAlert');
+            if (rejectionAlert) {
+                rejectionAlert.style.display = 'none';
             }
         } else if (status === 'PUBLISHED' || status === 'approved') {
             // Approved - show Edit button, hide Post button, show Approved status
@@ -1150,6 +1187,11 @@ class BusinessPreviewManager {
                     statusText.innerHTML = '<i class="fas fa-edit"></i> Edited - Resubmit';
                 }
             }
+            // Hide rejection reason alert
+            const rejectionAlert = document.getElementById('rejectionReasonAlert');
+            if (rejectionAlert) {
+                rejectionAlert.style.display = 'none';
+            }
         } else {
             // DRAFT - show both buttons, hide status badge
             if (postBtn) {
@@ -1162,6 +1204,11 @@ class BusinessPreviewManager {
             }
             if (statusBadge) {
                 statusBadge.style.display = 'none';
+            }
+            // Hide rejection reason alert
+            const rejectionAlert = document.getElementById('rejectionReasonAlert');
+            if (rejectionAlert) {
+                rejectionAlert.style.display = 'none';
             }
         }
     }
