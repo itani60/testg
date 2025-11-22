@@ -274,6 +274,7 @@
                 right: 10px !important;
             }
         }
+
     </style>
     
     
@@ -728,22 +729,12 @@
         <!-- Business Detail Container -->
         <div class="business-detail-container">
             <div class="container">
-                <!-- Breadcrumb Navigation -->
-                <nav class="breadcrumb-nav">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="local-business.html">Local Business</a></li>
-                        <li class="breadcrumb-item active" id="breadcrumbBusinessName">Business Details</li>
-                    </ol>
-                </nav>
-
-                <!-- Business Information Grid -->
                 <div class="business-info-grid">
                     <!-- Main Content -->
                     <div class="business-main-content">
                         <!-- Business Overview -->
                         <div class="business-overview">
-                            <h2>About This Business</h2>
+                            <h2>About Us</h2>
                             <div class="business-description" id="businessDescription">
                                 <!-- Business description will be populated here -->
                             </div>
@@ -751,90 +742,44 @@
 
                         <!-- Business Services -->
                         <div class="business-services" id="businessServices">
-                            <h3>Services & Gallery</h3>
+                            <h3>Our Services & Gallery</h3>
                             <div class="services-grid" id="servicesGrid">
                                 <!-- Services and gallery will be populated here -->
                             </div>
                         </div>
-
-                        <!-- Social Media & Action Buttons - Appears under Services & Gallery -->
-                        <div class="social-action-section">
-                            <!-- Social Media Buttons -->
-                            <div class="social-links-card">
-                                <h4>Connect With Us</h4>
-                                <div class="social-buttons" id="socialButtons">
-                                    <!-- Social buttons will be populated here -->
-                                </div>
-                            </div>
-                            
-                            <!-- Action Buttons -->
-                            <div class="action-buttons-card">
-                                <button class="btn btn-primary btn-rate" onclick="openRatingModalDetail()">
-                                    <i class="fas fa-star"></i>
-                                    Rate This Business
-                                </button>
-                                <button class="btn btn-outline-primary btn-share" onclick="shareBusiness()">
-                                    <i class="fas fa-share"></i>
-                                    Share Business
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Location Map (visible on all devices) -->
-                        <div class="business-hours-card">
-                            <h4>Location Map</h4>
-                            <div id="businessMapMain" class="business-map"></div>
-                        </div>
                     </div>
 
-                    <!-- Mobile Sidebar - appears after services on mobile -->
-                    <div class="business-sidebar mobile-sidebar">
-                        <!-- Contact Information -->
-                        <div class="contact-info-card">
-                            <h4>Contact Information</h4>
-                        <div class="contact-details" id="contactDetails">
-                                <!-- Contact details will be populated here -->
-                            </div>
-                        </div>
+                    <!-- Location Map -->
+                    <div class="business-hours-card">
+                        <h4>Location Map</h4>
+                        <div id="businessMapMain" class="business-map"></div>
+                    </div>
 
+                    <!-- Social & Action Section -->
+                    <div class="social-action-section">
                         <!-- Social Links -->
                         <div class="social-links-card">
                             <h4>Connect With Us</h4>
-                            <div class="social-buttons">
+                            <div class="social-buttons" id="socialButtons">
                                 <!-- Social buttons will be populated here -->
-                            </div>
-                        </div>
-
-                        <!-- Location Map -->
-                        <div class="business-hours-card">
-                            <h4>Location Map</h4>
-                            <div id="businessMapMobile" class="business-map"></div>
-                        </div>
-
-                        <!-- Business Hours -->
-                        <div class="business-hours-card">
-                            <h4>Business Hours</h4>
-                            <div class="business-hours" id="businessHours">
-                                <!-- Business hours will be populated here -->
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
                         <div class="action-buttons-card">
-                            <button class="btn btn-primary btn-rate" onclick="openRatingModal()">
+                            <button class="btn-rate" onclick="openRatingModal()">
                                 <i class="fas fa-star"></i>
-                                Rate This Business
+                                <span>Rate This Business</span>
                             </button>
-                            <button class="btn btn-outline-primary btn-share" onclick="shareBusiness()">
-                                <i class="fas fa-share"></i>
-                                Share Business
+                            <button class="btn-share" onclick="shareBusiness()">
+                                <i class="fas fa-share-alt"></i>
+                                <span>Share</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Continue with main content -->
+                    <!-- Business Reviews Section -->
                     <div class="business-main-content">
-                        <!-- Business Reviews -->
                         <div class="business-reviews-section">
                             <div class="reviews-header">
                                 <h3>Customer Reviews</h3>
@@ -872,52 +817,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Desktop Sidebar -->
-                    <div class="business-sidebar desktop-sidebar">
-                        <!-- Contact Information -->
-                        <div class="contact-info-card">
-                            <h4>Contact Information</h4>
-                            <div class="contact-details" id="contactDetailsDesktop">
-                                <!-- Contact details will be populated here -->
-                            </div>
-                        </div>
-
-                        <!-- Social Links -->
-                        <div class="social-links-card">
-                            <h4>Connect With Us</h4>
-                            <div class="social-buttons" id="socialButtonsDesktop">
-                                <!-- Social buttons will be populated here -->
-                            </div>
-                        </div>
-
-                        <!-- Location Map -->
-                        <div class="business-hours-card">
-                            <h4>Location Map</h4>
-                            <div id="businessMapDesktop" class="business-map"></div>
-                        </div>
-
-                        <!-- Business Hours -->
-                        <div class="business-hours-card">
-                            <h4>Business Hours</h4>
-                            <div class="business-hours" id="businessHoursDesktop">
-                                <!-- Business hours will be populated here -->
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="action-buttons-card">
-                            <button class="btn btn-primary btn-rate" onclick="openRatingModal()">
-                                <i class="fas fa-star"></i>
-                                Rate This Business
-                            </button>
-                            <button class="btn btn-outline-primary btn-share" onclick="shareBusiness()">
-                                <i class="fas fa-share"></i>
-                                Share Business
-                            </button>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
