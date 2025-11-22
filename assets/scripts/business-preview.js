@@ -1359,11 +1359,32 @@ async function postBusiness() {
     }
 }
 
-async function deleteCatalogue() {
-    if (window.previewManager) {
-        window.previewManager.deleteCatalogue();
+function deleteCatalogue() {
+    console.log('deleteCatalogue function called');
+    try {
+        const modalElement = document.getElementById('deleteCatalogueModal');
+        if (!modalElement) {
+            console.error('Delete catalogue modal not found');
+            alert('Delete confirmation modal not found. Please refresh the page.');
+            return;
+        }
+        
+        if (typeof bootstrap === 'undefined') {
+            console.error('Bootstrap is not loaded');
+            alert('Bootstrap library not loaded. Please refresh the page.');
+            return;
+        }
+        
+        console.log('Opening delete catalogue modal');
+        const deleteModal = new bootstrap.Modal(modalElement);
+        deleteModal.show();
+    } catch (error) {
+        console.error('Error opening delete modal:', error);
+        alert('Error opening delete confirmation: ' + error.message);
     }
 }
+
+window.deleteCatalogue = deleteCatalogue;
 
 async function confirmDeleteCatalogue() {
     if (window.previewManager) {
