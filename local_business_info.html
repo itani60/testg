@@ -5,49 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CompareHubPrices - Local Business Info</title>
 
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com https://fonts.googleapis.com https://www.gstatic.com; img-src 'self' data: https: blob:; font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://acc.comparehubprices.site https://accb.comparehubprices.site https://accounts.google.com https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://maps.google.com;">
-     <!-- SEO Meta Tags -->
-     <meta name="description" content="Discover local businesses, services, and reviews on CompareHubPrices. Find the best businesses near you with detailed information, ratings, and contact details.">
-     <meta name="keywords" content="local business, business directory, reviews, ratings, services, CompareHubPrices">
-     <meta name="author" content="CompareHubPrices">
-     <meta name="robots" content="index, follow">
-     
-     <!-- Open Graph Meta Tags for Social Sharing -->
-     <meta property="og:title" content="Business Details - CompareHubPrices">
-     <meta property="og:description" content="Discover local businesses, services, and reviews on CompareHubPrices. Find the best businesses near you with detailed information, ratings, and contact details.">
-     <meta property="og:type" content="website">
-     <meta property="og:url" content="">
-     <meta property="og:image" content="assets/logo .png">
-     <meta property="og:site_name" content="CompareHubPrices">
-     
-     <!-- Twitter Card Meta Tags -->
-     <meta name="twitter:card" content="summary_large_image">
-     <meta name="twitter:title" content="Business Details - CompareHubPrices">
-     <meta name="twitter:description" content="Discover local businesses, services, and reviews on CompareHubPrices. Find the best businesses near you with detailed information, ratings, and contact details.">
-     <meta name="twitter:image" content="assets/logo .png">
-     
-     <!-- Canonical URL -->
-     <link rel="canonical" href="">
-     
-     <!-- Structured Data for SEO -->
-     <script type="application/ld+json">
-     {
-         "@context": "https://schema.org",
-         "@type": "WebPage",
-         "name": "Business Details - CompareHubPrices",
-         "description": "Discover local businesses, services, and reviews on CompareHubPrices",
-         "url": "",
-         "publisher": {
-             "@type": "Organization",
-             "name": "CompareHubPrices",
-             "logo": {
-                 "@type": "ImageObject",
-                 "url": "assets/logo .png"
-             }
-         }
-     }
-     </script>
- 
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com https://fonts.googleapis.com https://www.gstatic.com; img-src 'self' data: https://www.gstatic.com https://images.comparehubprices.site; font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com; connect-src 'self' https://acc.comparehubprices.site https://accb.comparehubprices.site https://accounts.google.com https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com https://www.google.com https://www.gstatic.com;">
+    
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
@@ -68,7 +27,6 @@
     <link rel="stylesheet" href="assets/css/test.css">
     <link rel="stylesheet" href="assets/css/footer.css">
     <link rel="stylesheet" href="assets/css/badge.css">
-    <link rel="stylesheet" href="assets/css/my-account.css">
     <link rel="stylesheet" href="assets/css/local_business_info.css">
     
 
@@ -224,57 +182,6 @@
                 max-width: 150px;
             }
         }
-
-        /* Toast Notification Styling */
-        .toast-container {
-            z-index: 9999 !important;
-        }
-
-        .toast {
-            min-width: 350px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-            border-radius: 8px !important;
-            overflow: hidden;
-            border: none !important;
-            animation: slideInRight 0.3s ease-out;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .toast-header {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-            padding: 12px 16px !important;
-            font-weight: 600;
-        }
-
-        .toast-body {
-            padding: 16px !important;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #333;
-        }
-
-        @media (max-width: 576px) {
-            .toast {
-                min-width: calc(100vw - 40px);
-                max-width: calc(100vw - 40px);
-            }
-            
-            .toast-container {
-                top: 70px !important;
-                right: 10px !important;
-            }
-        }
-
     </style>
     
     
@@ -400,7 +307,7 @@
                             Price Alerts 
                             <span class="wishlist-count-badge" id="desktopPriceAlertsCount">0</span>
                         </a>
-                        <a href="notifications" class="header-link" id="desktopNotificationsLink">
+                        <a href="notifications.html" class="header-link" id="desktopNotificationsLink">
                             Notifications
                             <span class="notification-badge" id="desktopNotificationCount">0</span>
                         </a>
@@ -535,7 +442,7 @@
                         <div class="quick-access-badge count" id="mobileWishlistBadge" style="display: none;"></div>
                     </a>
                     
-                    <a href="notifications" class="quick-access-item notifications">
+                    <a href="notifications.html" class="quick-access-item notifications">
                         <div class="quick-access-icon">
                             <i class="fas fa-bell"></i>
                         </div>
@@ -688,12 +595,8 @@
 
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>
-
-    <!-- Toast Container for Notifications -->
-    <div class="toast-container position-fixed" style="top: 80px; right: 20px; z-index: 9999;" id="toastContainer"></div>
-
+ 
     <main class="main">
-        <!-- Business Hero Section -->
         <div class="business-hero" id="businessHero">
             <div class="hero-background"></div>
             <div class="hero-content">
@@ -725,7 +628,7 @@
                 </div>
             </div>
         </div>
-
+    
         <!-- Business Detail Container -->
         <div class="business-detail-container">
             <div class="container">
@@ -739,7 +642,7 @@
                                 <!-- Business description will be populated here -->
                             </div>
                         </div>
-
+    
                         <!-- Business Services -->
                         <div class="business-services" id="businessServices">
                             <h3>Our Services & Gallery</h3>
@@ -748,13 +651,13 @@
                             </div>
                         </div>
                     </div>
-
+    
                     <!-- Location Map -->
                     <div class="business-hours-card">
                         <h4>Location Map</h4>
                         <div id="businessMapMain" class="business-map"></div>
                     </div>
-
+    
                     <!-- Social & Action Section -->
                     <div class="social-action-section">
                         <!-- Social Links -->
@@ -764,7 +667,7 @@
                                 <!-- Social buttons will be populated here -->
                             </div>
                         </div>
-
+    
                         <!-- Action Buttons -->
                         <div class="action-buttons-card">
                             <button class="btn-rate" onclick="openRatingModal()">
@@ -777,7 +680,7 @@
                             </button>
                         </div>
                     </div>
-
+    
                     <!-- Business Reviews Section -->
                     <div class="business-main-content">
                         <div class="business-reviews-section">
@@ -820,62 +723,88 @@
                 </div>
             </div>
         </div>
+    
+        <!-- Rating Modal -->
+        <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body" id="ratingModalContent">
+                        <div class="rating-modal-header">
+                            <h3 id="ratingModalTitle">Rate This Business</h3>
+                            <button class="rating-modal-close" onclick="closeRatingModal()">&times;</button>
+                        </div>
+                        <div class="rating-modal-body">
+                            <div class="current-rating" id="currentRatingDisplay">
+                                <div class="rating-stars large" id="currentRatingStars">
+                                    <!-- Stars will be populated here -->
+                                </div>
+                                <div class="rating-info">
+                                    <span class="rating-score" id="currentRatingScore">0.0</span>
+                                    <span class="rating-count" id="currentRatingCount">0 ratings</span>
+                                </div>
+                            </div>
+                            
+                            <div class="user-rating-section">
+                                <h4>Rate This Business</h4>
+                                <div class="interactive-rating" id="interactiveRating">
+                                    <i class="far fa-star interactive-star" data-rating="1" onclick="selectRating(1)"></i>
+                                    <i class="far fa-star interactive-star" data-rating="2" onclick="selectRating(2)"></i>
+                                    <i class="far fa-star interactive-star" data-rating="3" onclick="selectRating(3)"></i>
+                                    <i class="far fa-star interactive-star" data-rating="4" onclick="selectRating(4)"></i>
+                                    <i class="far fa-star interactive-star" data-rating="5" onclick="selectRating(5)"></i>
+                                </div>
+                                <div class="rating-labels">
+                                    <span class="rating-label" data-rating="1">Poor</span>
+                                    <span class="rating-label" data-rating="2">Fair</span>
+                                    <span class="rating-label" data-rating="3">Good</span>
+                                    <span class="rating-label" data-rating="4">Very Good</span>
+                                    <span class="rating-label" data-rating="5">Excellent</span>
+                                </div>
+                            </div>
+                            
+                            <div class="review-section">
+                                <label for="ratingReview">Write a review (optional):</label>
+                                <textarea id="ratingReview" placeholder="Share your experience with this business..." rows="4"></textarea>
+                            </div>
+                            
+                            <div class="rating-actions">
+                                <button class="btn-secondary" onclick="closeRatingModal()">Cancel</button>
+                                <button class="btn-primary" onclick="submitRating()">Submit Rating</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Gallery Modal -->
+        <div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="galleryModalTitle">Gallery</h5>
+                        <button type="button" class="btn-close" id="galleryModalClose" aria-label="Close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="gallery-container">
+                            <button class="gallery-nav-btn" id="galleryPrevBtn" onclick="previousGalleryImage()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="gallery-image-container">
+                                <img id="galleryModalImage" src="" alt="" class="gallery-image">
+                            </div>
+                            <button class="gallery-nav-btn" id="galleryNextBtn" onclick="nextGalleryImage()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="gallery-counter" id="galleryCounter">1 / 1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
     </main>
 
-    <!-- Rating Modal -->
-    <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body" id="ratingModalContent">
-                    <!-- Rating modal content will be populated here -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Gallery Modal -->
-    <div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="galleryModalTitle">Gallery</h5>
-                    <button type="button" class="btn-close" id="galleryModalClose" aria-label="Close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="gallery-container">
-                        <button class="gallery-nav-btn" id="galleryPrevBtn" onclick="previousGalleryImage()">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <div class="gallery-image-container">
-                            <img id="galleryModalImage" src="" alt="" class="gallery-image">
-                        </div>
-                        <button class="gallery-nav-btn" id="galleryNextBtn" onclick="nextGalleryImage()">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                    <div class="gallery-counter" id="galleryCounter">1 / 1</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Followers Modal -->
-    <div class="modal fade" id="followersModal" tabindex="-1" aria-labelledby="followersModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="followersModalLabel">Followers</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="followersList" class="followers-list"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-  
-   
 
 
     <footer class="footer">
@@ -939,261 +868,12 @@
     <script src="assets/scripts/wishlist.js"></script>
     <script src="assets/scripts/local-business2.js"></script>
     <script src="assets/scripts/business-detail.js"></script>
+    <script src="assets/scripts/local_business_info.js"></script>
 
-    <script>
-        // Rating Modal Functionality - Compatibility layer for local_business_info.html
-        let selectedRating = 0;
+   
+ 
 
-        // Override openRatingModal to work without businessId parameter
-        function openRatingModal(businessId = null) {
-            // Get business ID from businessDetailManager if not provided
-            if (!businessId && window.businessDetailManager) {
-                businessId = window.businessDetailManager.getCurrentBusinessId();
-            }
-            
-            // If still no businessId, try to get from URL
-            if (!businessId) {
-                const urlParams = new URLSearchParams(window.location.search);
-                businessId = urlParams.get('id') || urlParams.get('businessId');
-            }
-            
-            // If we have a businessId and the function exists in local-business2.js, use it
-            if (businessId && typeof window.openRatingModalWithId === 'undefined') {
-                // Use the function from local-business2.js if available
-                if (typeof openRatingModal === 'function' && openRatingModal.length > 0) {
-                    openRatingModal(businessId);
-                    return;
-                }
-            }
-            
-            // Fallback: Use Bootstrap modal directly
-            selectedRating = 0;
-            const modal = document.getElementById('ratingModal');
-            if (modal) {
-                const bootstrapModal = new bootstrap.Modal(modal);
-                bootstrapModal.show();
-                resetStars();
-            }
-        }
-
-        function closeRatingModal() {
-            const modal = document.getElementById('ratingModal');
-            if (modal) {
-                const bootstrapModal = bootstrap.Modal.getInstance(modal);
-                if (bootstrapModal) {
-                    bootstrapModal.hide();
-                } else {
-                    // Fallback if Bootstrap modal instance doesn't exist
-                    modal.style.display = 'none';
-                }
-            }
-            document.body.style.overflow = 'auto';
-        }
-
-        function selectRating(rating) {
-            selectedRating = rating;
-            const stars = document.querySelectorAll('.interactive-star');
-            const labels = document.querySelectorAll('.rating-label');
-            
-            stars.forEach((star, index) => {
-                if (index < rating) {
-                    star.className = 'fas fa-star interactive-star';
-                } else {
-                    star.className = 'far fa-star interactive-star';
-                }
-            });
-            
-            labels.forEach(label => {
-                label.classList.remove('active');
-                if (parseInt(label.dataset.rating) === rating) {
-                    label.classList.add('active');
-                }
-            });
-        }
-
-        function resetStars() {
-            const stars = document.querySelectorAll('.interactive-star');
-            const labels = document.querySelectorAll('.rating-label');
-            
-            stars.forEach(star => {
-                star.className = 'far fa-star interactive-star';
-            });
-            
-            labels.forEach(label => {
-                label.classList.remove('active');
-            });
-        }
-
-        function submitRating() {
-            const reviewText = document.getElementById('ratingReview')?.value.trim() || '';
-            
-            if (selectedRating === 0) {
-                alert('Please select a rating before submitting.');
-                return;
-            }
-            
-            // Get business ID
-            let businessId = null;
-            if (window.businessDetailManager) {
-                businessId = window.businessDetailManager.getCurrentBusinessId();
-            }
-            
-            if (!businessId) {
-                const urlParams = new URLSearchParams(window.location.search);
-                businessId = urlParams.get('id') || urlParams.get('businessId');
-            }
-            
-            // Use submitRatingWithReview from local-business2.js if available
-            if (businessId && typeof submitRatingWithReview === 'function') {
-                window.selectedRating = selectedRating;
-                submitRatingWithReview(businessId);
-            } else {
-                // Fallback: Show success message
-                showRatingSuccess();
-                closeRatingModal();
-                document.getElementById('ratingReview').value = '';
-                selectedRating = 0;
-                resetStars();
-            }
-        }
-
-        function showRatingSuccess() {
-            const successMsg = document.createElement('div');
-            successMsg.className = 'rating-success-message show';
-            successMsg.innerHTML = `
-                <i class="fas fa-check-circle"></i>
-                <span>Thank you! Your rating has been submitted.</span>
-            `;
-            document.body.appendChild(successMsg);
-            
-            setTimeout(() => {
-                successMsg.classList.remove('show');
-                setTimeout(() => {
-                    if (document.body.contains(successMsg)) {
-                        document.body.removeChild(successMsg);
-                    }
-                }, 300);
-            }, 3000);
-        }
-
-        // Add hover effects to rating labels
-        function addRatingLabelHoverEffects() {
-            const stars = document.querySelectorAll('.interactive-star');
-            const labels = document.querySelectorAll('.rating-label');
-            
-            stars.forEach((star, index) => {
-                star.addEventListener('mouseenter', () => {
-                    labels.forEach((label, labelIndex) => {
-                        if (labelIndex <= index) {
-                            label.classList.add('hover');
-                        } else {
-                            label.classList.remove('hover');
-                        }
-                    });
-                });
-            });
-            
-            const interactiveRating = document.querySelector('.interactive-rating');
-            if (interactiveRating) {
-                interactiveRating.addEventListener('mouseleave', () => {
-                    labels.forEach(label => label.classList.remove('hover'));
-                });
-            }
-        }
-
-        // Make functions globally accessible
-        window.openRatingModal = openRatingModal;
-        window.closeRatingModal = closeRatingModal;
-        window.selectRating = selectRating;
-        window.submitRating = submitRating;
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            addRatingLabelHoverEffects();
-        });
-    </script>
-
-    <script>
-        // Function to show Toast notification
-        function showToast(message, type = 'success', title = null) {
-            const toastContainer = document.getElementById('toastContainer');
-            if (!toastContainer) return;
-            
-            const toastId = 'toast-' + Date.now();
-            
-            // Determine colors and icons based on type
-            let bgClass, icon, defaultTitle;
-            switch(type) {
-                case 'success':
-                    bgClass = 'bg-success';
-                    icon = 'fa-check-circle';
-                    defaultTitle = 'Success';
-                    break;
-                case 'error':
-                case 'danger':
-                    bgClass = 'bg-danger';
-                    icon = 'fa-exclamation-circle';
-                    defaultTitle = 'Error';
-                    break;
-                case 'warning':
-                    bgClass = 'bg-warning';
-                    icon = 'fa-exclamation-triangle';
-                    defaultTitle = 'Warning';
-                    break;
-                case 'info':
-                    bgClass = 'bg-info';
-                    icon = 'fa-info-circle';
-                    defaultTitle = 'Info';
-                    break;
-                default:
-                    bgClass = 'bg-success';
-                    icon = 'fa-check-circle';
-                    defaultTitle = 'Success';
-            }
-            
-            const displayTitle = title || defaultTitle;
-            
-            const toastHTML = `
-                <div class="toast" id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
-                    <div class="toast-header ${bgClass} text-white">
-                        <i class="fas ${icon} me-2"></i>
-                        <strong class="me-auto">${displayTitle}</strong>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                    <div class="toast-body">
-                        ${message}
-                    </div>
-                </div>
-            `;
-            
-            toastContainer.insertAdjacentHTML('beforeend', toastHTML);
-            const toastElement = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastElement);
-            toast.show();
-            
-            // Remove from DOM after hiding
-            toastElement.addEventListener('hidden.bs.toast', function() {
-                toastElement.remove();
-            });
-        }
-        
-        // Alias functions for convenience
-        function showSuccessToast(message, title = 'Success') {
-            showToast(message, 'success', title);
-        }
-        
-        function showErrorToast(message, title = 'Error') {
-            showToast(message, 'error', title);
-        }
-        
-        function showWarningToast(message, title = 'Warning') {
-            showToast(message, 'warning', title);
-        }
-        
-        function showInfoToast(message, title = 'Info') {
-            showToast(message, 'info', title);
-        }
-    </script>
+    
     
  
 
