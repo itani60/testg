@@ -1118,10 +1118,11 @@ class BusinessPreviewManager {
             }
             if (statusBadge && statusText) {
                 statusBadge.style.display = 'inline-block';
+                statusBadge.className = 'badge bg-warning text-dark ms-2';
                 statusText.textContent = 'Pending';
             }
         } else if (status === 'PUBLISHED' || status === 'approved') {
-            // Approved - show Edit button, hide Post button
+            // Approved - show Edit button, hide Post button, show Approved status
             if (postBtn) {
                 postBtn.style.display = 'none';
             }
@@ -1129,16 +1130,26 @@ class BusinessPreviewManager {
                 editBtn.style.display = 'inline-block';
                 editBtn.disabled = false;
             }
+            // Show Approved badge
+            if (statusBadge && statusText) {
+                statusBadge.style.display = 'inline-block';
+                statusBadge.className = 'badge bg-success text-white ms-2';
+                statusText.innerHTML = '<i class="fas fa-check-circle"></i> Approved';
+            }
             // Track if user has edited after approval
             if (this.hasEditedAfterApproval) {
-                // After editing, show Post button
+                // After editing, show Post button and change status to show it needs resubmission
                 if (postBtn) {
                     postBtn.style.display = 'inline-block';
                     postBtn.disabled = false;
                 }
+                if (statusBadge && statusText) {
+                    statusBadge.className = 'badge bg-info text-white ms-2';
+                    statusText.innerHTML = '<i class="fas fa-edit"></i> Edited - Resubmit';
+                }
             }
         } else {
-            // DRAFT - show both buttons
+            // DRAFT - show both buttons, hide status badge
             if (postBtn) {
                 postBtn.style.display = 'inline-block';
                 postBtn.disabled = false;
@@ -1146,6 +1157,9 @@ class BusinessPreviewManager {
             if (editBtn) {
                 editBtn.style.display = 'inline-block';
                 editBtn.disabled = false;
+            }
+            if (statusBadge) {
+                statusBadge.style.display = 'none';
             }
         }
     }
