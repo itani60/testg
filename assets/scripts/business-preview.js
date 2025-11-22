@@ -563,11 +563,11 @@ class BusinessPreviewManager {
         
         let html = '';
 
-        // Display logo if available
+        // Display logo at the top if available
         if (logo) {
-            html += `<div class="mb-3 text-center">
+            html += `<div class="mb-3 text-center" style="padding-bottom: 1rem; border-bottom: 1px solid #dee2e6;">
                 <img src="${this.escapeHtml(logo)}" alt="${this.escapeHtml(businessName || 'Business Logo')}" 
-                     style="max-width: 120px; max-height: 120px; border-radius: 8px; border: 2px solid #dee2e6; object-fit: cover;" 
+                     style="max-width: 150px; max-height: 150px; border-radius: 8px; border: 2px solid #dee2e6; object-fit: cover; width: 100%; height: auto;" 
                      onerror="this.style.display='none'">
             </div>`;
         }
