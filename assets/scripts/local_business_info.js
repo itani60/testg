@@ -69,9 +69,9 @@ class BusinessInfoManager {
         const business = this.businessData;
         const logo = business.logo || business.businessLogoUrl || 'assets/logo .png';
         const name = business.businessName || business.name || 'Business';
-        const description = business.description || business.moreInformation || '';
-        const category = business.category || 'General';
-        const address = business.address || '';
+        const description = business.businessDescription || business.description || business.moreInformation || '';
+        const category = business.businessCategory || business.category || 'General';
+        const address = business.businessAddress || business.address || '';
         const averageRating = this.getAverageRating();
         const totalRatings = this.getTotalRatings();
 
@@ -121,7 +121,7 @@ class BusinessInfoManager {
 
     renderDescription() {
         const business = this.businessData;
-        const description = business.moreInformation || business.description || '';
+        const description = business.businessDescription || business.moreInformation || business.description || '';
         const services = business.ourServices || '';
 
         const descriptionEl = document.getElementById('businessDescription');
@@ -132,17 +132,40 @@ class BusinessInfoManager {
         if (description) {
             // Split by paragraphs if it contains newlines
             const paragraphs = description.split('\n').filter(p => p.trim());
-            paragraphs.forEach(p => {
-                html += `<p>${this.escapeHtml(p.trim())}</p>`;
-            });
+            if (paragraphs.length > 0) {
+                paragraphs.forEach(p => {
+                    html += `<p>${this.escapeHtml(p.trim())}</p>`;
+                });
+            } else {
+                // If no newlines, just display as single paragraph
+                html += `<p>${this.escapeHtml(description.trim())}</p>`;
+            }
         }
 
         if (services) {
             html += `<h3>Our Services</h3>`;
-            const serviceParagraphs = services.split('\n').filter(p => p.trim());
-            serviceParagraphs.forEach(p => {
-                html += `<p>${this.escapeHtml(p.trim())}</p>`;
-            });
+            // Split by newlines and format as list if they start with bullet points
+            const serviceLines = services.split('\n').filter(p => p.trim());
+            if (serviceLines.length > 0) {
+                // Check if lines start with bullet points (•, -, *, etc.)
+                const hasBullets = serviceLines.some(line => /^[•\-\*]\s/.test(line.trim()));
+                
+                if (hasBullets) {
+                    html += '<ul>';
+                    serviceLines.forEach(line => {
+                        const cleanLine = line.trim().replace(/^[•\-\*]\s*/, '');
+                        if (cleanLine) {
+                            html += `<li>${this.escapeHtml(cleanLine)}</li>`;
+                        }
+                    });
+                    html += '</ul>';
+                } else {
+                    // Regular paragraphs
+                    serviceLines.forEach(p => {
+                        html += `<p>${this.escapeHtml(p.trim())}</p>`;
+                    });
+                }
+            }
         }
 
         if (!html) {
@@ -166,6 +189,11 @@ class BusinessInfoManager {
         this.galleryData = {};
 
         Object.keys(business.serviceGalleries).forEach(serviceName => {
+            // Skip description keys (keys ending with "_description")
+            if (serviceName.endsWith('_description')) {
+                return;
+            }
+            
             const images = business.serviceGalleries[serviceName];
             
             // Ensure images is an array
