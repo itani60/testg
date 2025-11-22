@@ -11,7 +11,6 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
     
-    <!-- QR Code Library - Load early -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
@@ -298,7 +297,6 @@
     <header class="header desktop-only">
         <div class="container-fluid">
             <div class="row align-items-center">
-                <!-- Mobile Toggle Button - Left Corner -->
                 <div class="col-auto mobile-tablet-only">
                     <button class="sidebar-toggle" aria-label="Open menu">☰</button>
                 </div>
@@ -309,7 +307,6 @@
                     </div>
                 </div>
                 
-                <!-- Categories Dropdown - Desktop Only -->
                 <div class="col-auto desktop-only">
                     <div class="categories-dropdown">
                         <a href="#categories" class="header-link">Categories <i class="fas fa-chevron-down" style="font-size: 0.7em;"></i></a>
@@ -365,7 +362,6 @@
                     </div>
                 </div>
                 
-                <!-- Header Search -->
                 <div class="col-auto desktop-only">
                     <div class="header-search">
                         <div class="search-wrapper">
@@ -375,17 +371,14 @@
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
-                            <!-- Desktop Search Suggestions Dropdown -->
                             <div class="search-suggestions" id="headerSearchSuggestions">
                                 <div class="suggestions-content">
-                                    <!-- Suggestions will be populated here -->
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Notification Buttons - Desktop Only -->
                 <div class="col desktop-only">
                     <div class="notification-buttons">
                         <a href="wishlist.html" class="header-link" id="desktopWishlistLink">
@@ -413,7 +406,6 @@
                                     <i class="fas fa-chevron-down" id="desktopLoginChevron"></i>
                                 </span>
                             </a>
-                            <!-- Logged out dropdown -->
                             <div class="login-dropdown desktop-only" aria-label="Login dropdown">
                                 <div class="login-card">
                                     <div class="login-card-header">Welcome</div>
@@ -434,23 +426,19 @@
         </div>
     </header>
 
-    <!-- Mobile Header -->
     <header class="mobile-header mobile-tablet-only">
         <div class="mobile-header-container">
             <div class="mobile-header-top">
-                <!-- Toggle Button -->
                 <button class="btn btn-outline-secondary sidebar-toggle" aria-label="Open menu" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
                 </button>
                 
-                <!-- Logo -->
                 <div class="mobile-logo">
                     <img src="assets/logo .png" alt="CompareHubPrices" class="mobile-logo-img">
                 </div>
             </div>
             
             <div class="mobile-header-bottom">
-                <!-- Search Input -->
                 <div class="mobile-search">
                     <div class="input-group">
                         <input type="text" id="mobileHeaderSearchInput" placeholder="Search..." class="form-control mobile-search-input">
@@ -458,10 +446,8 @@
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
-                    <!-- Search Suggestions Dropdown -->
                     <div class="mobile-search-suggestions" id="mobileHeaderSearchSuggestions">
                         <div class="suggestions-content">
-                            <!-- Suggestions will be populated here -->
                         </div>
                     </div>
                 </div>
@@ -469,26 +455,21 @@
         </div>
     </header>
 
-    <!-- Mobile/Tablet Sidebar -->
     <div class="mobile-sidebar" id="mobileSidebar">
         <div class="sidebar-content p-0">
-            <!-- Welcome Header with Close Button -->
             <div class="bg-danger text-white py-2 px-3 d-flex justify-content-between align-items-center">
                 <span class="small fw-bold">Welcome back to CompareHubPrices</span>
                 <button class="btn-close btn-close-white btn-sm" onclick="toggleSidebar()" aria-label="Close"></button>
             </div>
             
             
-            <!-- LOGGED OUT STATE - Show this when user is not logged in -->
             <div id="loggedOutState" class="px-3 py-2">
                 <button class="btn btn-danger w-100 d-flex justify-content-center align-items-center" onclick="toggleLoginState(); return false;">
                     Login
                 </button>
             </div>
             
-            <!-- LOGGED IN STATE - Show this when user is logged in -->
             <div id="loggedInState" style="display: none;">
-                <!-- User Profile Card -->
                 <div class="text-center py-4 bg-light">
                     <div class="d-inline-flex justify-content-center align-items-center rounded-circle bg-danger text-white" style="width: 80px; height: 80px; font-size: 28px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                         TE
@@ -497,7 +478,6 @@
                     <p class="text-muted mb-0">test@example.com</p>
                 </div>
                 
-                <!-- Sign Out Button -->
                 <div class="px-3 py-2">
                     <button class="btn btn-danger w-100 d-flex justify-content-center align-items-center" onclick="showLogoutConfirmation(); return false;">
                         Sign Out
@@ -505,7 +485,6 @@
                 </div>
             </div>
             
-            <!-- Visual Separator -->
             <div class="mx-3 my-3">
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1" style="height: 2px; background: linear-gradient(to right, rgba(0,0,0,0.1), rgba(0,0,0,0.3), rgba(0,0,0,0.1));"></div>
@@ -584,7 +563,6 @@
                     </a>
                 </div>
             </div>
-            <!-- Visual Separator -->
             <div class="mx-3 my-3">
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1" style="height: 2px; background: linear-gradient(to right, rgba(0,0,0,0.1), rgba(0,0,0,0.3), rgba(0,0,0,0.1));"></div>
@@ -676,16 +654,13 @@
         </div>
     </div>
 
-    <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
  
 
 
-    <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>
 
-    <!-- Toast Container for Notifications -->
     <div class="toast-container position-fixed" style="top: 80px; right: 20px; z-index: 9999;" id="toastContainer"></div>
 
     <main class="main">
@@ -708,10 +683,8 @@
             </div>
         </div>
 
-        <!-- Business Information Container -->
         <div class="contact-container">
             <div class="contact-content">
-                <!-- Breadcrumb -->
                 <nav class="breadcrumb-nav" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
@@ -731,7 +704,6 @@
 
                 <div class="business-preview-container">
                     <div class="container">
-                        <!-- Preview Header with Post Button -->
                 <div class="preview-header">
                     <div class="preview-header-content">
                         <h1 class="preview-title">Business Preview</h1>
@@ -753,7 +725,6 @@
                     </div>
                 </div>
 
-                <!-- Rejection Reason Alert -->
                 <div class="alert alert-danger alert-dismissible fade show" id="rejectionReasonAlert" style="display: none; margin-bottom: 2rem;">
                     <div class="d-flex align-items-start">
                         <i class="fas fa-times-circle me-2 mt-1" style="font-size: 1.25rem;"></i>
@@ -768,11 +739,8 @@
                     </div>
                 </div>
 
-                <!-- Business Information Grid -->
                 <div class="business-info-grid">
-                    <!-- Main Content -->
                     <div class="business-main-content">
-                        <!-- Business Overview -->
                         <div class="business-overview">
                             <div class="section-header">
                                 <h2>About This Business</h2>
@@ -786,31 +754,25 @@
                                 </div>
                             </div>
                             <div class="business-description editable-content" id="businessDescription" contenteditable="false">
-                                <!-- Business description will be populated here -->
                             </div>
                         </div>
 
-                        <!-- Our Services Section -->
                         <div class="business-services-section" id="ourServicesSection" style="display: none;">
                             <div class="section-header">
                                 <h3>Our Services</h3>
                             </div>
                             <div class="our-services-content" id="ourServicesContent">
-                                <!-- Our Services will be populated here -->
                             </div>
                         </div>
 
-                        <!-- More Information Section -->
                         <div class="business-info-section" id="moreInformationSection" style="display: none;">
                             <div class="section-header">
                                 <h3>More Information</h3>
                             </div>
                             <div class="more-information-content" id="moreInformationContent">
-                                <!-- More Information will be populated here -->
                             </div>
                         </div>
 
-                        <!-- Business Services -->
                         <div class="business-services" id="businessServices">
                                 <div class="section-header">
                                     <h3>Services & Gallery</h3>
@@ -821,43 +783,34 @@
                                     </div>
                                 </div>
                             <div class="services-grid" id="servicesGrid">
-                                <!-- Services and gallery will be populated here -->
                             </div>
                         </div>
 
-                        <!-- Social Media & Action Buttons -->
                         <div class="social-action-section">
-                            <!-- Social Media Buttons -->
                             <div class="social-links-card">
                                 <div class="section-header">
                                     <h4>Connect With Us</h4>
                                 </div>
                                 <div class="social-buttons" id="socialButtons">
-                                    <!-- Social buttons will be populated here -->
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Sidebar -->
                     <div class="business-sidebar">
-                        <!-- Contact Information -->
                         <div class="contact-info-card">
                             <div class="section-header">
                                 <h4>Contact Information</h4>
                             </div>
                             <div class="contact-details" id="contactDetails">
-                                <!-- Contact details will be populated here -->
                             </div>
                         </div>
 
-                        <!-- Business Hours -->
                         <div class="business-hours-card">
                             <div class="section-header">
                                 <h4>Business Hours</h4>
                             </div>
                             <div class="business-hours" id="businessHours">
-                                <!-- Business hours will be populated here -->
                             </div>
                         </div>
                     </div>
@@ -868,7 +821,6 @@
         </div>
     </main>
 
-    <!-- Image Modal -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content" style="background: transparent; border: none;">
@@ -882,7 +834,6 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
     <div class="modal fade" id="deleteImageModal" tabindex="-1" aria-labelledby="deleteImageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -902,7 +853,44 @@
         </div>
     </div>
 
-    <!-- Comprehensive Edit Business Modal -->
+    <div class="modal fade" id="deleteCatalogueModal" tabindex="-1" aria-labelledby="deleteCatalogueModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteCatalogueModalLabel">
+                        <i class="fas fa-exclamation-triangle"></i> Delete Catalogue
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <i class="fas fa-trash-alt text-danger mb-3" style="font-size: 3rem;"></i>
+                    <p class="mb-3">
+                        Are you sure you want to delete <strong>all catalogue data</strong>?
+                    </p>
+                    <p class="text-muted small mb-3">
+                        This will permanently delete:
+                    </p>
+                    <ul class="list-unstyled text-start mb-3" style="max-width: 400px; margin: 0 auto;">
+                        <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i> All products and services</li>
+                        <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i> All product images</li>
+                        <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i> Business description</li>
+                        <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i> Our services information</li>
+                        <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i> More information</li>
+                    </ul>
+                    <div class="alert alert-warning mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>Warning:</strong> This action cannot be undone. All data will be permanently removed from the database and S3 storage.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteCatalogueBtn" onclick="confirmDeleteCatalogue()">
+                        <i class="fas fa-trash"></i> Yes, Delete All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="editBusinessModal" tabindex="-1" aria-labelledby="editBusinessModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
@@ -914,7 +902,6 @@
                 </div>
                 <div class="modal-body">
                     <form id="editBusinessForm">
-                        <!-- About This Business Section -->
                         <div class="mb-4 p-3 border rounded bg-light">
                             <h6 class="text-primary mb-3">
                                 <i class="fas fa-info-circle"></i> About This Business
@@ -950,7 +937,6 @@
                         </div>
                         
                         <div id="editProductsContainer">
-                            <!-- Products will be dynamically added here -->
                         </div>
                     </form>
                 </div>

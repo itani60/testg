@@ -1214,14 +1214,22 @@ class BusinessPreviewManager {
     }
 
     async deleteCatalogue() {
-        if (!confirm('Are you sure you want to delete all catalogue data? This will permanently delete all products, services, descriptions, and images. This action cannot be undone.')) {
-            return;
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteCatalogueModal'));
+        deleteModal.show();
+    }
+
+    async confirmDeleteCatalogue() {
+        const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteCatalogueModal'));
+        if (deleteModal) {
+            deleteModal.hide();
         }
-        
-        if (!confirm('This will delete ALL your catalogue data including images. Are you absolutely sure?')) {
-            return;
+
+        const confirmBtn = document.getElementById('confirmDeleteCatalogueBtn');
+        if (confirmBtn) {
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
         }
-        
+
         try {
             const deleteBtn = document.getElementById('deleteBtn');
             if (deleteBtn) {
@@ -1292,6 +1300,11 @@ class BusinessPreviewManager {
                 deleteBtn.disabled = false;
                 deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete';
             }
+            const confirmBtn = document.getElementById('confirmDeleteCatalogueBtn');
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="fas fa-trash"></i> Yes, Delete All';
+            }
         }
     }
 
@@ -1347,8 +1360,14 @@ async function postBusiness() {
 }
 
 async function deleteCatalogue() {
-    if (previewManager) {
-        await previewManager.deleteCatalogue();
+    if (window.previewManager) {
+        window.previewManager.deleteCatalogue();
+    }
+}
+
+async function confirmDeleteCatalogue() {
+    if (window.previewManager) {
+        await window.previewManager.confirmDeleteCatalogue();
     }
 }
 
