@@ -29,10 +29,9 @@ class BusinessMarketplaceAPI {
     }
     
     static async listBusinesses(filters = {}) {
-        // NOTE: This requires a /business/public/list endpoint to be created in Lambda
-        // Expected endpoint: GET /business/public/list?category=...&province=...&search=...&limit=...&lastKey=...
-        // Expected response: { success: true, businesses: [...], count: number, lastKey: string | null }
-        // For now, falls back to hardcoded data if API fails
+        // Production endpoint: GET /business/business/public/list
+        // Query parameters: category, province, search, limit, lastKey
+        // Response: { success: true, businesses: [...], count: number, lastKey: string | null }
         try {
             const queryParams = new URLSearchParams();
             if (filters.category) queryParams.append('category', filters.category);
@@ -57,15 +56,9 @@ class BusinessMarketplaceAPI {
             }
             
             // Transform API response
-            console.log('📊 Raw API data.businesses:', data.businesses);
             const businesses = (data.businesses || []).map(b => {
-                console.log('📊 Transforming business:', b);
-                const transformed = this.transformBusinessData(b);
-                console.log('📊 Transformed result:', transformed);
-                return transformed;
+                return this.transformBusinessData(b);
             });
-            
-            console.log('📊 Final businesses array:', businesses);
             
             return {
                 businesses: businesses,
@@ -74,11 +67,10 @@ class BusinessMarketplaceAPI {
             };
         } catch (error) {
             console.error('Error fetching businesses list:', error);
-            // Fallback to hardcoded data if API fails
-            console.warn('Falling back to hardcoded data');
+            // Return empty result on error - no fallback data in production
             return {
-                businesses: getRegularBusinesses(),
-                count: getRegularBusinesses().length,
+                businesses: [],
+                count: 0,
                 lastKey: null
             };
         }
@@ -1047,44 +1039,30 @@ class LocalBusinessManager {
                 businessGrid.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-danger" role="status"><span class="visually-hidden">Loading businesses...</span></div><p class="mt-3">Loading businesses...</p></div>';
             }
             
-            // Check if test mode is enabled (test-hardcoded.js is loaded)
-            const testData = window.TEST_BUSINESS_DATA || (typeof TEST_BUSINESS_DATA !== 'undefined' ? TEST_BUSINESS_DATA : null);
-            if (testData && window.USE_TEST_MODE) {
-                console.log('🧪 TEST MODE: Using hardcoded test data', testData);
-                // Transform test data to match expected format
-                const testBusiness = BusinessMarketplaceAPI.transformBusinessData(testData);
-                console.log('🧪 Transformed test business:', testBusiness);
-                this.businesses = [testBusiness];
-                this.applyFilters();
-                return;
-            } else {
-                console.log('🧪 Test mode check:', {
-                    hasTestData: !!testData,
-                    useTestMode: window.USE_TEST_MODE,
-                    testDataValue: testData
-                });
-            }
+            // Production mode: Always use API
             
             // Fetch businesses from API
             const result = await BusinessMarketplaceAPI.listBusinesses({
                 limit: 100 // Fetch more businesses for filtering
             });
             
-            console.log('📊 API Response:', result);
-            console.log('📊 Businesses array:', result.businesses);
-            if (result.businesses && result.businesses.length > 0) {
-                console.log('📊 First business raw:', result.businesses[0]);
-                const transformed = BusinessMarketplaceAPI.transformBusinessData(result.businesses[0]);
-                console.log('📊 First business transformed:', transformed);
-            }
-            
-            this.businesses = result.businesses;
+            this.businesses = result.businesses || [];
             this.applyFilters();
         } catch (error) {
             console.error('Error loading businesses:', error);
-            // Fallback to hardcoded data
-        this.businesses = getRegularBusinesses();
-        this.applyFilters();
+            // Show error message to user
+            const businessGrid = document.getElementById('businessGrid');
+            if (businessGrid) {
+                businessGrid.innerHTML = `
+                    <div class="text-center p-5">
+                        <i class="fas fa-exclamation-triangle text-warning fa-3x mb-3"></i>
+                        <h5>Unable to load businesses</h5>
+                        <p class="text-muted">Please try again later.</p>
+                    </div>
+                `;
+            }
+            this.businesses = [];
+            this.applyFilters();
         }
     }
     
@@ -1159,30 +1137,7 @@ class LocalBusinessManager {
         }
         
         
-        // Pagination
-        const prevBtn = document.getElementById('prevPage');
-        const nextBtn = document.getElementById('nextPage');
-        
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => {
-                if (this.currentPage > 1) {
-                    this.currentPage--;
-                    this.renderBusinesses();
-                    this.updatePagination();
-                }
-            });
-        }
-        
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => {
-                const totalPages = Math.ceil(this.filteredBusinesses.length / this.itemsPerPage);
-                if (this.currentPage < totalPages) {
-                    this.currentPage++;
-                    this.renderBusinesses();
-                    this.updatePagination();
-                }
-            });
-        }
+        // Pagination is now handled dynamically in updatePagination()
         
         // Modal functionality
         this.setupModalEventListeners();
@@ -1395,47 +1350,87 @@ class LocalBusinessManager {
     }
     
     updatePagination() {
-        const totalPages = Math.ceil(this.filteredBusinesses.length / this.itemsPerPage);
-        const pagesContainer = document.getElementById('pages');
-        const prevBtn = document.getElementById('prevPage');
-        const nextBtn = document.getElementById('nextPage');
-        const paginationInfo = document.getElementById('paginationInfo');
+        // Remove existing pagination first
+        this.removeExistingPagination();
         
-        if (pagesContainer) {
-            let pagesHTML = '';
-            const maxVisiblePages = 5;
-            let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
-            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-            
-            if (endPage - startPage + 1 < maxVisiblePages) {
-                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-            }
-            
-            for (let i = startPage; i <= endPage; i++) {
-                pagesHTML += `
-                    <button class="page-number ${i === this.currentPage ? 'active' : ''}" 
-                            onclick="localBusinessManager.goToPage(${i})">
-                        ${i}
-                    </button>
-                `;
-            }
-            
-            pagesContainer.innerHTML = pagesHTML;
+        const totalPages = Math.ceil(this.filteredBusinesses.length / this.itemsPerPage);
+        
+        // Don't show pagination if there's only one page or no businesses
+        if (totalPages <= 1) return;
+        
+        const startItem = (this.currentPage - 1) * this.itemsPerPage + 1;
+        const endItem = Math.min(this.currentPage * this.itemsPerPage, this.filteredBusinesses.length);
+        
+        const paginationHTML = `
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    Showing ${startItem} to ${endItem} of ${this.filteredBusinesses.length} businesses
+                </div>
+                <div class="pagination-controls">
+                    <button class="page-nav" data-page="prev" aria-label="Previous page" ${this.currentPage === 1 ? 'disabled' : ''}>«</button>
+                    <div class="pagination-numbers">
+                        ${this.generatePaginationNumbers(totalPages)}
+                    </div>
+                    <button class="page-nav" data-page="next" aria-label="Next page" ${this.currentPage === totalPages ? 'disabled' : ''}>»</button>
+                </div>
+            </div>
+        `;
+        
+        const businessGrid = document.getElementById('businessGrid');
+        if (businessGrid) {
+            businessGrid.insertAdjacentHTML('afterend', paginationHTML);
         }
         
+        // Add event listeners to prev/next buttons
+        const prevBtn = document.querySelector('.pagination-container .page-nav[data-page="prev"]');
+        const nextBtn = document.querySelector('.pagination-container .page-nav[data-page="next"]');
+        
         if (prevBtn) {
-            prevBtn.disabled = this.currentPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                    this.renderBusinesses();
+                    this.updatePagination();
+                }
+            });
         }
         
         if (nextBtn) {
-            nextBtn.disabled = this.currentPage === totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (this.currentPage < totalPages) {
+                    this.currentPage++;
+                    this.renderBusinesses();
+                    this.updatePagination();
+                }
+            });
+        }
+    }
+    
+    removeExistingPagination() {
+        const existingPagination = document.querySelector('.pagination-container');
+        if (existingPagination) {
+            existingPagination.remove();
+        }
+    }
+    
+    generatePaginationNumbers(totalPages) {
+        const numbers = [];
+        const maxVisible = 5;
+        let startPage = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+        
+        if (endPage - startPage + 1 < maxVisible) {
+            startPage = Math.max(1, endPage - maxVisible + 1);
         }
         
-        if (paginationInfo) {
-            const startItem = (this.currentPage - 1) * this.itemsPerPage + 1;
-            const endItem = Math.min(this.currentPage * this.itemsPerPage, this.filteredBusinesses.length);
-            paginationInfo.textContent = `Showing ${startItem}-${endItem} of ${this.filteredBusinesses.length} businesses`;
+        for (let i = startPage; i <= endPage; i++) {
+            numbers.push(`
+                <button class="pagination-number ${i === this.currentPage ? 'active' : ''}" 
+                        onclick="localBusinessManager.goToPage(${i})">${i}</button>
+            `);
         }
+        
+        return numbers.join('');
     }
     
     goToPage(page) {
